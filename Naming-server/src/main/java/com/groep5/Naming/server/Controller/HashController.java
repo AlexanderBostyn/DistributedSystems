@@ -1,5 +1,6 @@
 package com.groep5.Naming.server.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import com.groep5.Naming.server.Service.DummyHasher;
 import com.groep5.Naming.server.Service.Hasher;
 import org.springframework.web.bind.annotation.*;
@@ -7,9 +8,18 @@ import org.springframework.web.bind.annotation.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.TreeMap;
 
 @RestController
 public class HashController {
+
+    private final TreeMap<Integer, InetAddress> mapping;
+
+    HashController(TreeMap<Integer, InetAddress> mapping) {
+        this.mapping = mapping;
+        System.out.println(this.mapping);
+    }
+
     private Hasher hasher= new DummyHasher();
     @RequestMapping({"/","/home"})
     @ResponseBody
@@ -55,7 +65,6 @@ public class HashController {
     {
         return name+"test";
     }
-
 
 
 }
