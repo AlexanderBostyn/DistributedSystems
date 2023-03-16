@@ -13,7 +13,7 @@ public class HashController {
     public String showHomepage(){
         return "Hello World";
     }
-
+/*
     @GetMapping("/file/{id}")//locate the node a file is located at
     public InetAddress locateFileById(@PathVariable int id) throws UnknownHostException {
         return hashLocateFileNode(id);
@@ -67,4 +67,6 @@ public class HashController {
         InetAddress addr = InetAddress.getLocalHost();
         return  addr;
     }
+
+ */
 }
