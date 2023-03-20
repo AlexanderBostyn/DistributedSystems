@@ -7,4 +7,5 @@ public class Node {
     private int prevNodeId;
     private int hashId;
     private InetAddress address;
+    private String name;
 }

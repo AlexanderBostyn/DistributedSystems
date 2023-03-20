@@ -21,6 +21,7 @@ public class HashController {
     }
 
     private Hasher hasher= new DummyHasher();
+
     @RequestMapping({"/","/home"})
     @ResponseBody
     public String showHomepage(){
