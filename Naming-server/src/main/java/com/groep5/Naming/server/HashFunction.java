@@ -2,11 +2,7 @@ package com.groep5.Naming.server;
 
 import com.google.common.hash.Hashing;
 
-import java.io.File;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.TreeMap;
 
 public class HashFunction {
