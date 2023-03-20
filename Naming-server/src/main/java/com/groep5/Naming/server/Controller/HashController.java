@@ -42,9 +42,9 @@ public class HashController {
         return hasher.addNode(name,strAddress);
     }
 
-    @DeleteMapping("/node")//delete a node
-    public void deleteNodeByAddress(@RequestBody String strAddress) throws UnknownHostException {
-        hasher.deleteNode(strAddress);
+    @DeleteMapping("/node/{name}")//delete a node
+    public void deleteNodeByAddress(@PathVariable String name,@RequestBody String strAddress) throws UnknownHostException {
+        hasher.deleteNode(name ,strAddress);
     }
 
     @GetMapping("/hash")
