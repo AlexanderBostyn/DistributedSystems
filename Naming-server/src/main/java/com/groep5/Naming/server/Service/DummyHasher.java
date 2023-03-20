@@ -35,7 +35,7 @@ public class DummyHasher implements Hasher {
     }
 
     @Override
-    public void deleteNode(String name, String strAddress) {
+    public void deleteNode(String name) {
 
     }
 

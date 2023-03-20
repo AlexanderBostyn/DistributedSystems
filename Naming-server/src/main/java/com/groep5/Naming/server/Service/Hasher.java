@@ -6,9 +6,8 @@ import java.net.UnknownHostException;
 public interface Hasher {
     public InetAddress locateFileByName(String name);
     public InetAddress locateFileById(int id);
-    public int addNode(String name, String strAddress);
-    public int addFile(String fileName);
-    public void deleteNode(String name, String strAddress);
+    public int addNode(String name, String strAddress) throws UnknownHostException;
+    public void deleteNode(String name);
 
     public int calcHashId(String name);
     
