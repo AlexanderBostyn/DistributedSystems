@@ -7,7 +7,7 @@ public interface Hasher {
     public InetAddress locateFileById(int id);
     public int addNode(String name, String strAddress);
     public int addFile(String fileName);
-    public void deleteNode(String strAddress);
+    public void deleteNode(String name, String strAddress);
 
     public int calcHashId(String name);
     
