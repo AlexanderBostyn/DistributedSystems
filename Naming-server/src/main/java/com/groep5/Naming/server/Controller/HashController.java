@@ -1,8 +1,10 @@
 package com.groep5.Naming.server.Controller;
 
+import com.groep5.Naming.server.HashFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.groep5.Naming.server.Service.DummyHasher;
 import com.groep5.Naming.server.Service.Hasher;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.InetAddress;
@@ -13,14 +15,11 @@ import java.util.TreeMap;
 @RestController
 public class HashController {
 
-    private final TreeMap<Integer, InetAddress> mapping;
-
-    HashController(TreeMap<Integer, InetAddress> mapping) {
-        this.mapping = mapping;
-        System.out.println(this.mapping);
+    private Hasher hasher;
+    HashController(ApplicationContext context) {
+        this.hasher = new HashFunction(context);
     }
 
-    private Hasher hasher= new DummyHasher();
 
     @RequestMapping({"/","/home"})
     @ResponseBody

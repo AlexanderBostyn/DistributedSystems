@@ -1,57 +1,63 @@
 package com.groep5.Naming.server;
 
 import com.google.common.hash.Hashing;
+import com.groep5.Naming.server.Service.Hasher;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 
-public class HashFunction {
+public class HashFunction implements Hasher {
 
-    private final TreeMap<Integer, String> nodeMap;
-    private final TreeMap<Integer, String> fileMap;
-    private static HashFunction instance = null;
+    private final TreeMap<Integer, InetAddress> nodeMap;
+    private File file;
+    private ApplicationContext context;
 
-    private HashFunction() {
-        this.nodeMap = new TreeMap<Integer, String>();
-        this.fileMap = new TreeMap<Integer, String>();
-    }
-    public static HashFunction getInstance() {
-        if(instance == null) {
-            instance = new HashFunction();
-        }
-        return instance;
+    public HashFunction(ApplicationContext context) {
+        this.context = context;
+        this.file = context.getBean("dataFile", File.class);
+        nodeMap = Persistence.LoadMap(file);
     }
 
-    public int getHash(String name) {
-        return Hashing.sha256().hashString(name, StandardCharsets.UTF_8).hashCode();
+    @Override
+    public int calcHashId(String name) {
+        double max = 2147483647;
+        return (int) ((Hashing.sha256().hashString(name, StandardCharsets.UTF_8).hashCode() + max) / max * (32768/2));
     }
 
-    public void addNode(String name) {
-        int hash = getHash(name);
-        System.out.println(hash);
-        nodeMap.put(hash,name);
+    @Override
+    public void deleteNode(String hostName) {
+        nodeMap.remove(calcHashId(hostName));
+        Persistence.SaveMap(nodeMap, file.getName());
     }
 
-    public void removeNode(int id) {
-        nodeMap.remove(id);
+    @Override
+    public int addNode(String name, String strAddress) throws UnknownHostException {
+        nodeMap.put(calcHashId(name), Inet4Address.getByName(strAddress));
+        Persistence.SaveMap(nodeMap, file.getName());
+        return calcHashId(name);
+    }
+    @Override
+    public InetAddress locateFileByName(String name) {
+        //TODO
+        return null;
     }
 
-    public void addFile(String name) {
-        int hash = getHash(name);
-        fileMap.put(hash,name);
+    @Override
+    public InetAddress locateFileById(int id) {
+
+        //TODO
+        return null;
     }
 
-    public void removeFile(int id) {
-        fileMap.remove(id);
-    }
 
-    public static void main(String[] args) {
-        HashFunction hashFunction = HashFunction.getInstance();
-        String node1 = "node1";
-        String node2 = "node2";
-        hashFunction.addNode(node1);
-        hashFunction.addNode(node2);
-    }
+
+
+
+
+
 }

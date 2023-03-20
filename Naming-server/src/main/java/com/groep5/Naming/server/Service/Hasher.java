@@ -1,6 +1,7 @@
 package com.groep5.Naming.server.Service;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public interface Hasher {
     public InetAddress locateFileByName(String name);
