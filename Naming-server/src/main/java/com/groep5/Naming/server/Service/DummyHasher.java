@@ -25,7 +25,7 @@ public class DummyHasher implements Hasher {
     }
 
     @Override
-    public int addNode(String strAddress) {
+    public int addNode(String name, String strAddress) {
         return 123;
     }
 

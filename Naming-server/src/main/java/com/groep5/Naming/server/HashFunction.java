@@ -64,5 +64,7 @@ public class HashFunction {
         System.out.println(hashFunction.getFileHash(file1));
         File file2 = new File("\"C:\\UAProgrammas\\IntellijProjects\\DIST\\Lab1\"");
         System.out.println(hashFunction.getFileHash(file2));
+        System.out.println(hashFunction.getNodeHash("test"));
+        System.out.println(hashFunction.getNodeHash("server"));
     }
 }
