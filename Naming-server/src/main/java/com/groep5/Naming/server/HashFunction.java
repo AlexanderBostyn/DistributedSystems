@@ -1,19 +1,18 @@
 package com.groep5.Naming.server;
 
-import com.google.common.hash.Hashing;
-
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.net.InetAddress;
 import java.util.TreeMap;
 
 public class HashFunction {
 
     private final TreeMap<Integer, String> nodeMap;
-    private final TreeMap<Integer, String> fileMap;
+    private final TreeMap<Integer, File> fileMap;
     private static HashFunction instance = null;
 
     private HashFunction() {
         this.nodeMap = new TreeMap<Integer, String>();
-        this.fileMap = new TreeMap<Integer, String>();
+        this.fileMap = new TreeMap<Integer, File>();
     }
     public static HashFunction getInstance() {
         if(instance == null) {
@@ -22,17 +21,17 @@ public class HashFunction {
         return instance;
     }
 
-    public int getHash(String name) {
-        int hash;
+    public int getNodeHash(String name) {
+        double max = 2147483647;
+        double hash;
         do {
-            hash = (Hashing.sha256().hashString(name, StandardCharsets.UTF_8).hashCode());
-        } while(nodeMap.containsKey(hash) && (nodeMap.get(hash) != name));
-        System.out.println(hash);
-        return hash;
+            hash = (name.hashCode() + max) / max * (32768/2);
+        } while(nodeMap.containsKey((int) hash) && (nodeMap.get((int) hash) != name));
+        return (int) hash;
     }
 
     public void addNode(String name) {
-        int hash = getHash(name);
+        int hash = getNodeHash(name);
         nodeMap.put(hash,name);
     }
 
@@ -40,22 +39,32 @@ public class HashFunction {
         nodeMap.remove(id);
     }
 
-    public void addFile(String name) {
-        int hash = getHash(name);
-        fileMap.put(hash,name);
+    public int getFileHash(File f) {
+        double max = 2147483647;
+        double hash;
+        do {
+            hash = (f.hashCode() + max) / max * (32768/2);
+        } while(fileMap.containsKey((int) hash) && (fileMap.get((int) hash) != f));
+        return (int) hash;
+    }
+
+    public void addFile(File f) {
+        int hash = getFileHash(f);
+        fileMap.put(hash,f);
     }
 
     public void removeFile(int id) {
         fileMap.remove(id);
     }
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         HashFunction hashFunction = HashFunction.getInstance();
-        String node1 = "testNode1";
-        hashFunction.addNode(node1);
-        String node2 = "testNode2";
-        hashFunction.addNode(node2);
-        String node3 = "testNode3";
-        hashFunction.addNode(node3);
-    }*/
+        //InetAddress address = InetAddress.getByAddress("127.0.0.1");
+        File file1 = new File("\"C:\\UAProgrammas\\IntellijProjects\\DIST\\Lab2\"");
+        System.out.println(hashFunction.getFileHash(file1));
+        File file2 = new File("\"C:\\UAProgrammas\\IntellijProjects\\DIST\\Lab1\"");
+        System.out.println(hashFunction.getFileHash(file2));
+        System.out.println(hashFunction.getNodeHash("test"));
+        System.out.println(hashFunction.getNodeHash("server"));
+    }
 }

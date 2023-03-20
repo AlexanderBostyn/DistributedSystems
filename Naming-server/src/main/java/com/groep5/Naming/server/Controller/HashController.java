@@ -37,9 +37,9 @@ public class HashController {
         return hasher.locateFileByName(name).getHostAddress();
     }
 
-    @PutMapping("/node")//add a node (with address) and receive hash id
-    public int addNode(@RequestBody String strAddress) throws UnknownHostException {
-        return hasher.addNode(strAddress);
+    @PutMapping("/node/{name}")//add a node (with address) and receive hash id
+    public int addNode(@PathVariable String name, @RequestBody String strAddress) throws UnknownHostException {
+        return hasher.addNode(name,strAddress);
     }
 
     @DeleteMapping("/node")//delete a node
