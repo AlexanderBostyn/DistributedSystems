@@ -29,7 +29,7 @@ public class DummyHasher implements Hasher {
         return 123;
     }
 
-    @Override
+    //@Override
     public int addFile(String fileName) {
         return 1234;
     }
