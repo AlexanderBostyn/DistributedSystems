@@ -5,6 +5,7 @@ import com.groep5.Naming.server.Service.Hasher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @RestController
@@ -30,6 +31,13 @@ public class HashController {
     public String  locateFileByName(@RequestBody String name) throws UnknownHostException {
 
         return hasher.locateFileByName(name).getHostAddress();
+    }
+
+    @DeleteMapping("/file")
+    public String locateFileByNameAndRemoveNode(@RequestBody String name) throws UnknownHostException {
+        InetAddress nodeAddress = hasher.locateFileByName(name);
+        hasher.deleteNodeByAddress(nodeAddress);
+        return nodeAddress.toString();
     }
 
     @PutMapping("/node/{name}")//add a node (with address) and receive hash id

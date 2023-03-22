@@ -10,7 +10,7 @@ public interface Hasher {
     public void deleteNode(String name);
 
     public int calcHashId(String name);
-    
 
 
+    void deleteNodeByAddress(InetAddress nodeAddress);
 }
