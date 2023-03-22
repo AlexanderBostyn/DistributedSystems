@@ -29,10 +29,6 @@ public class DummyHasher implements Hasher {
         return 123;
     }
 
-    //@Override
-    public int addFile(String fileName) {
-        return 1234;
-    }
 
     @Override
     public void deleteNode(String name) {
