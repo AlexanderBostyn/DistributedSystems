@@ -1,6 +1,7 @@
-package com.groep5.Naming.server;
+package com.groep5.Naming.server.Service;
 
 import com.google.common.hash.Hashing;
+import com.groep5.Naming.server.Persistence;
 import com.groep5.Naming.server.Service.Hasher;
 import org.springframework.context.ApplicationContext;
 
@@ -11,13 +12,13 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 
-public class HashFunction implements Hasher {
+public class SHAHasher implements Hasher {
 
     private final TreeMap<Integer, InetAddress> nodeMap;
     private File file;
     private ApplicationContext context;
 
-    public HashFunction(ApplicationContext context) {
+    public SHAHasher(ApplicationContext context) {
         this.context = context;
         this.file = context.getBean("dataFile", File.class);
         nodeMap = Persistence.LoadMap(file);
@@ -43,15 +44,18 @@ public class HashFunction implements Hasher {
     }
     @Override
     public InetAddress locateFileByName(String name) {
-        //TODO
-        return null;
+        return locateFileById(calcHashId(name));
     }
 
     @Override
     public InetAddress locateFileById(int id) {
-
-        //TODO
-        return null;
+        return nodeMap.get(nodeMap.keySet().stream()
+                .filter(integer -> integer < id)
+                .max(Integer::compareTo)
+                .orElseGet(
+                        () -> nodeMap.keySet().stream().max(Integer::compareTo).get()
+                )
+        );
     }
 
 
