@@ -50,9 +50,8 @@ public class Node {
 
     private void sendMulticast() {
         try {
-            MulticastSocket socket = new MulticastSocket(54322);
+            DatagramSocket socket = new DatagramSocket();
             InetAddress group = InetAddress.getByName("230.0.0.0");
-            socket.joinGroup(group);
             String message = this.nodeName + ";" + this.nodeAddress.getHostAddress();
             byte[] buffer = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, 54322);
