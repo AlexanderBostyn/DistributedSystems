@@ -56,11 +56,19 @@ public class HashController {
         return hasher.calcHashId(name);
     }
 
-    @GetMapping("/hashtest")
+    /*@GetMapping("/hashtest")
     public String testHash(@RequestBody String name)
     {
         String hashVal=test(name);
         return hashVal;
+    }*/
+
+    @GetMapping("/discovery")
+    public int returnAmountOfNodes(@RequestBody String name, @RequestBody String strAddress) throws UnknownHostException {
+        hasher.addNode(name, strAddress);
+        int size = hasher.returnAmountOfNodes();
+        //multicast networksize to other nodes
+        return size;
     }
 
 

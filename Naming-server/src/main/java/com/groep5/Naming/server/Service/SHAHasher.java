@@ -31,6 +31,12 @@ public class SHAHasher implements Hasher {
     }
 
     @Override
+    public int returnAmountOfNodes() {
+
+        return nodeMap.size();
+    }
+
+    @Override
     public void deleteNodeByAddress(InetAddress nodeAddress) {
         nodeMap.entrySet().removeIf(integerInetAddressEntry -> integerInetAddressEntry.getValue() == nodeAddress);
         Persistence.SaveMap(nodeMap, file.getName());
