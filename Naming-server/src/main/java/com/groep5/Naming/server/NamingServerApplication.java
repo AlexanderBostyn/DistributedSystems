@@ -27,6 +27,7 @@ public class NamingServerApplication {
 
 		ApplicationContext context = SpringApplication.run(NamingServerApplication.class, args);
 		map = Persistence.LoadMap(context.getBean("dataFile", File.class));
+		//start listening for multicasts
 		System.out.println(map);
 	}
 
