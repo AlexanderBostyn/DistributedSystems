@@ -1,12 +1,15 @@
 package com.groep5.Node;
 
+import org.apache.juli.logging.Log;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +20,7 @@ public class Node {
     private int nextHash;
     private Inet4Address nodeAddress;
     private Inet4Address namingServerAddress;
-
+    private Logger logger = Logger.getLogger("Node");
     public Node(String nodeName) {
         this.nodeName = nodeName;
         try {
@@ -28,7 +31,7 @@ public class Node {
             throw new RuntimeException(e);
         }
         this.nodeHash = calculateHash(this.nodeName);
-        Logger.getLogger("Node").log(Level.SEVERE, nodeName + nodeHash);
+        logger.log(Level.INFO, nodeName + "  " + nodeHash);
     }
 
     private int calculateHash(String nodeName) {
@@ -46,7 +49,20 @@ public class Node {
     }
 
     private void sendMulticast() {
-
+        try {
+            MulticastSocket socket = new MulticastSocket(54322);
+            InetAddress group = InetAddress.getByName("230.0.0.0");
+            socket.joinGroup(group);
+            String message = this.nodeName + ";" + this.nodeAddress.getHostAddress();
+            byte[] buffer = message.getBytes();
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, 54322);
+            socket.send(packet);
+            logger.info("Multicast send: " + new String(packet.getData(), StandardCharsets.UTF_8));
+            socket.close();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "IO exception when creating multicast");
+            throw new RuntimeException(e);
+        }
     }
 
     private void listenToResponses() {
