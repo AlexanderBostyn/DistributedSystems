@@ -50,8 +50,9 @@ public class MulticastReceiver extends Thread {
         public void run() {
             try {
                 String[] splitMessage = msg.split(";");
-                int receivedNodeHash = node.calculateHash(splitMessage[0]);
-                InetAddress address = InetAddress.getByName(splitMessage[1]);
+                if (!splitMessage[0].equals("discovery")) return;
+                int receivedNodeHash = node.calculateHash(splitMessage[1]);
+                InetAddress address = InetAddress.getByName(splitMessage[2]);
                 String newMessage = "";
                 if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
                     //if the new hash is bigger than the current hash but smaller than the next hash than it becomes the new next hash.
