@@ -76,6 +76,7 @@ public class Node {
        UnicastReceiver unicastReceiver = new UnicastReceiver(this);
        unicastReceiver.start();
        while(numberOfNodes < 0 || (connectionsFinished) < 3 && numberOfNodes > 0) {
+           logger.info("Number of nodes: " + numberOfNodes);
            //if the number of nodes is less than 0: naming server hasn't responded yet
            //in the other cases naming server has responded, if the network size is greater than 0 then it should receive 3 connections in total
            //if the network size is zero only the namingServer response is necessary.
