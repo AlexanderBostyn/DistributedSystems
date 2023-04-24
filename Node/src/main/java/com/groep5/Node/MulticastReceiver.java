@@ -3,6 +3,7 @@ package com.groep5.Node;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class MulticastReceiver extends Thread {
@@ -24,7 +25,7 @@ public class MulticastReceiver extends Thread {
                 socket.receive(packet);
                 String msg = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 logger.info("Multicast Received: " + msg);
-                new MulticastReceiverHandler(msg).run();
+                new MulticastReceiverHandler(msg).start();
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
@@ -53,24 +54,20 @@ public class MulticastReceiver extends Thread {
                 if (!splitMessage[0].equals("discovery")) return;
                 int receivedNodeHash = node.calculateHash(splitMessage[1]);
                 InetAddress address = InetAddress.getByName(splitMessage[2]);
-                String newMessage = "";
+                logger.info("Received message: " + Arrays.toString(splitMessage));
+                logger.info("receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash: " + (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash));
+                logger.info("receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash: " + (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash));
                 if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
                     //if the new hash is bigger than the current hash but smaller than the next hash than it becomes the new next hash.
                     logger.info("received node is the new nextNode: " + receivedNodeHash);
                     node.nextHash = receivedNodeHash;
-                    newMessage = "previous;" + node.nodeHash;
+                    sendMessage("previous;" + node.nodeHash, address);
                 }
-                else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
+                if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
                     //if the new hash is smaller than the current hash but bigger than the previous hash than it becomes the new previous hash.
                     logger.info("received node is the new previousNode: " + receivedNodeHash);
                     node.previousHash = receivedNodeHash;
-                    newMessage = "next;" + node.nodeHash;
-                }
-                if (!newMessage.isEmpty()) {
-                    Socket socket = new Socket(address, 4321);
-                    PrintWriter writer = new PrintWriter(socket.getOutputStream(),true);
-                    writer.println(newMessage);
-                    logger.info("notified node");
+                    sendMessage("next;" + node.nodeHash, address);
                 }
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
@@ -79,7 +76,13 @@ public class MulticastReceiver extends Thread {
                 logger.severe("couldn't open unicast socket");
                 throw new RuntimeException(e);
             }
-
         }
+    }
+    private void sendMessage(String message, InetAddress address) throws IOException {
+        logger.info("sending message: " + message + ", to: " + address.getHostAddress());
+        Socket socket = new Socket(address, 4321);
+        PrintWriter writer = new PrintWriter(socket.getOutputStream(),true);
+        writer.println(message);
+        socket.close();
     }
 }
