@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,9 @@ public class Node {
     private Inet4Address nodeAddress;
     private Inet4Address namingServerAddress;
     private Logger logger = Logger.getLogger("Node");
+    private int connectionsFinished;
+    public int numberOfNodes = -1;
+
     public Node(String nodeName) {
         this.nodeName = nodeName;
         try {
@@ -49,22 +53,21 @@ public class Node {
     }
 
     private void sendMulticast() {
-        try {
-            DatagramSocket socket = new DatagramSocket();
-            InetAddress group = InetAddress.getByName("230.0.0.0");
-            String message = this.nodeName + ";" + this.nodeAddress.getHostAddress();
-            byte[] buffer = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, 54322);
-            socket.send(packet);
-            logger.info("Multicast send: " + new String(packet.getData(), StandardCharsets.UTF_8));
-            socket.close();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "IO exception when creating multicast");
-            throw new RuntimeException(e);
-        }
+        String message = this.nodeName + ";" + this.nodeAddress.getHostAddress();
+        MulticastSender m = new MulticastSender(message);
+        m.run();
     }
 
     private void listenToResponses() {
+       UnicastReceiver unicastReceiver = new UnicastReceiver(this);
+       unicastReceiver.run();
+       while(numberOfNodes < 0 || (numberOfNodes > 0 && (numberOfNodes > connectionsFinished))) {
+           unicastReceiver.stop();
+       }
 
+    }
+
+    public void finishConnection() {
+        connectionsFinished++;
     }
 }
