@@ -11,6 +11,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,11 @@ public class Node {
     private Inet4Address namingServerAddress;
     private Logger logger = Logger.getLogger("Node");
     private int connectionsFinished;
+
+
+    private HashMap<String, InetAddress> nodeMap = new HashMap<>();
+
+
     public int numberOfNodes = -1;
 
     public Node(String nodeName) {
@@ -69,5 +75,17 @@ public class Node {
 
     public void finishConnection() {
         connectionsFinished++;
+    }
+
+    public void setNamingServerAddress(Inet4Address namingServerAddress) {
+        this.namingServerAddress = namingServerAddress;
+    }
+
+    public void setNumberOfNodes(int numberOfNodes) {
+        this.numberOfNodes = numberOfNodes;
+    }
+
+    public void addNodeMap(String nodeName, InetAddress inetAddress) {
+        this.nodeMap.put(nodeName, inetAddress);
     }
 }
