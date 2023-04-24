@@ -28,12 +28,6 @@ public class MulticastReciever implements Runnable {
             socket.receive(packet);
             String msg = new String(packet.getData(), packet.getOffset(),packet.getLength());
             System.out.println("[Multicast UDP message received] >> "+msg);
-            if("OK".equals(msg)) {
-                System.out.println("No more message. Exiting : "+msg);
-                break;
-            }
-            new MulticastHandler(msg).run();
-            //if node leaves --> break
         }
     }
     @Override

@@ -1,4 +1,6 @@
-package com.groep5.Node;
+package com.groep5.Node.Unicast;
+
+import com.groep5.Node.Node;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +35,7 @@ public class UnicastHandler implements Runnable {
                     node.setNumberOfNodes(Integer.parseInt(message[1]));
                     break;
                 default:
-                    node.addNodeMap(message[0], Inet4Address.getByName(message[1]));
+                    node.addNodeMap(node.calculateHash(message[0]), Inet4Address.getByName(message[1]));
                     break;
             }
             socket.close();

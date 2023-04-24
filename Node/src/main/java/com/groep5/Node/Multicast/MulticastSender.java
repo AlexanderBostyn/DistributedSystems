@@ -1,4 +1,4 @@
-package com.groep5.Node;
+package com.groep5.Node.Multicast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,18 +18,6 @@ public class MulticastSender implements Runnable{
         socket.send(packet);
         socket.close();
     }
-
-    /*public static void main(String[] args) throws IOException {
-        sendUDPMessage("This is a multicast messge", "238.0.0.0", 4321);
-        sendUDPMessage("This is the second multicast messge", "238.0.0.0", 4321);
-        sendUDPMessage("This is the third multicast messge", "238.0.0.0", 4321);
-        //sendUDPMessage("OK", "238.0.0.0", 4321);
-    }*/
-
-//    public static void main(String[] args) {
-//        Thread t = new Thread(new MulticastSender());
-//        t.start();
-//    }
 
     public MulticastSender(String message) {
         this.message = message;

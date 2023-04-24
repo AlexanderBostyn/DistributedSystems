@@ -1,4 +1,7 @@
-package com.groep5.Node;
+package com.groep5.Node.Unicast;
+
+import com.groep5.Node.Node;
+import com.groep5.Node.Unicast.UnicastHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;

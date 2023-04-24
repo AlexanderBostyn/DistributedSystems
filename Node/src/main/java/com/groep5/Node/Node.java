@@ -1,16 +1,11 @@
 package com.groep5.Node;
 
-import org.apache.juli.logging.Log;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import com.groep5.Node.Multicast.MulticastReciever;
+import com.groep5.Node.Multicast.MulticastSender;
+import com.groep5.Node.Unicast.UnicastReceiver;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.IOException;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,19 +19,16 @@ public class Node {
     private Inet4Address namingServerAddress;
     private Logger logger = Logger.getLogger("Node");
     private int connectionsFinished;
-
-
-    private HashMap<String, InetAddress> nodeMap = new HashMap<>();
-
-
-    public int numberOfNodes = -1;
+    private HashMap<Integer, InetAddress> nodeMap = new HashMap<>();
+    public int numberOfNodes = 0;
 
     public Node(String nodeName) {
         this.nodeName = nodeName;
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
             discovery();
-            this.namingServerAddress = (Inet4Address) Inet4Address.getLocalHost();
+            //this.namingServerAddress = (Inet4Address) Inet4Address.getLocalHost();
+            listenToMulticast();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -67,10 +59,9 @@ public class Node {
     private void listenToResponses() {
        UnicastReceiver unicastReceiver = new UnicastReceiver(this);
        unicastReceiver.run();
-       while(numberOfNodes < 0 || (numberOfNodes > 0 && (numberOfNodes > connectionsFinished))) {
+       if(!(numberOfNodes < 1 || (numberOfNodes > 0 && (numberOfNodes > connectionsFinished)))) {
            unicastReceiver.stop();
        }
-
     }
 
     public void finishConnection() {
@@ -85,7 +76,36 @@ public class Node {
         this.numberOfNodes = numberOfNodes;
     }
 
-    public void addNodeMap(String nodeName, InetAddress inetAddress) {
-        this.nodeMap.put(nodeName, inetAddress);
+    public void addNodeMap(int hash, InetAddress inetAddress) {
+        this.nodeMap.put(hash, inetAddress);
+    }
+
+    public void listenToMulticast() {
+        MulticastReciever multicastReciever = new MulticastReciever(this);
+        multicastReciever.run();
+    }
+
+    public int getPreviousHash() {
+        return previousHash;
+    }
+
+    public void setPreviousHash(int previousHash) {
+        this.previousHash = previousHash;
+    }
+
+    public int getNextHash() {
+        return nextHash;
+    }
+
+    public void setNextHash(int nextHash) {
+        this.nextHash = nextHash;
+    }
+
+    public int getNodeHash() {
+        return nodeHash;
+    }
+
+    public void setNodeHash(int nodeHash) {
+        this.nodeHash = nodeHash;
     }
 }

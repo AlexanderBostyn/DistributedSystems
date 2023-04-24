@@ -1,4 +1,8 @@
-package com.groep5.Node;
+package com.groep5.Node.Multicast;
+
+import com.groep5.Node.Node;
+import com.groep5.Node.Unicast.UnicastSender;
+import com.groep5.Node.UpdateNode;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -6,9 +10,14 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 public class MulticastReciever implements Runnable {
+    private static Node node;
     public static void main(String[] args) {
-        Thread t = new Thread(new MulticastReciever());
+        Thread t = new Thread(new MulticastReciever(node));
         t.start();
+    }
+
+    public MulticastReciever(Node node) {
+        this.node = node;
     }
 
     public void receiveUDPMessage(String ip, int port) throws IOException {
@@ -22,10 +31,9 @@ public class MulticastReciever implements Runnable {
             socket.receive(packet);
             String msg = new String(packet.getData(), packet.getOffset(),packet.getLength());
             System.out.println("[Multicast UDP message received] >> "+msg);
-            //if node leaves --> break
+            UpdateNode updateNode = new UpdateNode(msg, node);
+            updateNode.run();
         }
-        /*socket.leaveGroup(group);
-        socket.close();*/
     }
 
     @Override
