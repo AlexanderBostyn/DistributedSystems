@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.logging.Logger;
 
 public class MulticastReciever implements Runnable {
     private volatile boolean running = true;
     private MulticastSocket socket;
     private InetAddress group;
 
+
+    Logger logger = Logger.getLogger(MulticastReciever.class.getName());
     public static void main(String[] args) {
         Thread t = new Thread(new MulticastReciever());
         t.start();
@@ -29,6 +32,8 @@ public class MulticastReciever implements Runnable {
                 System.out.println("No more message. Exiting : "+msg);
                 break;
             }
+            new MulticastHandler(msg).run();
+            //if node leaves --> break
         }
     }
     @Override

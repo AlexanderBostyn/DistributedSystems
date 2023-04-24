@@ -1,5 +1,6 @@
 package com.groep5.Naming.server;
 
+import com.groep5.Naming.server.Service.multicast.MulticastReciever;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
