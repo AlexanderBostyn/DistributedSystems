@@ -37,7 +37,7 @@ public class Server implements Runnable{
             sendUDPMessage("This is the third multicast messge", "238.0.0.0", 4321);
             sendUDPMessage("test 123", "238.0.0.0", 4321);
             sendUDPMessage("notTest 123", "238.0.0.0", 4321);
-            sendUDPMessage("discovery nodeName 192.168.1.8", "238.0.0.0", 4321);
+            sendUDPMessage("discovery nodeName "+InetAddress.getLocalHost().getHostAddress(), "238.0.0.0", 4321);
 
             sendUDPMessage("OK", "238.0.0.0", 4321);
         } catch (IOException e) {

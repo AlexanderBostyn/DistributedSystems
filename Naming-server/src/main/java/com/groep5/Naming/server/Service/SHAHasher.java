@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 
-@Service
+
 public class SHAHasher implements Hasher {
 
     private final TreeMap<Integer, InetAddress> nodeMap;

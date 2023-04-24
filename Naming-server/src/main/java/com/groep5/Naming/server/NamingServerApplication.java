@@ -29,7 +29,7 @@ public class NamingServerApplication {
 		map = Persistence.LoadMap(context.getBean("dataFile", File.class));
 		System.out.println(map);
 		//start listening for multicasts
-		//new MulticastReciever().run();
+		new MulticastReciever().run();
 
 	}
 

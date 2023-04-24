@@ -12,7 +12,6 @@ import java.net.UnknownHostException;
 @RestController
 public class HashController {
 
-    @Autowired
     private Hasher hasher;
     HashController(ApplicationContext context) {
         this.hasher = new SHAHasher(context);
@@ -57,10 +56,10 @@ public class HashController {
     {
         return hasher.calcHashId(name);
     }
-    @GetMapping("/hash/{name}")
-    public int calcHashValueFromPath(@PathVariable String name)
+    @GetMapping("/hash/{path}")
+    public int calcHashValueFromPath(@PathVariable String path)
     {
-        return hasher.calcHashId(name);
+        return hasher.calcHashId(path);
     }
 
     /*@GetMapping("/hashtest")

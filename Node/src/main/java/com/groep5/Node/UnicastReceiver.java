@@ -25,7 +25,8 @@ public class UnicastReceiver implements Runnable{
         while (true) {
             try {
                 logger.info("Waiting on connection:");
-                UnicastHandler unicastHandler = new UnicastHandler(socket.accept(), node);
+                //UnicastHandler unicastHandler = new UnicastHandler(socket.accept(), node);
+                new UnicastHandler(socket.accept(), node).run();
             } catch (IOException e) {
                 logger.severe("Error in accepting socket");
                 throw new RuntimeException(e);

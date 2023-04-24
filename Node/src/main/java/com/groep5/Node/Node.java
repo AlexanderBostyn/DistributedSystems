@@ -45,7 +45,7 @@ public class Node {
     }
 
     private int calculateHash(String nodeName) {
-      return WebClient.create("http://"+ namingServerAddress.getHostAddress() + ":54321")
+      return WebClient.create("http://"+ namingServerAddress.getHostAddress() + ":4321")
               .get()
               .uri("/hash/" + nodeName)
               .retrieve()
@@ -59,7 +59,7 @@ public class Node {
     }
 
     private void sendMulticast() {
-        String message = this.nodeName + ";" + this.nodeAddress.getHostAddress();
+        String message = "discovery;" +this.nodeName + ";" + this.nodeAddress.getHostAddress();
         MulticastSender m = new MulticastSender(message);
         m.run();
     }
