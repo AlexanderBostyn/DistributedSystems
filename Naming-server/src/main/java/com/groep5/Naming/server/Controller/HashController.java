@@ -56,11 +56,6 @@ public class HashController {
     {
         return hasher.calcHashId(name);
     }
-    @GetMapping("/hash/{path}")
-    public int calcHashValueFromPath(@PathVariable String path)
-    {
-        return hasher.calcHashId(path);
-    }
 
     /*@GetMapping("/hashtest")
     public String testHash(@RequestBody String name)

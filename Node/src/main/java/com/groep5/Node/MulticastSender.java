@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
-public class MulticastSender implements Runnable{
+public class MulticastSender extends Thread{
     private final String message;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
