@@ -2,6 +2,7 @@ package com.groep5.Naming.server.Controller;
 
 import com.groep5.Naming.server.Service.SHAHasher;
 import com.groep5.Naming.server.Service.Hasher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import java.net.UnknownHostException;
 @RestController
 public class HashController {
 
+    @Autowired
     private Hasher hasher;
     HashController(ApplicationContext context) {
         this.hasher = new SHAHasher(context);
@@ -52,6 +54,11 @@ public class HashController {
 
     @GetMapping("/hash")
     public int calcHashValue(@RequestBody String name)
+    {
+        return hasher.calcHashId(name);
+    }
+    @GetMapping("/hash/{name}")
+    public int calcHashValueFromPath(@PathVariable String name)
     {
         return hasher.calcHashId(name);
     }

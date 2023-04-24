@@ -4,6 +4,7 @@ import com.google.common.hash.Hashing;
 import com.groep5.Naming.server.Persistence;
 import com.groep5.Naming.server.Service.Hasher;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.Inet4Address;
@@ -12,6 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.TreeMap;
 
+@Service
 public class SHAHasher implements Hasher {
 
     private final TreeMap<Integer, InetAddress> nodeMap;
