@@ -1,6 +1,7 @@
 package com.groep5.Naming.server;
 
 import com.groep5.Naming.server.Service.multicast.MulticastListenener;
+import com.groep5.Naming.server.Service.multicast.MulticastReciever;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -30,7 +31,7 @@ public class NamingServerApplication {
 		map = Persistence.LoadMap(context.getBean("dataFile", File.class));
 		System.out.println(map);
 		//start listening for multicasts
-		new MulticastListenener().start();
+		new MulticastReciever().run();
 
 	}
 
