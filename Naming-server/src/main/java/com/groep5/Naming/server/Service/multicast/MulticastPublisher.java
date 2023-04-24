@@ -5,24 +5,25 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class MulticastPublisher {
+public class MulticastPublisher implements Runnable {
     private DatagramSocket socket;
     private InetAddress group;
     private byte[] buf;
 
-    public void multicastNetworkSize() throws IOException {
-        int size =2;
-        multicast(String.valueOf(size));
-    }
-    public void multicast(
-            String multicastMessage) throws IOException {
+    public void sendUDPMessage(String message, String ipAddress, int port) throws IOException {
         socket = new DatagramSocket();
-        group = InetAddress.getByName("230.0.0.0");
-        buf = multicastMessage.getBytes();
-
-        DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, group, 4446);
+        group = InetAddress.getByName(ipAddress);
+        buf = message.getBytes();
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, group, port);
         socket.send(packet);
         socket.close();
+    }
+    @Override
+    public void run() {
+        try {
+            sendUDPMessage("This is a multicast messge", "238.0.0.0", 4321);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
