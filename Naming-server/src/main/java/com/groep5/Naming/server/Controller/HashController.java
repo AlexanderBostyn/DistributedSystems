@@ -52,8 +52,8 @@ public class HashController {
         hasher.deleteNode(name);
     }
 
-    @GetMapping("/hash")
-    public int calcHashValue(@RequestBody String name)
+    @GetMapping("/hash/{name}")
+    public int calcHashValue(@PathVariable String name)
     {
         return hasher.calcHashId(name);
     }
