@@ -13,13 +13,11 @@ public class MulticastReceiver extends Thread {
         this.node = node;
     }
 
-    public void receiveUDPMessage(String ip, int port) {
+    public void receiveUDPMessage() {
         byte[] buffer = new byte[1024];
-        MulticastSocket socket = null;
+        DatagramSocket socket = null;
         try {
-            socket = new MulticastSocket(4321);
-            InetAddress group = InetAddress.getByName("238.0.0.0");
-            socket.joinGroup(group);
+            socket = new DatagramSocket(4321);
             while (!isInterrupted()) {
                 logger.info("waiting for multicast message");
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -38,7 +36,7 @@ public class MulticastReceiver extends Thread {
 
     @Override
     public void run() {
-        receiveUDPMessage("238.0.0.0", 4321);
+        receiveUDPMessage();
     }
 
     private class MulticastReceiverHandler extends Thread {

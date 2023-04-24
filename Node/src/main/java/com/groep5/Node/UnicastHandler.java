@@ -34,7 +34,7 @@ public class UnicastHandler extends Thread{
                     logger.info("location of namingServer: " + socket.getInetAddress());
                     node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
 //                    node.setNumberOfNodes(Integer.parseInt(message[1]));
-                    node.setNumberOfNodes(0);
+                    node.setNumberOfNodes(Integer.parseInt(message[1]));
                     break;
                 case "previous":
                     logger.info("previous Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
