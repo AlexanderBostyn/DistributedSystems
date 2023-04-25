@@ -18,10 +18,10 @@ public class Failure extends Thread {
     @Override
     public void run() {
         try {
-            Inet4Address nextNodeIp = (Inet4Address) node.getIp(node.nextHash);
-            Inet4Address previousNodeIp = (Inet4Address) node.getIp(node.previousHash);
             logger.info("Running failure check");
             while (!isInterrupted()) {
+                Inet4Address nextNodeIp = (Inet4Address) node.getIp(node.nextHash);
+                Inet4Address previousNodeIp = (Inet4Address) node.getIp(node.previousHash);
                 if (node.nextHash != node.nodeHash) {
                     checkNodes(nextNodeIp, previousNodeIp);
                 } else {
