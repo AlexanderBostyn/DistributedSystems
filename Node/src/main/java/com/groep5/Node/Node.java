@@ -64,10 +64,10 @@ public class Node {
     }
 
 
-    public void sendUnicast(String message, InetSocketAddress address) throws IOException {
+    public synchronized void sendUnicast(String message, InetSocketAddress address) throws IOException {
+        logger.info("Sending Unicast to" + address + ", message: " + message);
         Socket socket = new Socket();
         socket.connect(address);
-        logger.info("Sending Unicast to" + socket.getInetAddress() + ", message: " + message);
         PrintWriter printer = new PrintWriter(socket.getOutputStream());
         printer.println(message);
         socket.close();
@@ -101,7 +101,7 @@ public class Node {
             //if the network size is zero only the namingServer response is necessary.
 //           logger.info("blocking");
         }
-        unicastReceiver.stopTask();
+//        unicastReceiver.stopTask();
 
     }
 
