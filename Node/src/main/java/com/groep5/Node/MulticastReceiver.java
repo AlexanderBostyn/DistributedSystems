@@ -9,9 +9,11 @@ import java.util.logging.Logger;
 public class MulticastReceiver extends Thread {
     private Node node;
     private Logger logger = Logger.getLogger(this.getClass().getName());
+    private Failure failure;
 
-    public MulticastReceiver(Node node) {
+    public MulticastReceiver(Node node, Failure failure) {
         this.node = node;
+        this.failure = failure;
     }
 
     public void receiveUDPMessage() {
@@ -23,12 +25,15 @@ public class MulticastReceiver extends Thread {
                 logger.info("waiting for multicast message");
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
+                failure.wait(5000); //pause the thread to ensure the node has time to register
                 String msg = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 logger.info("Multicast Received: " + msg);
                 new MulticastReceiverHandler(msg).start();
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         /*socket.leaveGroup(group);

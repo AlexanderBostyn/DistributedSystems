@@ -59,8 +59,9 @@ public class Node {
         logger.info("nextHash: " + nextHash);
 
         registerDevice();
-        listenToMulticasts();
-        new Failure(this).start();
+        Failure f = new Failure(this);
+        f.start();
+        listenToMulticasts(f);
     }
 
 
@@ -73,9 +74,9 @@ public class Node {
         socket.close();
     }
 
-    private void listenToMulticasts() {
+    private void listenToMulticasts(Failure f) {
         logger.info("");
-        MulticastReceiver m = new MulticastReceiver(this);
+        MulticastReceiver m = new MulticastReceiver(this, f);
         m.start();
     }
 
