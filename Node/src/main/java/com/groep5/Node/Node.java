@@ -86,7 +86,7 @@ public class Node {
 
     }
 
-    public void finishConnection() {
+    public synchronized void finishConnection() {
         connectionsFinished++;
     }
 
@@ -116,7 +116,7 @@ public class Node {
                 .block();
         logger.info(result);
     }
-    public void setNumberOfNodes(int numberOfNodes) {
+    public synchronized void setNumberOfNodes(int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
     }
 
