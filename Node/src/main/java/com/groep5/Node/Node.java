@@ -14,7 +14,7 @@ public class Node {
     public int previousHash;
     public int nextHash;
     private final Inet4Address nodeAddress;
-    private Inet4Address namingServerAddress;
+    public Inet4Address namingServerAddress;
     private final Logger logger = Logger.getLogger("Node");
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
@@ -60,55 +60,11 @@ public class Node {
 
         registerDevice();
         listenToMulticasts();
-        checkNodes();
+        new Failure(this).start();
     }
 
-    private void checkNodes() {
-        try {
-            Inet4Address nextNodeIp = (Inet4Address) getIp(nextHash);
-            Inet4Address previousNodeIp = (Inet4Address) getIp(previousHash);
-            while (true) {
-                if (!nextNodeIp.isReachable(1000)) {
-                    logger.severe("NextNode unreachable, starting recovery protocol");
-                    int newNextHash = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                            .get()
-                            .uri("/node/" + nextHash + "/next")
-                            .retrieve()
-                            .bodyToMono(Integer.class)
-                            .block();
-                    InetAddress newNextIp = getIp(newNextHash);
-                    sendUnicast("failure;previous;" + nodeHash, new InetSocketAddress(newNextIp, 4321));
-                    //We put the responsibility to remove the failed node with the previous node.
-                    WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                            .delete()
-                            .uri("/node/" + nextHash)
-                            .retrieve();
-                    logger.info("Removed the failed from the namingserver");
-                }
-                logger.fine("NextNode is still reachable");
-                if (!previousNodeIp.isReachable(1000)) {
-                    logger.severe("PreviousNode unreachable, starting recovery protocol");
-                    int newPreviousHash = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                            .get()
-                            .uri("/node/" + previousHash + "/previous")
-                            .retrieve()
-                            .bodyToMono(Integer.class)
-                            .block();
-                    InetAddress newPreviousIp = getIp(newPreviousHash);
-                    sendUnicast("failure;next;" + nodeHash, new InetSocketAddress(newPreviousIp, 4321));
-                }
-                logger.fine("PreviousNode is still reachable");
-            }
-        } catch (UnknownHostException e) {
-            logger.severe("Host Not found");
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            logger.severe("IoException while pinging the addresses");
-            throw new RuntimeException(e);
-        }
-    }
 
-    private void sendUnicast(String message, InetSocketAddress address) throws IOException {
+    public void sendUnicast(String message, InetSocketAddress address) throws IOException {
         Socket socket = new Socket();
         socket.connect(address);
         logger.info("Sending Unicast to" + socket.getInetAddress() + ", message: " + message);
@@ -181,7 +137,7 @@ public class Node {
         logger.info(result);
     }
 
-    private InetAddress getIp(int nodeHash) throws UnknownHostException {
+    public InetAddress getIp(int nodeHash) throws UnknownHostException {
         String result = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
                 .get()
                 .uri("/file/" + nodeHash)
