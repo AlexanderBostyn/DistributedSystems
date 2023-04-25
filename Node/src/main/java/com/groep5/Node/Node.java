@@ -140,7 +140,7 @@ public class Node {
     public InetAddress getIp(int nodeHash) throws UnknownHostException {
         String result = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
                 .get()
-                .uri("/file/" + nodeHash)
+                .uri("/node/" + nodeHash)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
