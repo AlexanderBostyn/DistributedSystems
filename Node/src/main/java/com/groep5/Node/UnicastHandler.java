@@ -62,15 +62,15 @@ public class UnicastHandler extends Thread {
                 logger.info("location of namingServer: " + socket.getInetAddress());
                 node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
 //                    node.setNumberOfNodes(Integer.parseInt(message[1]));
-                node.setNumberOfNodes(Integer.parseInt(message[1]));
+                node.setNumberOfNodes(Integer.parseInt(message[2]));
             }
             case "previous" -> {
                 logger.info("previous Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
-                node.previousHash = Integer.parseInt(message[1]);
+                node.previousHash = Integer.parseInt(message[2]);
             }
             case "next" -> {
                 logger.info("next Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
-                node.nextHash = Integer.parseInt(message[1]);
+                node.nextHash = Integer.parseInt(message[2]);
             }
             default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
         }
