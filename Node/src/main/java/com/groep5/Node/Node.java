@@ -79,7 +79,7 @@ public class Node {
         m.start();
     }
 
-    private void sendMulticast() {
+    private synchronized void sendMulticast() {
         String message = "discovery;" + this.nodeName + ";" + this.nodeAddress.getHostAddress();
         MulticastSender m = new MulticastSender(message);
         m.start();
