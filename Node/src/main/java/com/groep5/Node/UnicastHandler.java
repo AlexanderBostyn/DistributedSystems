@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-public class UnicastHandler extends Thread{
+public class UnicastHandler extends Thread {
     private Logger logger = Logger.getLogger(this.getClass().getName());
     private Socket socket;
     private Node node;
@@ -30,28 +30,49 @@ public class UnicastHandler extends Thread{
             String[] message = input.readLine().split(";");
             logger.info("message received:" + Arrays.toString(message));
             switch (message[0]) {
-                case "namingServer":
-                    logger.info("location of namingServer: " + socket.getInetAddress());
-                    node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
-//                    node.setNumberOfNodes(Integer.parseInt(message[1]));
-                    node.setNumberOfNodes(Integer.parseInt(message[1]));
-                    break;
-                case "previous":
-                    logger.info("previous Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
-                    node.previousHash = Integer.parseInt(message[1]);
-                    break;
-                case "next":
-                    logger.info("next Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
-                    node.nextHash = Integer.parseInt(message[1]);
-                    break;
-                default:
-                    logger.info("Message could not be parsed: " + Arrays.toString(message));
+                case "discovery" -> discoveryHandler(message);
+                case "failure" -> failureHandler(message);
+                default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
             node.finishConnection();
         } catch (IOException e) {
             logger.severe("Idk wat er gebeurd is but you fucked up");
             throw new RuntimeException(e);
+        }
+    }
+
+    private void failureHandler(String[] message) {
+        switch (message[1]) {
+            case "previous" -> {
+                logger.info("previous Node failed");
+                node.previousHash = Integer.parseInt(message[2]);
+            }
+            case "next" -> {
+                logger.info("Next Node Failed");
+                node.nextHash = Integer.parseInt(message[2]);
+            }
+            default -> logger.severe("Message could not be parsed");
+        }
+    }
+
+    public void discoveryHandler(String[] message) {
+        switch (message[1]) {
+            case "namingServer" -> {
+                logger.info("location of namingServer: " + socket.getInetAddress());
+                node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
+//                    node.setNumberOfNodes(Integer.parseInt(message[1]));
+                node.setNumberOfNodes(Integer.parseInt(message[1]));
+            }
+            case "previous" -> {
+                logger.info("previous Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
+                node.previousHash = Integer.parseInt(message[1]);
+            }
+            case "next" -> {
+                logger.info("next Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
+                node.nextHash = Integer.parseInt(message[1]);
+            }
+            default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
         }
     }
 }

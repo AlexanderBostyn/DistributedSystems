@@ -72,8 +72,8 @@ public class SHAHasher implements Hasher {
 
 
     @Override
-    public void deleteNode(String hostName) {
-        nodeMap.remove(calcHashId(hostName));
+    public void deleteNode(int id) {
+        nodeMap.remove(id);
         Persistence.SaveMap(nodeMap, file.getName());
     }
 

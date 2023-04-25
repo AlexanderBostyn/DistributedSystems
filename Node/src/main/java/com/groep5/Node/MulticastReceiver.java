@@ -66,6 +66,7 @@ public class MulticastReceiver extends Thread {
                     sendMessage("previous;" + node.nodeHash, address);
                 }
                 else if (node.nodeHash > node.nextHash) { //last node in ring
+                    logger.info("We are the last node in the ring");
                     if (receivedNodeHash > node.nodeHash || receivedNodeHash < node.nextHash) {
                         //because this is the last ring, if the received hash is bigger than itself or smaller than the next hash it must be the new next node
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
@@ -117,7 +118,7 @@ public class MulticastReceiver extends Thread {
         }
     }
 
-    private void sendMessage(String message, InetAddress address) throws IOException {
+    private synchronized void sendMessage(String message, InetAddress address) throws IOException {
         logger.info("sending message: " + message + ", to: " + address.getHostAddress());
         Socket socket = new Socket(address, 4321);
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
