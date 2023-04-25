@@ -22,8 +22,12 @@ public class Failure extends Thread {
             Inet4Address previousNodeIp = (Inet4Address) node.getIp(node.previousHash);
             logger.info("Running failure check");
             while (!isInterrupted()) {
-                checkNodes(nextNodeIp, previousNodeIp);
-                //noinspection BusyWait
+                if (node.nextHash != node.nodeHash) {
+                    checkNodes(nextNodeIp, previousNodeIp);
+                } else {
+                    logger.info("Only node in network: skipping failure detection");
+                }
+                    //noinspection BusyWait
                 Thread.sleep(5000);
             }
         } catch (UnknownHostException e) {
