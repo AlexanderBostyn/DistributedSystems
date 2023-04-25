@@ -3,10 +3,7 @@ package com.groep5.Node;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
@@ -23,10 +20,11 @@ public class Failure extends Thread {
         try {
             Inet4Address nextNodeIp = (Inet4Address) node.getIp(node.nextHash);
             Inet4Address previousNodeIp = (Inet4Address) node.getIp(node.previousHash);
-            while(!isInterrupted()) {
+            logger.info("Running failure check");
+            while (!isInterrupted()) {
                 checkNodes(nextNodeIp, previousNodeIp);
                 //noinspection BusyWait
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             }
         } catch (UnknownHostException e) {
             logger.severe("Hostname not resolveable");
@@ -37,9 +35,8 @@ public class Failure extends Thread {
     }
 
     private void checkNodes(Inet4Address nextNodeIp, Inet4Address previousNodeIp) {
-        logger.info("Checking nodes");
         try {
-            if (!nextNodeIp.isReachable(1000)) {
+            if (hasFailed(nextNodeIp)) {
                 logger.severe("NextNode unreachable, starting recovery protocol");
                 int newNextHash = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
                         .get()
@@ -55,9 +52,10 @@ public class Failure extends Thread {
                         .uri("/node/" + node.nextHash)
                         .retrieve();
                 logger.info("Removed the failed from the namingserver");
+            } else {
+                logger.info("NextNode is still reachable");
             }
-            logger.fine("NextNode is still reachable");
-            if (!previousNodeIp.isReachable(1000)) {
+            if (hasFailed(previousNodeIp)) {
                 logger.severe("PreviousNode unreachable, starting recovery protocol");
                 int newPreviousHash = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
                         .get()
@@ -67,13 +65,27 @@ public class Failure extends Thread {
                         .block();
                 InetAddress newPreviousIp = node.getIp(newPreviousHash);
                 node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
+            } else {
+                logger.info("PreviousNode is still reachable");
             }
-            logger.fine("PreviousNode is still reachable");
         } catch (UnknownHostException e) {
             logger.severe("Host Not found");
             throw new RuntimeException(e);
         } catch (IOException e) {
             logger.severe("IoException while pinging the addresses");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private synchronized boolean hasFailed(Inet4Address address) {
+        try {
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(address, 4321));
+            socket.close();
+            return false;
+        } catch (ConnectException e) {
+            return true;
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

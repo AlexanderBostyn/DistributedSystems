@@ -42,3 +42,29 @@ class BroadcastReceiver {
 		}
 	}
 }
+
+class TCPServer {
+	public static void main(String args[]) {
+		try {
+			ServerSocket socket = new ServerSocket(5555);
+			socket.accept();
+			socket.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+}
+
+class TCPClient {
+	public static void main(String args[]) {
+		try {
+			Socket socket = new Socket();
+			socket.connect(new InetSocketAddress(5555));
+			System.out.println("Connected");
+		} catch (ConnectException e) {
+			System.out.println("Not connected");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+}
