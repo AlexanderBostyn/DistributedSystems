@@ -77,7 +77,6 @@ public class MulticastReceiver extends Thread {
                         node.previousHash = receivedNodeHash;
                         sendMessage("next;" + node.nodeHash, address);
                     }
-
                 }
                 else if(node.nodeHash < node.previousHash) { //first node in ring
                     if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
@@ -104,9 +103,6 @@ public class MulticastReceiver extends Thread {
                         sendMessage("next;" + node.nodeHash, address);
                     }
                 }
-
-
-
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
