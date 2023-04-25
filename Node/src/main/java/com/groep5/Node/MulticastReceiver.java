@@ -55,8 +55,9 @@ public class MulticastReceiver extends Thread {
                 int receivedNodeHash = node.calculateHash(splitMessage[1]);
                 InetAddress address = InetAddress.getByName(splitMessage[2]);
                 logger.info("Received message: " + Arrays.toString(splitMessage));
-                logger.info("receivedNodeHash < node.nextHash " + (receivedNodeHash < node.nextHash ));
-                logger.info("receivedNodeHash > node.previousHash " + (receivedNodeHash > node.previousHash ));
+                logger.info("receivedNodeHash < node.nextHash " + (receivedNodeHash < node.nextHash));
+                logger.info("receivedNodeHash > node.previousHash " + (receivedNodeHash > node.previousHash));
+                //check if node is first or last in the ring
                 if (node.previousHash == node.nextHash && node.previousHash == node.nodeHash) {
                     logger.info("The current network size was one, new node is next and previous");
                     node.nextHash = receivedNodeHash;
@@ -64,18 +65,48 @@ public class MulticastReceiver extends Thread {
                     sendMessage("next;" + node.nodeHash, address);
                     sendMessage("previous;" + node.nodeHash, address);
                 }
-                else if (receivedNodeHash < node.nextHash) {
-                    //if the new hash is bigger than the current hash but smaller than the next hash than it becomes the new next hash.
-                    logger.info("received node is the new nextNode: " + receivedNodeHash);
-                    node.nextHash = receivedNodeHash;
-                    sendMessage("previous;" + node.nodeHash, address);
+                else if (node.nodeHash > node.nextHash) { //last node in ring
+                    if (receivedNodeHash > node.nodeHash || receivedNodeHash < node.nextHash) {
+                        //because this is the last ring, if the received hash is bigger than itself or smaller than the next hash it must be the new next node
+                        logger.info("received node is the new nextNode: " + receivedNodeHash);
+                        node.nextHash = receivedNodeHash;
+                        sendMessage("previous;" + node.nodeHash, address);
+                    } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
+                        //if the new hash is smaller than the current hash but bigger than the previous hash than it becomes the new previous hash.
+                        logger.info("received node is the new previousNode: " + receivedNodeHash);
+                        node.previousHash = receivedNodeHash;
+                        sendMessage("next;" + node.nodeHash, address);
+                    }
+
                 }
-                else if (receivedNodeHash > node.previousHash ) {
-                    //if the new hash is smaller than the current hash but bigger than the previous hash than it becomes the new previous hash.
-                    logger.info("received node is the new previousNode: " + receivedNodeHash);
-                    node.previousHash = receivedNodeHash;
-                    sendMessage("next;" + node.nodeHash, address);
+                else if(node.nodeHash < node.previousHash) { //first node in ring
+                    if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
+                        //if the received hash is smaller than the nexthash but bigger than the next hash it must be the new next node
+                        logger.info("received node is the new nextNode: " + receivedNodeHash);
+                        node.nextHash = receivedNodeHash;
+                        sendMessage("previous;" + node.nodeHash, address);
+                    } else if (receivedNodeHash < node.nodeHash || receivedNodeHash > node.nextHash) {
+                        //because this is the first node in the ring, if the received hash is smaller than itself or bigger than the nexthash it must be the new previous node.
+                        logger.info("received node is the new previousNode: " + receivedNodeHash);
+                        node.previousHash = receivedNodeHash;
+                        sendMessage("next;" + node.nodeHash, address);
+                    }
+                } else { //must be a normal node
+                    if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
+                        //if the received hash is smaller than the nexthash but bigger than the next hash it must be the new next node
+                        logger.info("received node is the new nextNode: " + receivedNodeHash);
+                        node.nextHash = receivedNodeHash;
+                        sendMessage("previous;" + node.nodeHash, address);
+                    } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
+                        //if the received hash is bigger than the previous hash but smaller than self than it must be the new previous node
+                        logger.info("received node is the new previousNode: " + receivedNodeHash);
+                        node.previousHash = receivedNodeHash;
+                        sendMessage("next;" + node.nodeHash, address);
+                    }
                 }
+
+
+
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
@@ -83,12 +114,17 @@ public class MulticastReceiver extends Thread {
                 logger.severe("couldn't open unicast socket");
                 throw new RuntimeException(e);
             }
+            logger.info("Parameters set: ");
+            logger.info("previousHash: " + node.previousHash);
+            logger.info("nodeHash: " + node.nodeHash);
+            logger.info("nextHash: " + node.nextHash);
         }
     }
+
     private void sendMessage(String message, InetAddress address) throws IOException {
         logger.info("sending message: " + message + ", to: " + address.getHostAddress());
         Socket socket = new Socket(address, 4321);
-        PrintWriter writer = new PrintWriter(socket.getOutputStream(),true);
+        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
         writer.println(message);
         socket.close();
     }

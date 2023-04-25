@@ -43,6 +43,7 @@ public class UnicastHandler extends Thread{
                 case "next":
                     logger.info("next Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
                     node.nextHash = Integer.parseInt(message[1]);
+                    break;
                 default:
                     logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
