@@ -41,6 +41,21 @@ public class HashController {
         return nodeAddress.toString();
     }
 
+    @GetMapping("/node/{id}")
+    public String locateNodeById(@PathVariable int id) {
+        return hasher.locateNodeById(id).getHostAddress();
+    }
+
+    @GetMapping("/node/{id}/previous")
+    public int getPreviousNodeId(@PathVariable int id) {
+        return hasher.previousId(id);
+    }
+
+    @GetMapping("node/{id}/next")
+    public int getNextNodeId(@PathVariable int id) {
+        return hasher.nextId(id);
+    }
+
     @PutMapping("/node/{name}")//add a node (with address) and receive hash id
     public int addNode(@PathVariable String name, @RequestBody String strAddress) throws UnknownHostException {
         return hasher.addNode(name,strAddress);
