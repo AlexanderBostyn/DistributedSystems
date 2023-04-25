@@ -36,6 +36,8 @@ public class UnicastHandler extends Thread {
             }
             socket.close();
             node.finishConnection();
+        } catch (NullPointerException e) {
+            logger.info("Got pinged");
         } catch (IOException e) {
             logger.severe("Idk wat er gebeurd is but you fucked up");
             throw new RuntimeException(e);

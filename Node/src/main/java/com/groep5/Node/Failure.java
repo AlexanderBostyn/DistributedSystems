@@ -83,9 +83,11 @@ public class Failure extends Thread {
 
     private synchronized boolean hasFailed(Inet4Address address) {
         try {
+            logger.info("pining: " + address.getHostAddress());
             Socket socket = new Socket();
             socket.connect(new InetSocketAddress(address, 4321));
             socket.close();
+            logger.info("received answer");
             return false;
         } catch (ConnectException e) {
             return true;
