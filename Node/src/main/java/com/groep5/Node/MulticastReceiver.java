@@ -57,7 +57,7 @@ public class MulticastReceiver extends Thread {
                 logger.info("Received message: " + Arrays.toString(splitMessage));
                 logger.info("receivedNodeHash < node.nextHash " + (receivedNodeHash < node.nextHash ));
                 logger.info("receivedNodeHash > node.previousHash " + (receivedNodeHash > node.previousHash ));
-                if (node.previousHash == node.nextHash ) {
+                if (node.previousHash == node.nextHash && node.previousHash == node.nodeHash) {
                     logger.info("The current network size was one, new node is next and previous");
                     node.nextHash = receivedNodeHash;
                     node.previousHash = receivedNodeHash;
