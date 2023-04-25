@@ -55,15 +55,22 @@ public class MulticastReceiver extends Thread {
                 int receivedNodeHash = node.calculateHash(splitMessage[1]);
                 InetAddress address = InetAddress.getByName(splitMessage[2]);
                 logger.info("Received message: " + Arrays.toString(splitMessage));
-                logger.info("receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash: " + (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash));
-                logger.info("receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash: " + (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash));
-                if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
+                logger.info("receivedNodeHash < node.nextHash " + (receivedNodeHash < node.nextHash ));
+                logger.info("receivedNodeHash > node.previousHash " + (receivedNodeHash > node.previousHash ));
+                if (node.previousHash == node.nextHash ) {
+                    logger.info("The current network size was one, new node is next and previous");
+                    node.nextHash = receivedNodeHash;
+                    node.previousHash = receivedNodeHash;
+                    sendMessage("next;" + node.nodeHash, address);
+                    sendMessage("previous;" + node.nodeHash, address);
+                }
+                else if (receivedNodeHash < node.nextHash) {
                     //if the new hash is bigger than the current hash but smaller than the next hash than it becomes the new next hash.
                     logger.info("received node is the new nextNode: " + receivedNodeHash);
                     node.nextHash = receivedNodeHash;
                     sendMessage("previous;" + node.nodeHash, address);
                 }
-                if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
+                else if (receivedNodeHash > node.previousHash ) {
                     //if the new hash is smaller than the current hash but bigger than the previous hash than it becomes the new previous hash.
                     logger.info("received node is the new previousNode: " + receivedNodeHash);
                     node.previousHash = receivedNodeHash;
