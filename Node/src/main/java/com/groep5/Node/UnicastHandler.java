@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
@@ -48,11 +49,25 @@ public class UnicastHandler extends Thread {
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");
-                node.previousHash = Integer.parseInt(message[2]);
+                if (node.previousHash != Integer.parseInt(message[2])) {
+                    node.previousHash = Integer.parseInt(message[2]);
+                    try {
+                        node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
             case "next" -> {
                 logger.info("Next Node Failed");
-                node.nextHash = Integer.parseInt(message[2]);
+                if (node.nextHash != Integer.parseInt(message[2])) {
+                    node.nextHash = Integer.parseInt(message[2]);
+                    try {
+                        node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
             default -> logger.severe("Message could not be parsed");
         }
