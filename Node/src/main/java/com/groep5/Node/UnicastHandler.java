@@ -56,6 +56,10 @@ public class UnicastHandler extends Thread {
             }
             default -> logger.severe("Message could not be parsed");
         }
+        logger.info("Parameters set: ");
+        logger.info("previousHash: " + node.previousHash);
+        logger.info("nodeHash: " + node.nodeHash);
+        logger.info("nextHash: " + node.nextHash);
     }
 
     public void discoveryHandler(String[] message) {
