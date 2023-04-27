@@ -27,7 +27,7 @@ public class MulticastReceiver extends Thread {
                 socket.receive(packet);
                 String msg = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 logger.info("Multicast Received: " + msg);
-                new MulticastReceiverHandler(msg, failure).start();
+                new MulticastReceiverHandler(msg).start();
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
@@ -44,16 +44,15 @@ public class MulticastReceiver extends Thread {
 
     private class MulticastReceiverHandler extends Thread {
         private final String msg;
-        private final Failure failure;
 
-        MulticastReceiverHandler(String msg, Failure failure) {
+        MulticastReceiverHandler(String msg) {
             this.msg = msg;
-            this.failure = failure;
         }
 
         @Override
         public void run() {
             try {
+                logger.info("Stopping Failure task");
                 failure.stop();
                 String[] splitMessage = msg.split(";");
                 if (!splitMessage[0].equals("discovery")) return;
@@ -108,12 +107,14 @@ public class MulticastReceiver extends Thread {
                         node.previousHash = receivedNodeHash;
                         sendMessage("discovery;next;" + node.nodeHash, address);
                     }
-                    Thread.sleep(5000);
-                    failure.start();
                     logger.info("Parameters set: ");
                     logger.info("previousHash: " + node.previousHash);
                     logger.info("nodeHash: " + node.nodeHash);
                     logger.info("nextHash: " + node.nextHash);
+                    Thread.sleep(5000);
+                    logger.info("restarting Failure thread");
+                    failure = new Failure(failure.node);
+                    failure.start();
                 }
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");

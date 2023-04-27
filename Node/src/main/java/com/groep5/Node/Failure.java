@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
 public class Failure extends Thread {
-    private final Node node;
+    public final Node node;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public Failure(Node node) {
