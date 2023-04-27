@@ -2,13 +2,14 @@ package com.groep5.Naming.server.Service.multicast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.logging.Logger;
 
 public class MulticastReciever implements Runnable {
     private volatile boolean running = true;
-    private MulticastSocket socket;
+    private DatagramSocket socket;
     private InetAddress group;
 
 
@@ -17,11 +18,9 @@ public class MulticastReciever implements Runnable {
         Thread t = new Thread(new MulticastReciever());
         t.start();
     }
-    public void receiveUDPMessage(String ip, int port) throws IOException {
+    public void receiveUDPMessage(int port) throws IOException {
         byte[] buffer=new byte[1024];
-        socket=new MulticastSocket(port);
-        group=InetAddress.getByName(ip);
-        socket.joinGroup(group);
+        socket=new DatagramSocket(port);
         while(running){
             System.out.println("Waiting for multicast message...");
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -33,16 +32,11 @@ public class MulticastReciever implements Runnable {
     @Override
     public void run(){
         try {
-            receiveUDPMessage("238.0.0.0", 4321);
+            receiveUDPMessage( 4321);
         }catch(IOException ex){
             ex.printStackTrace();
         }finally {
-            try {
-                socket.leaveGroup(group);
-                socket.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            socket.close();
         }
     }
     public void terminate() {

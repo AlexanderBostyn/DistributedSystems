@@ -11,6 +11,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 
@@ -29,7 +31,7 @@ public class SHAHasher implements Hasher {
     @Override
     public int calcHashId(String name) {
         double max = 2147483647;
-        return (int) ((Hashing.sha256().hashString(name, StandardCharsets.UTF_8).hashCode() + max) / max * (32768/2));
+        return (int) ((Hashing.sha256().hashString(name, StandardCharsets.UTF_8).hashCode() + max) / max * (32768 / 2));
     }
 
     @Override
@@ -45,8 +47,33 @@ public class SHAHasher implements Hasher {
     }
 
     @Override
-    public void deleteNode(String hostName) {
-        nodeMap.remove(calcHashId(hostName));
+    public int previousId(int id) {
+        List<Integer> ids = nodeMap.keySet().stream().toList(); //gets keys in ascending order
+        int index = ids.indexOf(id);
+        if (index == 0) {
+            return ids.get(ids.size() - 1);
+        }
+        return ids.get(index - 1);
+    }
+
+    @Override
+    public int nextId(int id) {
+        List<Integer> ids = nodeMap.keySet().stream().toList();
+        int index = ids.indexOf(id);
+        if (index == ids.size() -1) {
+            return ids.get(0);
+        }
+        return ids.get(index + 1);
+    }
+    @Override
+    public InetAddress locateNodeById(int id) {
+        return nodeMap.get(id);
+    }
+
+
+    @Override
+    public void deleteNode(int id) {
+        nodeMap.remove(id);
         Persistence.SaveMap(nodeMap, file.getName());
     }
 
@@ -56,6 +83,7 @@ public class SHAHasher implements Hasher {
         Persistence.SaveMap(nodeMap, file.getName());
         return calcHashId(name);
     }
+
     @Override
     public InetAddress locateFileByName(String name) {
         return locateFileById(calcHashId(name));
@@ -71,11 +99,6 @@ public class SHAHasher implements Hasher {
                 )
         );
     }
-
-
-
-
-
 
 
 }

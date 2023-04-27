@@ -42,7 +42,7 @@ public class MulticastHandler implements Runnable{
                 logger.info("name of node: " +name+ " address: "+address);
                 int nodeCount=hasher.returnAmountOfNodes();
                 logger.info("networksize:"+nodeCount+", address: "+address);
-                UnicastPublisher.sendMessage("namingServer;"+nodeCount,address);
+                UnicastPublisher.sendMessage("discovery;namingServer;"+nodeCount,address);
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }

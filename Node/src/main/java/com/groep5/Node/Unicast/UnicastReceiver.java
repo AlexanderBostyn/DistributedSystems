@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Logger;
 
-public class UnicastReceiver implements Runnable{
+public class UnicastReceiver extends Thread {
     private Node node;
     private ServerSocket socket;
     private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -25,19 +25,24 @@ public class UnicastReceiver implements Runnable{
 
     @Override
     public void run() {
-        while (true) {
+        while (!isInterrupted()) {
             try {
                 logger.info("Waiting on connection:");
                 //UnicastHandler unicastHandler = new UnicastHandler(socket.accept(), node);
-                new UnicastHandler(socket.accept(), node).run();
+                new UnicastHandler(socket.accept(), node).start();
             } catch (IOException e) {
-                logger.severe("Error in accepting socket");
-                throw new RuntimeException(e);
+                if (!isInterrupted()) {
+                    logger.severe("Error in accepting socket");
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
-    public void stop() {
+
+
+    public void stopTask() {
+        this.interrupt();
         try {
             socket.close();
             logger.info("closed socket");
