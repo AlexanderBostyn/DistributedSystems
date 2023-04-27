@@ -98,7 +98,7 @@ public class Node {
         logger.info("Sending Unicast to" + address + ", message: " + message);
         Socket socket = new Socket();
         socket.connect(address);
-        PrintWriter printer = new PrintWriter(socket.getOutputStream());
+        PrintWriter printer = new PrintWriter(socket.getOutputStream(), true);
         printer.println(message);
         socket.close();
     }

@@ -25,7 +25,9 @@ public class MulticastReceiver extends Thread {
                 logger.info("waiting for multicast message");
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-                failure.wait(5000); //pause the thread to ensure the node has time to register
+                synchronized (failure) {
+                    failure.wait(5000); //pause the thread to ensure the node has time to register
+                }
                 String msg = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 logger.info("Multicast Received: " + msg);
                 new MulticastReceiverHandler(msg).start();
