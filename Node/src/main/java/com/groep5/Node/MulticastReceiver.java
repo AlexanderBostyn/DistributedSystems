@@ -107,15 +107,15 @@ public class MulticastReceiver extends Thread {
                         node.previousHash = receivedNodeHash;
                         sendMessage("discovery;next;" + node.nodeHash, address);
                     }
-                    logger.info("Parameters set: ");
-                    logger.info("previousHash: " + node.previousHash);
-                    logger.info("nodeHash: " + node.nodeHash);
-                    logger.info("nextHash: " + node.nextHash);
-                    Thread.sleep(5000);
-                    logger.info("restarting Failure thread");
-                    failure = new Failure(failure.node);
-                    failure.start();
                 }
+                logger.info("Parameters set: ");
+                logger.info("previousHash: " + node.previousHash);
+                logger.info("nodeHash: " + node.nodeHash);
+                logger.info("nextHash: " + node.nextHash);
+                Thread.sleep(5000);
+                logger.info("restarting Failure thread");
+                failure = new Failure(failure.node);
+                failure.start();
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
