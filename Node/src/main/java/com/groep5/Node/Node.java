@@ -152,4 +152,21 @@ public class Node {
         this.numberOfNodes = numberOfNodes;
     }
 
+    public void shutdown() throws IOException {
+
+        //send id of next node to prev node
+        //get address of node from namingserver
+        InetAddress prevIp=getIp(previousHash);
+        InetSocketAddress prevAddr= new InetSocketAddress(prevIp, 4321);
+        sendUnicast(("shutdownNode;nextId"+nextHash),prevAddr);
+        //send id of prev node to next node
+        InetAddress nextIp=getIp(nextHash);
+        InetSocketAddress nextAddr= new InetSocketAddress(nextIp, 4321);
+        sendUnicast(("shutdownNode;prevId"+previousHash),nextAddr);
+        //remove node rom naming server
+        InetSocketAddress namingAddr = new InetSocketAddress(namingServerAddress, 4321);
+        sendUnicast(("shutdownNode;nodeId"),namingAddr);
+        logger.info("test");
+        System.out.println("node shutting down\n 0/ bye bye 0/");
+    }
 }
