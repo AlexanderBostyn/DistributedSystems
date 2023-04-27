@@ -2,16 +2,18 @@ package com.groep5.Naming.server.Controller;
 
 import com.groep5.Naming.server.Service.SHAHasher;
 import com.groep5.Naming.server.Service.Hasher;
+import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 @RestController
 public class HashController {
-
+    private Logger logger = Logger.getLogger(this.getClass().getName());
     private Hasher hasher;
     HashController(ApplicationContext context) {
         this.hasher = new SHAHasher(context);
@@ -56,13 +58,15 @@ public class HashController {
         return hasher.nextId(id);
     }
 
-    @PutMapping("/node/{name}")//add a node (with address) and receive hash id
+    @PostMapping("/node/{name}")//add a node (with address) and receive hash id
     public int addNode(@PathVariable String name, @RequestBody String strAddress) throws UnknownHostException {
+        logger.info("Added Node:" + name);
         return hasher.addNode(name,strAddress);
     }
 
     @DeleteMapping("/node/{id}")//delete a node
     public void deleteNodeByAddress(@PathVariable int id) throws UnknownHostException {
+        logger.info("deleted Node with Id: " + id );
         hasher.deleteNode(id);
     }
 

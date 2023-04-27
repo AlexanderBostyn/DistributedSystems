@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class MulticastReceiver extends Thread {
     private Node node;
     private Logger logger = Logger.getLogger(this.getClass().getName());
-    private Failure failure;
+    private final Failure failure;
 
     public MulticastReceiver(Node node, Failure failure) {
         this.node = node;
@@ -25,17 +25,12 @@ public class MulticastReceiver extends Thread {
                 logger.info("waiting for multicast message");
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-                synchronized (failure) {
-                    failure.wait(5000); //pause the thread to ensure the node has time to register
-                }
                 String msg = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 logger.info("Multicast Received: " + msg);
-                new MulticastReceiverHandler(msg).start();
+                new MulticastReceiverHandler(msg, failure).start();
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         /*socket.leaveGroup(group);
@@ -49,14 +44,17 @@ public class MulticastReceiver extends Thread {
 
     private class MulticastReceiverHandler extends Thread {
         private final String msg;
+        private final Failure failure;
 
-        MulticastReceiverHandler(String msg) {
+        MulticastReceiverHandler(String msg, Failure failure) {
             this.msg = msg;
+            this.failure = failure;
         }
 
         @Override
         public void run() {
             try {
+                failure.stop();
                 String[] splitMessage = msg.split(";");
                 if (!splitMessage[0].equals("discovery")) return;
                 int receivedNodeHash = node.calculateHash(splitMessage[1]);
@@ -122,6 +120,7 @@ public class MulticastReceiver extends Thread {
             logger.info("previousHash: " + node.previousHash);
             logger.info("nodeHash: " + node.nodeHash);
             logger.info("nextHash: " + node.nextHash);
+            failure.start();
         }
     }
 

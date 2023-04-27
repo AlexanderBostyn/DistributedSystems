@@ -56,7 +56,7 @@ public class UnicastHandler extends Thread {
         }
     }
 
-    private void failureHandler(String[] message) {
+    private synchronized void failureHandler(String[] message) {
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");
@@ -68,9 +68,13 @@ public class UnicastHandler extends Thread {
             }
             default -> logger.severe("Message could not be parsed");
         }
+        logger.info("Parameters set: ");
+        logger.info("previousHash: " + node.previousHash);
+        logger.info("nodeHash: " + node.nodeHash);
+        logger.info("nextHash: " + node.nextHash);
     }
 
-    public void discoveryHandler(String[] message) {
+    public synchronized void discoveryHandler(String[] message) {
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
