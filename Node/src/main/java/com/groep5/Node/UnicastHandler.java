@@ -60,8 +60,8 @@ public class UnicastHandler extends Thread {
             }
             case "next" -> {
                 logger.info("Next Node Failed");
-                if (node.previousHash != Integer.parseInt(message[2])) {
-                    node.previousHash = Integer.parseInt(message[2]);
+                if (node.nextHash != Integer.parseInt(message[2])) {
+                    node.nextHash = Integer.parseInt(message[2]);
                     try {
                         node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
                     } catch (IOException e) {

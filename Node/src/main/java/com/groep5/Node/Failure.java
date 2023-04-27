@@ -27,7 +27,7 @@ public class Failure extends Thread {
                 } else {
                     logger.info("Only node in network: skipping failure detection");
                 }
-                    //noinspection BusyWait
+                //noinspection BusyWait
                 Thread.sleep(5000);
             }
         } catch (UnknownHostException e) {
@@ -54,7 +54,8 @@ public class Failure extends Thread {
                 WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
                         .delete()
                         .uri("/node/" + node.nextHash)
-                        .retrieve();
+                        .retrieve()
+                        .bodyToMono(String.class).block();
                 logger.info("Removed the failed from the namingserver");
             } else {
                 logger.info("NextNode is still reachable");
