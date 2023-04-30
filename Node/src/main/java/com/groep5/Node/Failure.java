@@ -48,15 +48,10 @@ public class Failure extends Thread {
                         .retrieve()
                         .bodyToMono(Integer.class)
                         .block();
+                deleteFromNamingServer();
                 InetAddress newNextIp = node.getIp(newNextHash);
                 node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(newNextIp, 4321));
-                //We put the responsibility to remove the failed node with the previous node.
-                WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
-                        .delete()
-                        .uri("/node/" + node.nextHash)
-                        .retrieve()
-                        .bodyToMono(String.class).block();
-                logger.info("Removed the failed from the namingserver");
+
             } else {
                 logger.info("NextNode is still reachable");
             }
@@ -68,6 +63,7 @@ public class Failure extends Thread {
                         .retrieve()
                         .bodyToMono(Integer.class)
                         .block();
+                deleteFromNamingServer();
                 InetAddress newPreviousIp = node.getIp(newPreviousHash);
                 node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
             } else {
@@ -95,5 +91,13 @@ public class Failure extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    private synchronized void deleteFromNamingServer() {
+        WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
+                .delete()
+                .uri("/node/" + node.nextHash)
+                .retrieve()
+                .bodyToMono(String.class).block();
+        logger.info("Removed the failed from the namingserver");
     }
 }
