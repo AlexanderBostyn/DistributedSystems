@@ -10,9 +10,8 @@ import java.net.*;
 import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
-@Component("node")
 public class Node {
-    private final String nodeName;
+    private String nodeName;
     public int nodeHash;
     public int previousHash;
     public int nextHash;
@@ -22,8 +21,7 @@ public class Node {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
 
-    public Node(String nodeName) {
-        this.nodeName = nodeName;
+    public Node() {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
         } catch (UnknownHostException e) {
@@ -31,7 +29,8 @@ public class Node {
         }
     }
 
-    public void start() {
+    public void start(String nodeName) {
+        this.nodeName = nodeName;
         discovery();
         bootstrap();
     }

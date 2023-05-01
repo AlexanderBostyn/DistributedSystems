@@ -15,12 +15,12 @@ public class Controller {
 
     private final Node node;
 
-    public Controller(Node node) {
-        this.node = node;
+    public Controller(Node getNode) {
+        this.node = getNode;
     }
 
     @PutMapping("/shutdown")//shutdown
-    public void shtudown() throws IOException {
+    public void shutdown() throws IOException {
         node.shutdown();
     }
 }
