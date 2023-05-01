@@ -172,6 +172,7 @@ public class Node {
         Failure.deleteFromNamingServer(this, nodeHash);
         logger.info("test");
         System.out.println("node shutting down\n 0/ bye bye 0/");
+        System.exit(0);
     }
 
     public synchronized Failure getFailure() {
