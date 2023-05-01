@@ -8,6 +8,7 @@ public class UnicastReceiver extends Thread {
     private Node node;
     private ServerSocket socket;
     private Logger logger = Logger.getLogger(this.getClass().getName());
+    private Failure failure;
 
     public UnicastReceiver(Node node) {
         this.node = node;

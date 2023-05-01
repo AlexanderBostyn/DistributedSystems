@@ -47,6 +47,7 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void failureHandler(String[] message) {
+        node.getFailure().stop();
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");
@@ -76,6 +77,8 @@ public class UnicastHandler extends Thread {
         logger.info("previousHash: " + node.previousHash);
         logger.info("nodeHash: " + node.nodeHash);
         logger.info("nextHash: " + node.nextHash);
+        node.setFailure(new Failure(node));
+        node.getFailure().start();
     }
 
     private synchronized void discoveryHandler(String[] message) {
@@ -98,7 +101,9 @@ public class UnicastHandler extends Thread {
         }
     }
 
+
     private synchronized void shutdownHandler(String[] message) {
+        node.getFailure().stop();
         switch (message[1]) {
             case "previous" -> {
                 node.previousHash = Integer.parseInt(message[2]);
@@ -112,5 +117,7 @@ public class UnicastHandler extends Thread {
         logger.info("previousHash: " + node.previousHash);
         logger.info("nodeHash: " + node.nodeHash);
         logger.info("nextHash: " + node.nextHash);
+        node.setFailure(new Failure(node));
+        node.getFailure().start();
     }
 }

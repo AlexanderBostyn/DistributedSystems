@@ -55,7 +55,7 @@ public class Failure extends Thread {
             } else {
                 logger.info("NextNode is still reachable");
             }
-            if (hasFailed(previousNodeIp)) {
+            if (hasFailed(previousNodeIp) && !hasFailed(nextNodeIp)) {
                 logger.severe("PreviousNode unreachable, starting recovery protocol");
                 int newPreviousHash = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
                         .get()

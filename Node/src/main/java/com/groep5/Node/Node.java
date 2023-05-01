@@ -21,6 +21,9 @@ public class Node {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
 
+
+    private Failure failure;
+
     public Node() {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
@@ -61,9 +64,9 @@ public class Node {
         logger.info("nextHash: " + nextHash);
 
         registerDevice();
-        Failure f = new Failure(this);
-        f.start();
-        listenToMulticasts(f);
+        this.failure = new Failure(this);
+        failure.start();
+        listenToMulticasts();
     }
 
 
@@ -76,9 +79,9 @@ public class Node {
         socket.close();
     }
 
-    private void listenToMulticasts(Failure f) {
+    private void listenToMulticasts() {
         logger.info("");
-        MulticastReceiver m = new MulticastReceiver(this, f);
+        MulticastReceiver m = new MulticastReceiver(this);
         m.start();
     }
 
@@ -170,5 +173,13 @@ public class Node {
         Failure.deleteFromNamingServer(this, nodeHash);
         logger.info("test");
         System.out.println("node shutting down\n 0/ bye bye 0/");
+    }
+
+    public Failure getFailure() {
+        return failure;
+    }
+
+    public void setFailure(Failure failure) {
+        this.failure = failure;
     }
 }
