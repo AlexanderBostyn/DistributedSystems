@@ -1,5 +1,7 @@
 package com.groep5.Node;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.net.*;
 import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
+@Component("node")
 public class Node {
     private final String nodeName;
     public int nodeHash;

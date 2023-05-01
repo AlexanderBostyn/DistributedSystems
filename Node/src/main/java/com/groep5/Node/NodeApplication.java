@@ -21,7 +21,7 @@ public class NodeApplication {
 
 	@PreDestroy
 	public void preDestroy() throws IOException {
-		self.shutdown();
+//		self.shutdown();
 		System.out.println("shutting down!");
 	}
 
