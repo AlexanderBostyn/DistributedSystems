@@ -154,7 +154,7 @@ public class Node {
         this.numberOfNodes = numberOfNodes;
     }
 
-    public synchronized void shutdown() throws IOException {
+    public synchronized void random() throws IOException {
 
         //send id of next node to prev node
         //get address of node from namingserver
