@@ -48,7 +48,7 @@ public class Failure extends Thread {
                         .retrieve()
                         .bodyToMono(Integer.class)
                         .block();
-                deleteFromNamingServer();
+                deleteFromNamingServer(node, node.nextHash);
                 InetAddress newNextIp = node.getIp(newNextHash);
                 node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(newNextIp, 4321));
 
@@ -63,7 +63,7 @@ public class Failure extends Thread {
                         .retrieve()
                         .bodyToMono(Integer.class)
                         .block();
-                deleteFromNamingServer();
+                deleteFromNamingServer(node, node.previousHash);
                 InetAddress newPreviousIp = node.getIp(newPreviousHash);
                 node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
             } else {
@@ -92,12 +92,12 @@ public class Failure extends Thread {
             throw new RuntimeException(e);
         }
     }
-    private synchronized void deleteFromNamingServer() {
+    public static synchronized void deleteFromNamingServer(Node node, int hash) {
         WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
                 .delete()
-                .uri("/node/" + node.nextHash)
+                .uri("/node/" + hash)
                 .retrieve()
                 .bodyToMono(String.class).block();
-        logger.info("Removed the failed from the namingserver");
+        Logger.getAnonymousLogger().info("Removed the failed from the namingserver");
     }
 }

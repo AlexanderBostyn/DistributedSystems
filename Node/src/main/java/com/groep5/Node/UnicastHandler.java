@@ -33,6 +33,7 @@ public class UnicastHandler extends Thread {
             switch (message[0]) {
                 case "discovery" -> discoveryHandler(message);
                 case "failure" -> failureHandler(message);
+                case "shutdown" -> shutdownHandler(message);
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
@@ -77,7 +78,7 @@ public class UnicastHandler extends Thread {
         logger.info("nextHash: " + node.nextHash);
     }
 
-    public void discoveryHandler(String[] message) {
+    private void discoveryHandler(String[] message) {
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
@@ -95,5 +96,21 @@ public class UnicastHandler extends Thread {
             }
             default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
         }
+    }
+
+    private void shutdownHandler(String[] message) {
+        switch (message[1]) {
+            case "previous" -> {
+                node.previousHash = Integer.parseInt(message[2]);
+            }
+            case "next" -> {
+                node.nextHash = Integer.parseInt(message[2]);
+            }
+            default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
+        }
+        logger.info("Parameters set: ");
+        logger.info("previousHash: " + node.previousHash);
+        logger.info("nodeHash: " + node.nodeHash);
+        logger.info("nextHash: " + node.nextHash);
     }
 }
