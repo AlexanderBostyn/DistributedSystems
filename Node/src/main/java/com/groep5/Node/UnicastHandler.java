@@ -37,7 +37,6 @@ public class UnicastHandler extends Thread {
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
-            node.finishConnection();
         } catch (NullPointerException e) {
             logger.info("Got pinged");
         } catch (IOException e) {
@@ -82,7 +81,8 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void discoveryHandler(String[] message) {
-        node.getFailure().stop();
+        Failure failure = node.getFailure();
+        if (failure!= null && failure.isAlive()) failure.stop();
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
@@ -100,8 +100,11 @@ public class UnicastHandler extends Thread {
             }
             default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
         }
-        node.setFailure(new Failure(node));
-        node.getFailure().start();
+        node.finishConnection();
+        if (node.getFailure() != null) {
+            node.setFailure(new Failure(node));
+            node.getFailure().start();
+        }
     }
 
 

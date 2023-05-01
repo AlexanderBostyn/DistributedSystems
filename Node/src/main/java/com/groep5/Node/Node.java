@@ -20,8 +20,6 @@ public class Node {
     private final Logger logger = Logger.getLogger("Node");
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
-
-
     private Failure failure;
 
     public Node() {
