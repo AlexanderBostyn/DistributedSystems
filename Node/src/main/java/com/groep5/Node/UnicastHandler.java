@@ -46,7 +46,7 @@ public class UnicastHandler extends Thread {
         }
     }
 
-    private void failureHandler(String[] message) {
+    private synchronized void failureHandler(String[] message) {
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");
@@ -78,7 +78,7 @@ public class UnicastHandler extends Thread {
         logger.info("nextHash: " + node.nextHash);
     }
 
-    private void discoveryHandler(String[] message) {
+    private synchronized void discoveryHandler(String[] message) {
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
@@ -98,7 +98,7 @@ public class UnicastHandler extends Thread {
         }
     }
 
-    private void shutdownHandler(String[] message) {
+    private synchronized void shutdownHandler(String[] message) {
         switch (message[1]) {
             case "previous" -> {
                 node.previousHash = Integer.parseInt(message[2]);

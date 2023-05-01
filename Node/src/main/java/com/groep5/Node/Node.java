@@ -158,11 +158,11 @@ public class Node {
         //get address of node from namingserver
         InetAddress prevIp=getIp(previousHash);
         InetSocketAddress prevAddr= new InetSocketAddress(prevIp, 4321);
-        sendUnicast(("shutdown;previous"+nextHash),prevAddr);
+        sendUnicast(("shutdown;previous;"+nextHash),prevAddr);
         //send id of prev node to next node
         InetAddress nextIp=getIp(nextHash);
         InetSocketAddress nextAddr= new InetSocketAddress(nextIp, 4321);
-        sendUnicast(("shutdown;next"+previousHash),nextAddr);
+        sendUnicast(("shutdown;next;"+previousHash),nextAddr);
         //remove node rom naming server
         InetSocketAddress namingAddr = new InetSocketAddress(namingServerAddress, 4321);
         Failure.deleteFromNamingServer(this, nodeHash);
