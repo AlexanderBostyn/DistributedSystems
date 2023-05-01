@@ -2,6 +2,7 @@ package com.groep5.Naming.server.Controller;
 
 import com.groep5.Naming.server.Service.SHAHasher;
 import com.groep5.Naming.server.Service.Hasher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,27 +41,50 @@ public class HashController {
         return nodeAddress.toString();
     }
 
+    @GetMapping("/node/{id}")
+    public String locateNodeById(@PathVariable int id) {
+        return hasher.locateNodeById(id).getHostAddress();
+    }
+
+    @GetMapping("/node/{id}/previous")
+    public int getPreviousNodeId(@PathVariable int id) {
+        return hasher.previousId(id);
+    }
+
+    @GetMapping("node/{id}/next")
+    public int getNextNodeId(@PathVariable int id) {
+        return hasher.nextId(id);
+    }
+
     @PutMapping("/node/{name}")//add a node (with address) and receive hash id
     public int addNode(@PathVariable String name, @RequestBody String strAddress) throws UnknownHostException {
         return hasher.addNode(name,strAddress);
     }
 
-    @DeleteMapping("/node/{name}")//delete a node
-    public void deleteNodeByAddress(@PathVariable String name,@RequestBody String strAddress) throws UnknownHostException {
-        hasher.deleteNode(name);
+    @DeleteMapping("/node/{id}")//delete a node
+    public void deleteNodeByAddress(@PathVariable int id) throws UnknownHostException {
+        hasher.deleteNode(id);
     }
 
-    @GetMapping("/hash")
-    public int calcHashValue(@RequestBody String name)
+    @GetMapping("/hash/{name}")
+    public int calcHashValue(@PathVariable String name)
     {
         return hasher.calcHashId(name);
     }
 
-    @GetMapping("/hashtest")
+    /*@GetMapping("/hashtest")
     public String testHash(@RequestBody String name)
     {
         String hashVal=test(name);
         return hashVal;
+    }*/
+
+    @GetMapping("/discovery")
+    public int returnAmountOfNodes(@RequestBody String name, @RequestBody String strAddress) throws UnknownHostException {
+        hasher.addNode(name, strAddress);
+        int size = hasher.returnAmountOfNodes();
+        //multicast networksize to other nodes
+        return size;
     }
 
 
