@@ -82,6 +82,7 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void discoveryHandler(String[] message) {
+        node.getFailure().stop();
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
@@ -99,6 +100,8 @@ public class UnicastHandler extends Thread {
             }
             default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
         }
+        node.setFailure(new Failure(node));
+        node.getFailure().start();
     }
 
 
