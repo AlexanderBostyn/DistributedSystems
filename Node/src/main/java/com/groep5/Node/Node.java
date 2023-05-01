@@ -175,11 +175,11 @@ public class Node {
         System.out.println("node shutting down\n 0/ bye bye 0/");
     }
 
-    public Failure getFailure() {
+    public synchronized Failure getFailure() {
         return failure;
     }
 
-    public void setFailure(Failure failure) {
+    public synchronized void setFailure(Failure failure) {
         this.failure = failure;
     }
 }
