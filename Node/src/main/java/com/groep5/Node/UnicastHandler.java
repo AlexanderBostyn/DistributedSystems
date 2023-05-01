@@ -103,6 +103,11 @@ public class UnicastHandler extends Thread {
         node.finishConnection();
         if (node.getFailure() != null) {
             node.setFailure(new Failure(node));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             node.getFailure().start();
         }
     }
