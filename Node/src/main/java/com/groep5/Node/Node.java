@@ -159,6 +159,7 @@ public class Node {
 
         //send id of next node to prev node
         //get address of node from namingserver
+        failure.stop();
         if (nextHash != nodeHash) {
             logger.info(this.namingServerAddress.getHostAddress());
             InetAddress prevIp = getIp(previousHash);
