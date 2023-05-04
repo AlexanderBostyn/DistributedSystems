@@ -3,10 +3,7 @@ package com.groep5.Node.Replication;
 import com.groep5.Node.Node;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -44,14 +41,25 @@ public class SendFile implements Runnable {
 
         try {
             Socket socket = new Socket(hostname, port);
-            PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-            printWriter.println("replication;" + file.getName());
-            printWriter.close();
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             if (this.file != null) {
                 if (file.isFile()) {
-                    out.writeObject(file);
-                    out.flush();
+                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                    DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                    FileInputStream fileInputStream = new FileInputStream(file);
+
+                    dataOutputStream.writeLong(file.length());
+                    byte[] buf = new byte[4*1024];
+                    int bytes = 0;
+                    while((bytes = fileInputStream.read(buf)) != -1) {
+                        dataOutputStream.write(buf,0,bytes);
+                        dataOutputStream.flush();
+                    }
+                    fileInputStream.close();
+                    dataInputStream.close();
+                    dataOutputStream.close();
+
+                    socket.close();
+
                     logger.info("Sent file: " + file.getName());
                 }
             }
