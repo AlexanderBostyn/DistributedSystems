@@ -30,7 +30,7 @@ public class Detection extends Thread {
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                     logger.info("File created: " + fileName);
                     SendFile sendFile = new SendFile(this.node, fileName.toFile());
-                    sendFile.run();
+                    sendFile.start();
                 }
             }
 

@@ -18,7 +18,7 @@ public class StartUp {
     public void sendFiles() {
         for(File file : files) {
             SendFile sendFile = new SendFile(this.node, file);
-            sendFile.run();
+            sendFile.start();
         }
     }
 
