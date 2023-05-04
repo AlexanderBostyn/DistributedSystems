@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
-public class SendFile implements Runnable {
+public class SendFile extends Thread {
     public Node node;
     public File file;
     public int fileHash = -1;
