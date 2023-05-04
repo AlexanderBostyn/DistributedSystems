@@ -5,10 +5,7 @@ import com.groep5.Node.Node;
 
 import net.officefloor.plugin.variable.In;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -37,6 +34,7 @@ public class UnicastHandler extends Thread {
                 case "discovery" -> discoveryHandler(message);
                 case "failure" -> failureHandler(message);
                 case "shutdown" -> shutdownHandler(message);
+                case "replication" -> replicationHandler(message);
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
@@ -131,5 +129,26 @@ public class UnicastHandler extends Thread {
         logger.info("nextHash: " + node.nextHash);
         node.setFailure(new Failure(node));
         node.getFailure().start();
+    }
+
+    private void replicationHandler(String[] message) {
+        String filename = message[1];
+        long size = Long.parseLong(message[2]);
+        File file = new File("src/main/resources/replicas" + filename);
+        int bytes = 0;
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            byte[] buffer = new byte[4*1024];
+            while (size > 0 && (bytes = dis.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
+                fileOutputStream.write(buffer, 0,bytes);
+                size -= bytes;
+            }
+            dis.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
