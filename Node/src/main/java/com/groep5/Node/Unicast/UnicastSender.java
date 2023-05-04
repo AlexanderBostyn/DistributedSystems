@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class UnicastSender implements Runnable{
+public class UnicastSender {
     private Socket socket;
     private int previous;
     private int next;
@@ -19,10 +19,5 @@ public class UnicastSender implements Runnable{
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         out.println(previous + ";" + next);
         socket.close();
-    }
-
-    @Override
-    public void run() {
-
     }
 }
