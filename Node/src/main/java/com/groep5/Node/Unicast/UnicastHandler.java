@@ -1,5 +1,6 @@
 package com.groep5.Node.Unicast;
 
+import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 
 import net.officefloor.plugin.variable.In;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
@@ -32,22 +34,12 @@ public class UnicastHandler extends Thread {
             String[] message = input.readLine().split(";");
             logger.info("message received:" + Arrays.toString(message));
             switch (message[0]) {
-<<<<<<< HEAD:Node/src/main/java/com/groep5/Node/Unicast/UnicastHandler.java
-                case "namingServer":
-                    node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
-                    node.setNumberOfNodes(Integer.parseInt(message[1]));
-                    break;
-                default:
-                    node.addNodeMap(node.calculateHash(message[0]), Inet4Address.getByName(message[1]));
-                    break;
-=======
                 case "discovery" -> discoveryHandler(message);
                 case "failure" -> failureHandler(message);
+                case "shutdown" -> shutdownHandler(message);
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
->>>>>>> discovery:Node/src/main/java/com/groep5/Node/UnicastHandler.java
             }
             socket.close();
-            node.finishConnection();
         } catch (NullPointerException e) {
             logger.info("Got pinged");
         } catch (IOException e) {
@@ -57,14 +49,29 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void failureHandler(String[] message) {
+        node.getFailure().stop();
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");
-                node.previousHash = Integer.parseInt(message[2]);
+                if (node.previousHash != Integer.parseInt(message[2])) {
+                    node.previousHash = Integer.parseInt(message[2]);
+                    try {
+                        node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
             case "next" -> {
                 logger.info("Next Node Failed");
-                node.nextHash = Integer.parseInt(message[2]);
+                if (node.nextHash != Integer.parseInt(message[2])) {
+                    node.nextHash = Integer.parseInt(message[2]);
+                    try {
+                        node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
             default -> logger.severe("Message could not be parsed");
         }
@@ -74,7 +81,9 @@ public class UnicastHandler extends Thread {
         logger.info("nextHash: " + node.nextHash);
     }
 
-    public synchronized void discoveryHandler(String[] message) {
+    private synchronized void discoveryHandler(String[] message) {
+        Failure failure = node.getFailure();
+        if (failure!= null && failure.isAlive()) failure.stop();
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
@@ -92,5 +101,35 @@ public class UnicastHandler extends Thread {
             }
             default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
         }
+        node.finishConnection();
+        if (node.getFailure() != null) {
+            node.setFailure(new Failure(node));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            node.getFailure().start();
+        }
+    }
+
+
+    private synchronized void shutdownHandler(String[] message) {
+        node.getFailure().stop();
+        switch (message[1]) {
+            case "previous" -> {
+                node.previousHash = Integer.parseInt(message[2]);
+            }
+            case "next" -> {
+                node.nextHash = Integer.parseInt(message[2]);
+            }
+            default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
+        }
+        logger.info("Parameters set: ");
+        logger.info("previousHash: " + node.previousHash);
+        logger.info("nodeHash: " + node.nodeHash);
+        logger.info("nextHash: " + node.nextHash);
+        node.setFailure(new Failure(node));
+        node.getFailure().start();
     }
 }
