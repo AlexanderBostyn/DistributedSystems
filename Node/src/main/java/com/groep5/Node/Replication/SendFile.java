@@ -1,10 +1,11 @@
 package com.groep5.Node.Replication;
 
 import com.groep5.Node.Node;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ public class SendFile implements Runnable {
     public File file;
     public int fileHash = -1;
     private Logger logger = Logger.getLogger(this.getClass().getName());
+
     SendFile(Node node, File file) {
         this.node = node;
         this.file = file;
@@ -23,43 +25,44 @@ public class SendFile implements Runnable {
         fileHash = node.calculateHash(file.getName());
     }
 
-    public int findNodeHash() {
-        Node currentNode = node;
-
-
-
-        int current = node.nodeHash;
-        int newNode = node.previousHash;
-        if(fileHash < current) {
-            while(newNode > current)
-            do {
-                current = newNode;
-                newNode = node.previousHash;
-            } while (true);
-        }
-        else if (fileHash > current) {
-            do {
-
-            } while (true);
-        }
-        return 0;
+    public String findNodeHash() throws UnknownHostException {
+        String result = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
+                .get()
+                .uri("/file/" + fileHash)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        return result;
     }
 
-    public void Send() {
-        String hostname = "127.0.0.1";
-        int port = 5000;
+    public void Send(String ip) {
+        String hostname = ip;
+        int port = 4321;
 
-        try (Socket socket = new Socket(hostname, port);
-             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
-
+        try {
+            Socket socket = new Socket(hostname, port);
             if (this.file != null) {
                 if (file.isFile()) {
-                    out.writeObject(file);
-                    out.flush();
+                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                    DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                    FileInputStream fileInputStream = new FileInputStream(file);
+
+                    dataOutputStream.writeLong(file.length());
+                    byte[] buf = new byte[4*1024];
+                    int bytes = 0;
+                    while((bytes = fileInputStream.read(buf)) != -1) {
+                        dataOutputStream.write(buf,0,bytes);
+                        dataOutputStream.flush();
+                    }
+                    fileInputStream.close();
+                    dataInputStream.close();
+                    dataOutputStream.close();
+
+                    socket.close();
+
                     logger.info("Sent file: " + file.getName());
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,7 +71,12 @@ public class SendFile implements Runnable {
     @Override
     public void run() {
         calcHash();
-        findNodeHash();
-        Send();
+        try {
+            String ip = findNodeHash();
+            Send(ip);
+        } catch (UnknownHostException e) {
+            logger.severe("Error with sending file");
+            throw new RuntimeException(e);
+        }
     }
 }

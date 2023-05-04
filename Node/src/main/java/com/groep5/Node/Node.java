@@ -2,6 +2,8 @@ package com.groep5.Node;
 
 import com.groep5.Node.Multicast.MulticastReceiver;
 import com.groep5.Node.Multicast.MulticastSender;
+import com.groep5.Node.Replication.Detection;
+import com.groep5.Node.Replication.StartUp;
 import com.groep5.Node.Unicast.UnicastReceiver;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -39,6 +41,8 @@ public class Node {
         this.nodeName = nodeName;
         discovery();
         bootstrap();
+        new StartUp(this);
+        new Detection(this).start();
     }
 
 

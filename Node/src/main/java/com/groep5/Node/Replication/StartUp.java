@@ -6,28 +6,26 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-public class StartUp implements Runnable {
+public class StartUp {
     public Node node;
     public File[] files;
     private Logger logger = Logger.getLogger(this.getClass().getName());
-    public StartUp(Node node) {
-        this.node = node;
-    }
 
     public void lookForFiles() {
         File directory = new File("C:\\UAProgrammas\\IntellijProjects\\DIST");
         files = directory.listFiles();
     }
-    public void SendFiles() {
+    public void sendFiles() {
         for(File file : files) {
             SendFile sendFile = new SendFile(this.node, file);
             sendFile.run();
         }
     }
-    @Override
-    public void run() {
+
+    public StartUp(Node node) {
+        this.node = node;
         lookForFiles();
-        SendFiles();
+        sendFiles();
         logger.info("Start up file sharing");
     }
 }

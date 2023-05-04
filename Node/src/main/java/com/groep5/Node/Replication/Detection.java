@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.logging.Logger;
 
-public class Detection implements Runnable {
+public class Detection extends Thread {
     public Node node;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
