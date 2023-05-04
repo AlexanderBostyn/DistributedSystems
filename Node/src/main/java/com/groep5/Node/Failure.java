@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
 public class Failure extends Thread {
-    private final Node node;
+    public final Node node;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public Failure(Node node) {
@@ -27,7 +27,7 @@ public class Failure extends Thread {
                 } else {
                     logger.info("Only node in network: skipping failure detection");
                 }
-                    //noinspection BusyWait
+                //noinspection BusyWait
                 Thread.sleep(5000);
             }
         } catch (UnknownHostException e) {
@@ -48,18 +48,14 @@ public class Failure extends Thread {
                         .retrieve()
                         .bodyToMono(Integer.class)
                         .block();
+                deleteFromNamingServer(node, node.nextHash);
                 InetAddress newNextIp = node.getIp(newNextHash);
                 node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(newNextIp, 4321));
-                //We put the responsibility to remove the failed node with the previous node.
-                WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
-                        .delete()
-                        .uri("/node/" + node.nextHash)
-                        .retrieve();
-                logger.info("Removed the failed from the namingserver");
+
             } else {
                 logger.info("NextNode is still reachable");
             }
-            if (hasFailed(previousNodeIp)) {
+            if (hasFailed(previousNodeIp) && !hasFailed(nextNodeIp)) {
                 logger.severe("PreviousNode unreachable, starting recovery protocol");
                 int newPreviousHash = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
                         .get()
@@ -67,6 +63,7 @@ public class Failure extends Thread {
                         .retrieve()
                         .bodyToMono(Integer.class)
                         .block();
+                deleteFromNamingServer(node, node.previousHash);
                 InetAddress newPreviousIp = node.getIp(newPreviousHash);
                 node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
             } else {
@@ -94,5 +91,13 @@ public class Failure extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static synchronized void deleteFromNamingServer(Node node, int hash) {
+        WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
+                .delete()
+                .uri("/node/" + hash)
+                .retrieve()
+                .bodyToMono(String.class).block();
+        Logger.getAnonymousLogger().info("Removed the failed from the namingserver");
     }
 }

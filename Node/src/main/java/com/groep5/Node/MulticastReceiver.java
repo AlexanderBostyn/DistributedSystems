@@ -9,11 +9,9 @@ import java.util.logging.Logger;
 public class MulticastReceiver extends Thread {
     private Node node;
     private Logger logger = Logger.getLogger(this.getClass().getName());
-    private final Failure failure;
 
-    public MulticastReceiver(Node node, Failure failure) {
+    public MulticastReceiver(Node node ) {
         this.node = node;
-        this.failure = failure;
     }
 
     public void receiveUDPMessage() {
@@ -54,7 +52,8 @@ public class MulticastReceiver extends Thread {
         @Override
         public void run() {
             try {
-                failure.stop();
+                logger.info("Stopping Failure task");
+                node.getFailure().stop();
                 String[] splitMessage = msg.split(";");
                 if (!splitMessage[0].equals("discovery")) return;
                 int receivedNodeHash = node.calculateHash(splitMessage[1]);
@@ -109,18 +108,23 @@ public class MulticastReceiver extends Thread {
                         sendMessage("discovery;next;" + node.nodeHash, address);
                     }
                 }
+                logger.info("Parameters set: ");
+                logger.info("previousHash: " + node.previousHash);
+                logger.info("nodeHash: " + node.nodeHash);
+                logger.info("nextHash: " + node.nextHash);
+                Thread.sleep(5000);
+                logger.info("restarting Failure thread");
+                node.setFailure(new Failure(node));
+                node.getFailure().start();
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 logger.severe("couldn't open unicast socket");
                 throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-            logger.info("Parameters set: ");
-            logger.info("previousHash: " + node.previousHash);
-            logger.info("nodeHash: " + node.nodeHash);
-            logger.info("nextHash: " + node.nextHash);
-            failure.start();
         }
     }
 

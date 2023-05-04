@@ -1,9 +1,7 @@
 package com.groep5.Node;
 
-<<<<<<< HEAD
-import com.groep5.Node.Multicast.MulticastReciever;
-import com.groep5.Node.Multicast.MulticastSender;
-import com.groep5.Node.Unicast.UnicastReceiver;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.*;
@@ -20,18 +18,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
 public class Node {
-    private final String nodeName;
-<<<<<<< HEAD
-    private int nodeHash;
-    private int previousHash;
-    private int nextHash;
-    private Inet4Address nodeAddress;
-    private Inet4Address namingServerAddress;
-    private Logger logger = Logger.getLogger("Node");
-    private int connectionsFinished;
-    private HashMap<Integer, InetAddress> nodeMap = new HashMap<>();
-    public int numberOfNodes = 0;
-=======
+    private String nodeName;
     public int nodeHash;
     public int previousHash;
     public int nextHash;
@@ -40,10 +27,9 @@ public class Node {
     private final Logger logger = Logger.getLogger("Node");
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
->>>>>>> discovery
+    private Failure failure;
 
-    public Node(String nodeName) {
-        this.nodeName = nodeName;
+    public Node() {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
 <<<<<<< HEAD
@@ -57,7 +43,8 @@ public class Node {
         }
     }
 
-    public void start() {
+    public void start(String nodeName) {
+        this.nodeName = nodeName;
         discovery();
         bootstrap();
     }
@@ -88,9 +75,9 @@ public class Node {
         logger.info("nextHash: " + nextHash);
 
         registerDevice();
-        Failure f = new Failure(this);
-        f.start();
-        listenToMulticasts(f);
+        this.failure = new Failure(this);
+        failure.start();
+        listenToMulticasts();
     }
 
 
@@ -103,9 +90,9 @@ public class Node {
         socket.close();
     }
 
-    private void listenToMulticasts(Failure f) {
+    private void listenToMulticasts() {
         logger.info("");
-        MulticastReceiver m = new MulticastReceiver(this, f);
+        MulticastReceiver m = new MulticastReceiver(this);
         m.start();
     }
 
@@ -223,4 +210,34 @@ public class Node {
         this.numberOfNodes = numberOfNodes;
     }
 
+    public synchronized void random() throws IOException {
+
+        //send id of next node to prev node
+        //get address of node from namingserver
+        failure.stop();
+        if (nextHash != nodeHash) {
+            logger.info(this.namingServerAddress.getHostAddress());
+            InetAddress prevIp = getIp(previousHash);
+            InetSocketAddress prevAddr = new InetSocketAddress(prevIp, 4321);
+            sendUnicast(("shutdown;next;" + nextHash), prevAddr);
+            //send id of prev node to next node
+            InetAddress nextIp = getIp(nextHash);
+            InetSocketAddress nextAddr = new InetSocketAddress(nextIp, 4321);
+            sendUnicast(("shutdown;previous;" + previousHash), nextAddr);
+        }
+        //remove node rom naming server
+        InetSocketAddress namingAddr = new InetSocketAddress(namingServerAddress, 4321);
+        Failure.deleteFromNamingServer(this, nodeHash);
+        logger.info("test");
+        System.out.println("node shutting down\n 0/ bye bye 0/");
+        System.exit(0);
+    }
+
+    public synchronized Failure getFailure() {
+        return failure;
+    }
+
+    public synchronized void setFailure(Failure failure) {
+        this.failure = failure;
+    }
 }
