@@ -1,4 +1,7 @@
-package com.groep5.Node;
+package com.groep5.Node.Multicast;
+
+import com.groep5.Node.Failure;
+import com.groep5.Node.Node;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,7 +28,7 @@ public class MulticastReceiver extends Thread {
                 socket.receive(packet);
                 String msg = new String(packet.getData(), packet.getOffset(), packet.getLength());
                 logger.info("Multicast Received: " + msg);
-                new MulticastReceiverHandler(msg, failure).start();
+                new MulticastReceiverHandler(msg).start();
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
@@ -42,11 +45,9 @@ public class MulticastReceiver extends Thread {
 
     private class MulticastReceiverHandler extends Thread {
         private final String msg;
-        private final Failure failure;
 
-        MulticastReceiverHandler(String msg, Failure failure) {
+        MulticastReceiverHandler(String msg) {
             this.msg = msg;
-            this.failure = failure;
         }
 
         @Override

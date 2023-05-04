@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5482e775-9a46-4698-863b-2c0396202aaf" name="Changes" comment="" />
+    <list default="true" id="5482e775-9a46-4698-863b-2c0396202aaf" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Multicast/MulticastReciever.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/MulticastReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Multicast/MulticastReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Unicast/UnicastHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Unicast/UnicastHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Unicast/UnicastReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Unicast/UnicastReceiver.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -48,7 +54,11 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/UAProgrammas/IntellijProjects/DIST/DistributedSystems/Node"
+    "last_opened_file_path": "C:/UAProgrammas/IntellijProjects/DIST/DistributedSystems/Node",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

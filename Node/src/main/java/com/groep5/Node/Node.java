@@ -1,19 +1,14 @@
 package com.groep5.Node;
 
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import com.groep5.Node.Multicast.MulticastReceiver;
+import com.groep5.Node.Multicast.MulticastSender;
+import com.groep5.Node.Unicast.UnicastReceiver;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.*;
-import java.util.HashMap;
-import java.util.logging.Level;
-=======
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.*;
->>>>>>> discovery
 import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
@@ -32,12 +27,9 @@ public class Node {
     public Node() {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
-<<<<<<< HEAD
             discovery();
             //this.namingServerAddress = (Inet4Address) Inet4Address.getLocalHost();
-            listenToMulticast();
-=======
->>>>>>> discovery
+            listenToMulticasts();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -103,13 +95,6 @@ public class Node {
     }
 
     private void listenToResponses() {
-<<<<<<< HEAD
-       UnicastReceiver unicastReceiver = new UnicastReceiver(this);
-       unicastReceiver.run();
-       if(!(numberOfNodes < 1 || (numberOfNodes > 0 && (numberOfNodes > connectionsFinished)))) {
-           unicastReceiver.stop();
-       }
-=======
         UnicastReceiver unicastReceiver = new UnicastReceiver(this);
         unicastReceiver.start();
         while (numberOfNodes < 0 || (connectionsFinished < 3 && numberOfNodes > 0)) {
@@ -126,8 +111,6 @@ public class Node {
 //           logger.info("blocking");
         }
 //        unicastReceiver.stopTask();
-
->>>>>>> discovery
     }
 
     public synchronized void finishConnection() {
@@ -162,39 +145,39 @@ public class Node {
         logger.info(result);
     }
 
-<<<<<<< HEAD
-    public void addNodeMap(int hash, InetAddress inetAddress) {
-        this.nodeMap.put(hash, inetAddress);
-    }
-
-    public void listenToMulticast() {
-        MulticastReciever multicastReciever = new MulticastReciever(this);
-        multicastReciever.run();
-    }
-
-    public int getPreviousHash() {
-        return previousHash;
-    }
-
-    public void setPreviousHash(int previousHash) {
-        this.previousHash = previousHash;
-    }
-
-    public int getNextHash() {
-        return nextHash;
-    }
-
-    public void setNextHash(int nextHash) {
-        this.nextHash = nextHash;
-    }
-
-    public int getNodeHash() {
-        return nodeHash;
-    }
+//    public void addNodeMap(int hash, InetAddress inetAddress) {
+//        this.nodeMap.put(hash, inetAddress);
+//    }
+//
+//    public void listenToMulticast() {
+//        MulticastReciever multicastReciever = new MulticastReciever(this);
+//        multicastReciever.run();
+//    }
+//
+//    public int getPreviousHash() {
+//        return previousHash;
+//    }
+//
+//    public void setPreviousHash(int previousHash) {
+//        this.previousHash = previousHash;
+//    }
+//
+//    public int getNextHash() {
+//        return nextHash;
+//    }
+//
+//    public void setNextHash(int nextHash) {
+//        this.nextHash = nextHash;
+//    }
+//
+//    public int getNodeHash() {
+//        return nodeHash;
+//    }
 
     public void setNodeHash(int nodeHash) {
         this.nodeHash = nodeHash;
-=======
+    }
+
     public InetAddress getIp(int nodeHash) throws UnknownHostException {
         String result = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
                 .get()
@@ -203,7 +186,6 @@ public class Node {
                 .bodyToMono(String.class)
                 .block();
         return InetAddress.getByName(result);
->>>>>>> discovery
     }
 
     public synchronized void setNumberOfNodes(int numberOfNodes) {

@@ -1,5 +1,6 @@
 package com.groep5.Node.Unicast;
 
+import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 
 import net.officefloor.plugin.variable.In;
@@ -33,20 +34,10 @@ public class UnicastHandler extends Thread {
             String[] message = input.readLine().split(";");
             logger.info("message received:" + Arrays.toString(message));
             switch (message[0]) {
-<<<<<<< HEAD:Node/src/main/java/com/groep5/Node/Unicast/UnicastHandler.java
-                case "namingServer":
-                    node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
-                    node.setNumberOfNodes(Integer.parseInt(message[1]));
-                    break;
-                default:
-                    node.addNodeMap(node.calculateHash(message[0]), Inet4Address.getByName(message[1]));
-                    break;
-=======
                 case "discovery" -> discoveryHandler(message);
                 case "failure" -> failureHandler(message);
                 case "shutdown" -> shutdownHandler(message);
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
->>>>>>> discovery:Node/src/main/java/com/groep5/Node/UnicastHandler.java
             }
             socket.close();
         } catch (NullPointerException e) {
@@ -58,10 +49,7 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void failureHandler(String[] message) {
-<<<<<<< HEAD:Node/src/main/java/com/groep5/Node/Unicast/UnicastHandler.java
-=======
         node.getFailure().stop();
->>>>>>> discovery:Node/src/main/java/com/groep5/Node/UnicastHandler.java
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");
@@ -91,19 +79,11 @@ public class UnicastHandler extends Thread {
         logger.info("previousHash: " + node.previousHash);
         logger.info("nodeHash: " + node.nodeHash);
         logger.info("nextHash: " + node.nextHash);
-<<<<<<< HEAD:Node/src/main/java/com/groep5/Node/Unicast/UnicastHandler.java
-    }
-
-    public synchronized void discoveryHandler(String[] message) {
-=======
-        node.setFailure(new Failure(node));
-        node.getFailure().start();
     }
 
     private synchronized void discoveryHandler(String[] message) {
         Failure failure = node.getFailure();
         if (failure!= null && failure.isAlive()) failure.stop();
->>>>>>> discovery:Node/src/main/java/com/groep5/Node/UnicastHandler.java
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
