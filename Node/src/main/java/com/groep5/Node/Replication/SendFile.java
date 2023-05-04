@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -17,6 +18,7 @@ public class SendFile implements Runnable {
     public File file;
     public int fileHash = -1;
     private Logger logger = Logger.getLogger(this.getClass().getName());
+
     SendFile(Node node, File file) {
         this.node = node;
         this.file = file;
@@ -40,9 +42,12 @@ public class SendFile implements Runnable {
         String hostname = ip;
         int port = 4321;
 
-        try (Socket socket = new Socket(hostname, port);
-             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
-
+        try {
+            Socket socket = new Socket(hostname, port);
+            PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+            printWriter.println("replication;" + file.getName());
+            printWriter.close();
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             if (this.file != null) {
                 if (file.isFile()) {
                     out.writeObject(file);
@@ -50,7 +55,6 @@ public class SendFile implements Runnable {
                     logger.info("Sent file: " + file.getName());
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
