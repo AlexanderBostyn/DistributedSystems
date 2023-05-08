@@ -14,9 +14,10 @@ public class SendFile extends Thread {
     public Node node;
     public File file;
     public int fileHash = -1;
+    String ip;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    SendFile(Node node, File file) {
+    public SendFile(Node node, File file) {
         this.node = node;
         this.file = file;
     }

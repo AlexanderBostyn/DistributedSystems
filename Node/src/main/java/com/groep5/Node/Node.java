@@ -3,6 +3,7 @@ package com.groep5.Node;
 import com.groep5.Node.Multicast.MulticastReceiver;
 import com.groep5.Node.Multicast.MulticastSender;
 import com.groep5.Node.Replication.Detection;
+import com.groep5.Node.Replication.SendFile;
 import com.groep5.Node.Replication.StartUp;
 import com.groep5.Node.Unicast.UnicastReceiver;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -200,7 +201,7 @@ public class Node {
         this.numberOfNodes = numberOfNodes;
     }
 
-    public synchronized void random() throws IOException {
+    public synchronized void shutDownNode() throws IOException {
 
         //send id of next node to prev node
         //get address of node from namingserver
@@ -215,6 +216,11 @@ public class Node {
             InetSocketAddress nextAddr = new InetSocketAddress(nextIp, 4321);
             sendUnicast(("shutdown;previous;" + previousHash), nextAddr);
         }
+        //move files to prev node unless prev node is local owner, then move to prev of prev node
+        File directory = new File("src/main/resources");
+        File[] files = directory.listFiles();
+        //send files to prev node
+
         //remove node rom naming server
         InetSocketAddress namingAddr = new InetSocketAddress(namingServerAddress, 4321);
         Failure.deleteFromNamingServer(this, nodeHash);
@@ -222,6 +228,7 @@ public class Node {
         System.out.println("node shutting down\n 0/ bye bye 0/");
         System.exit(0);
     }
+
 
     public synchronized Failure getFailure() {
         return failure;

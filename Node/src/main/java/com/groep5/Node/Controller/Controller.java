@@ -21,6 +21,6 @@ public class Controller {
 
     @PutMapping("/shutdown")//shutdown
     public void random() throws IOException {
-        node.random();
+        node.shutDownNode();
     }
 }
