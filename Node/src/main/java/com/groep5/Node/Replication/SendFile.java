@@ -38,7 +38,7 @@ public class SendFile extends Thread {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        //this.node.log.add(result);
+        this.node.addLog(file, result);
         return result;
     }
 
@@ -68,11 +68,10 @@ public class SendFile extends Thread {
 
                     socket.close();
 
-                    this.node.addLog(file, ip);
-
                     logger.info("Sent file: " + file.getName());
                 }
             }
+            this.node.addLog(file, ip);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -31,7 +31,7 @@ public class Node {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
-    public HashMap<File, String> log = new HashMap<>();
+    public HashMap<File, ArrayList<String>> log = new HashMap<>();
     public File latestFile;
 
     public Node() {
@@ -244,6 +244,8 @@ public class Node {
     }
 
     public void addLog(File f, String s) {
-        log.put(f, s);
+        ArrayList<String> list = log.get(f);
+        list.add(s);
+        log.replace(f, list);
     }
 }

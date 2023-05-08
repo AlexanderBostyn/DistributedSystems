@@ -5,6 +5,7 @@ import com.groep5.Node.Node;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class UpdateRemovedNode {
@@ -27,9 +28,15 @@ public class UpdateRemovedNode {
         for (File f : files) {
             logger.info("send file " + f.getName() + " to new location");
             // edge case: see if the previous node is the owner of the node
+            logger.info("test file log: " + (node.log.get(f)).get(0));
             InetAddress ip = node.getIp(node.previousHash);
-            new SendFile(node, f, ip.toString()).start();
-            deleteFile(f);
+            if (node.log.get(f).get(0).equals(ip.toString())) {
+                //file moet naar de previous node van de previous node gestuurd worden
+            }
+            else {
+                new SendFile(node, f, ip.toString()).start();
+                deleteFile(f);
+            }
         }
     }
 
