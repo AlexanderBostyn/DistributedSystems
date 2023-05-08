@@ -44,6 +44,8 @@ public class SendFile extends Thread {
             Socket socket = new Socket(hostname, port);
             if (this.file != null) {
                 if (file.isFile()) {
+                    PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                    printWriter.println("replication;" + file.getName() + ";" + file.length());
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     FileInputStream fileInputStream = new FileInputStream(file);
                     byte[] buf = new byte[4*1024];

@@ -7,6 +7,7 @@ import com.groep5.Node.Replication.StartUp;
 import com.groep5.Node.Unicast.UnicastReceiver;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.File;
 import java.net.*;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class Node {
     public int numberOfNodes = -1;
     private Failure failure;
     public final ArrayList<String> log = new ArrayList<>();
+    public File latestFile;
 
     public Node() {
         try {

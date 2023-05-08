@@ -5,16 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1b7c37bf-91c9-480f-b4f5-7319160ca161" name="Changes" comment="Thread">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Replication/Detection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Replication/Detection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Replication/SendFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Replication/SendFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Replication/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/groep5/Node/Replication/StartUp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/groep5/Node/FileTransferTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/groep5/Node/FileTransferTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/groep5/Node/MulticastSender.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/groep5/Node/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/groep5/Node/Node.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/groep5/Node/NodeApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/groep5/Node/NodeApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/groep5/Node/UnicastHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/groep5/Node/UnicastReceiver.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
