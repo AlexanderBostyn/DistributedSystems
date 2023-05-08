@@ -2,7 +2,10 @@ package com.groep5.Node.Multicast;
 
 import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
+import com.groep5.Node.Replication.SendFile;
+import com.groep5.Node.Replication.StartUp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
@@ -78,6 +81,8 @@ public class MulticastReceiver extends Thread {
                         //send files that now belong to new node to new node
                         node.nextHash = receivedNodeHash;
                         sendMessage("discovery;previous;" + node.nodeHash, address);
+                        new StartUp(node);
+                        logger.info("resend files");
                     } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
                         //if the new hash is smaller than the current hash but bigger than the previous hash than it becomes the new previous hash.
                         logger.info("received node is the new previousNode: " + receivedNodeHash);
@@ -97,6 +102,8 @@ public class MulticastReceiver extends Thread {
                         logger.info("received node is the new previousNode: " + receivedNodeHash);
                         node.previousHash = receivedNodeHash;
                         sendMessage("discovery;next;" + node.nodeHash, address);
+                        new StartUp(node);
+                        logger.info("resend files");
                     }
                 } else { //must be a normal node
                     if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
@@ -104,6 +111,8 @@ public class MulticastReceiver extends Thread {
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
                         node.nextHash = receivedNodeHash;
                         sendMessage("discovery;previous;" + node.nodeHash, address);
+                        new StartUp(node);
+                        logger.info("resend files");
                     } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
                         //if the received hash is bigger than the previous hash but smaller than self than it must be the new previous node
                         logger.info("received node is the new previousNode: " + receivedNodeHash);

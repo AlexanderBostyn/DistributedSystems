@@ -5,6 +5,8 @@ import com.groep5.Naming.server.Service.Hasher;
 import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.InetAddress;
@@ -44,8 +46,12 @@ public class HashController {
     }
 
     @GetMapping("/node/{id}")
-    public String locateNodeById(@PathVariable int id) {
-        return hasher.locateNodeById(id).getHostAddress();
+    public ResponseEntity<String> locateNodeById(@PathVariable int id) {
+        InetAddress address = hasher.locateNodeById(id);
+        if (address == null) {
+            return new ResponseEntity<String>("Node Not Found", HttpStatusCode.valueOf(404));
+        }
+        return new ResponseEntity<String>(address.getHostAddress(), HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("/node/{id}/previous")
