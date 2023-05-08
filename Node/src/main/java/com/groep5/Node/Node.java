@@ -11,6 +11,7 @@ import java.net.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
@@ -25,6 +26,7 @@ public class Node {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
+    public final ArrayList<String> log = new ArrayList<>();
 
     public Node() {
         try {
@@ -225,5 +227,9 @@ public class Node {
 
     public synchronized void setFailure(Failure failure) {
         this.failure = failure;
+    }
+
+    public void addLog(String s) {
+        log.add(s);
     }
 }

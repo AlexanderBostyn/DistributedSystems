@@ -12,8 +12,9 @@ public class StartUp {
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public void lookForFiles() {
-        File directory = new File("C:\\UAProgrammas\\IntellijProjects\\DIST");
+        File directory = new File("C:\\UAProgrammas\\IntellijProjects\\DIST\\DistributedSystems\\Node\\src\\main\\resources\\local");
         files = directory.listFiles();
+        logger.info("Files: " + files);
     }
     public void sendFiles() {
         for(File file : files) {
@@ -29,4 +30,5 @@ public class StartUp {
         logger.info("Start up file sharing");
     }
 }
+
 

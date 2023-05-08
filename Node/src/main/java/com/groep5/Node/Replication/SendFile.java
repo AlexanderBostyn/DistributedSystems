@@ -32,6 +32,7 @@ public class SendFile extends Thread {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+        this.node.log.add(result);
         return result;
     }
 
@@ -43,11 +44,8 @@ public class SendFile extends Thread {
             Socket socket = new Socket(hostname, port);
             if (this.file != null) {
                 if (file.isFile()) {
-                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     FileInputStream fileInputStream = new FileInputStream(file);
-
-                    dataOutputStream.writeLong(file.length());
                     byte[] buf = new byte[4*1024];
                     int bytes = 0;
                     while((bytes = fileInputStream.read(buf)) != -1) {
@@ -55,10 +53,11 @@ public class SendFile extends Thread {
                         dataOutputStream.flush();
                     }
                     fileInputStream.close();
-                    dataInputStream.close();
                     dataOutputStream.close();
 
                     socket.close();
+
+                    this.node.addLog(ip);
 
                     logger.info("Sent file: " + file.getName());
                 }
