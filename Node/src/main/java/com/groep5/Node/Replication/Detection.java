@@ -16,7 +16,7 @@ public class Detection extends Thread {
     }
 
     public void lookForFiles() throws IOException, InterruptedException {
-        Path directory = Paths.get("C:\\UAProgrammas\\IntellijProjects\\DIST");
+        Path directory = Paths.get("src/main/resources/local");
         WatchService watchService = FileSystems.getDefault().newWatchService();
         directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
 
@@ -29,7 +29,7 @@ public class Detection extends Thread {
                 Path fileName = (Path) event.context();
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    File newFile = fileName.toFile();
+                    File newFile = new File("src/main/resources/local/" + fileName);
                     if (newFile != node.latestFile) {
                         logger.info("File created: " + fileName);
                         SendFile sendFile = new SendFile(this.node, newFile);
