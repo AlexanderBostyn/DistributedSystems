@@ -3,8 +3,9 @@ package com.groep5.Node;
 import com.groep5.Node.Multicast.MulticastReceiver;
 import com.groep5.Node.Multicast.MulticastSender;
 import com.groep5.Node.Replication.Detection;
-import com.groep5.Node.Replication.SendFile;
 import com.groep5.Node.Replication.StartUp;
+import com.groep5.Node.Replication.UpdateNewNode;
+import com.groep5.Node.Replication.UpdateRemovedNode;
 import com.groep5.Node.Unicast.UnicastReceiver;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -14,6 +15,8 @@ import java.net.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @SuppressWarnings("DataFlowIssue")
@@ -28,7 +31,7 @@ public class Node {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
-    public final ArrayList<String> log = new ArrayList<>();
+    public HashMap<File, String> log = new HashMap<>();
     public File latestFile;
 
     public Node() {
@@ -215,6 +218,8 @@ public class Node {
             InetAddress nextIp = getIp(nextHash);
             InetSocketAddress nextAddr = new InetSocketAddress(nextIp, 4321);
             sendUnicast(("shutdown;previous;" + previousHash), nextAddr);
+            new UpdateRemovedNode(this);
+            logger.info("start updating nodes");
         }
         //move files to prev node unless prev node is local owner, then move to prev of prev node
         File directory = new File("src/main/resources");
@@ -238,7 +243,7 @@ public class Node {
         this.failure = failure;
     }
 
-    public void addLog(String s) {
-        log.add(s);
+    public void addLog(File f, String s) {
+        log.put(f, s);
     }
 }

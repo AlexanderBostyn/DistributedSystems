@@ -18,16 +18,15 @@ public class StartUp {
     }
     public void sendFiles() {
         for(File file : files) {
-            SendFile sendFile = new SendFile(this.node, file);
-            sendFile.start();
+            new SendFile(this.node, file).start();
         }
     }
 
     public StartUp(Node node) {
         this.node = node;
+        logger.info("Start up file sharing");
         lookForFiles();
         sendFiles();
-        logger.info("Start up file sharing");
     }
 }
 

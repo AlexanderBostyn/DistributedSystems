@@ -18,7 +18,7 @@ public class Detection extends Thread {
     public void lookForFiles() throws IOException, InterruptedException {
         Path directory = Paths.get("src/main/resources/local");
         WatchService watchService = FileSystems.getDefault().newWatchService();
-        directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+        directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
 
         logger.info("Watching directory: " + directory);
 
@@ -28,12 +28,11 @@ public class Detection extends Thread {
                 WatchEvent.Kind<?> kind = event.kind();
                 Path fileName = (Path) event.context();
 
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                     File newFile = new File("src/main/resources/local/" + fileName);
                     if (newFile != node.latestFile) {
                         logger.info("File created: " + fileName);
-                        SendFile sendFile = new SendFile(this.node, newFile);
-                        sendFile.start();
+                        new SendFile(this.node, newFile).start();
                     }
                 }
             }

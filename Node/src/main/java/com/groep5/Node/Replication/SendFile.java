@@ -13,10 +13,15 @@ import java.util.logging.Logger;
 public class SendFile extends Thread {
     public Node node;
     public File file;
-    public int fileHash = -1;
-    String ip;
+    public int fileHash;
+    String ip = "";
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
+    public SendFile(Node node, File file, String ip) {
+        this.node = node;
+        this.file = file;
+        this.ip = ip;
+    }
     public SendFile(Node node, File file) {
         this.node = node;
         this.file = file;
@@ -33,16 +38,19 @@ public class SendFile extends Thread {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        this.node.log.add(result);
+        //this.node.log.add(result);
         return result;
     }
 
-    public void Send(String ip) {
-        String hostname = ip;
-        int port = 4321;
+    public void Send() throws UnknownHostException {
+        if (ip.equals(""))
+        {
+            calcHash();
+            ip = findNodeHash();
+        }
 
         try {
-            Socket socket = new Socket(hostname, port);
+            Socket socket = new Socket(ip, 4321);
             if (this.file != null) {
                 if (file.isFile()) {
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
@@ -60,7 +68,7 @@ public class SendFile extends Thread {
 
                     socket.close();
 
-                    this.node.addLog(ip);
+                    this.node.addLog(file, ip);
 
                     logger.info("Sent file: " + file.getName());
                 }
@@ -72,12 +80,9 @@ public class SendFile extends Thread {
 
     @Override
     public void run() {
-        calcHash();
         try {
-            String ip = findNodeHash();
-            Send(ip);
+            Send();
         } catch (UnknownHostException e) {
-            logger.severe("Error with sending file");
             throw new RuntimeException(e);
         }
     }
