@@ -27,6 +27,7 @@ public class MulticastReciever implements Runnable {
             socket.receive(packet);
             String msg = new String(packet.getData(), packet.getOffset(),packet.getLength());
             System.out.println("[Multicast UDP message received] >> "+msg);
+            new MulticastHandler(msg).run();
         }
     }
     @Override
