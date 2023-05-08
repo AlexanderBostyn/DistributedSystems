@@ -12,7 +12,7 @@ public class StartUp {
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public void lookForFiles() {
-        File directory = new File("C:\\UAProgrammas\\IntellijProjects\\DIST\\DistributedSystems\\Node\\src\\main\\resources\\local");
+        File directory = new File("src/main/resources");
         files = directory.listFiles();
         logger.info("Files: " + files);
     }
