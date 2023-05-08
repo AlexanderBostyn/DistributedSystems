@@ -2,6 +2,7 @@
 cd Naming-server/
 git reset --hard
 git pull origin test
+chmod +x ../deployNamingServer.sh
 mvn clean install
 rm src/main/resources/data.json
 touch src/main/resources/data.json
