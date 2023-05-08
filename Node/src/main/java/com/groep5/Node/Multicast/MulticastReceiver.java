@@ -75,6 +75,7 @@ public class MulticastReceiver extends Thread {
                     if (receivedNodeHash > node.nodeHash || receivedNodeHash < node.nextHash) {
                         //because this is the last ring, if the received hash is bigger than itself or smaller than the next hash it must be the new next node
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
+                        //send files that now belong to new node to new node
                         node.nextHash = receivedNodeHash;
                         sendMessage("discovery;previous;" + node.nodeHash, address);
                     } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
@@ -88,6 +89,7 @@ public class MulticastReceiver extends Thread {
                     if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
                         //if the received hash is smaller than the nexthash but bigger than the next hash it must be the new next node
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
+                        //send files that now belong to new node to new node
                         node.nextHash = receivedNodeHash;
                         sendMessage("discovery;previous;" + node.nodeHash, address);
                     } else if (receivedNodeHash < node.nodeHash || receivedNodeHash > node.nextHash) {
