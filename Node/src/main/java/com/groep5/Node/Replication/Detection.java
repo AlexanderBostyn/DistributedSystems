@@ -2,6 +2,7 @@ package com.groep5.Node.Replication;
 
 import com.groep5.Node.Node;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.logging.Logger;
@@ -28,9 +29,12 @@ public class Detection extends Thread {
                 Path fileName = (Path) event.context();
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    logger.info("File created: " + fileName);
-                    SendFile sendFile = new SendFile(this.node, fileName.toFile());
-                    sendFile.start();
+                    File newFile = fileName.toFile();
+                    if (newFile != node.latestFile) {
+                        logger.info("File created: " + fileName);
+                        SendFile sendFile = new SendFile(this.node, newFile);
+                        sendFile.start();
+                    }
                 }
             }
 
