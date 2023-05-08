@@ -37,9 +37,9 @@ public class Node {
     public Node() {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
-            discovery();
+//            discovery();
             //this.namingServerAddress = (Inet4Address) Inet4Address.getLocalHost();
-            listenToMulticasts();
+//            listenToMulticasts();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }

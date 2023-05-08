@@ -24,7 +24,6 @@ public class NodeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(NodeApplication.class, args);
 		Logger.getAnonymousLogger().info(Arrays.toString(args));
-
 		node.start(args[0]);
 	}
 
