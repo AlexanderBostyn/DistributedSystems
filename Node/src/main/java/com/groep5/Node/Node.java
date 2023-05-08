@@ -148,7 +148,7 @@ public class Node {
     private void registerDevice() {
         logger.info("registering device with the NamingServer");
         String result = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                .put()
+                .post()
                 .uri("/node/" + nodeName)
                 .bodyValue(this.nodeAddress.getHostAddress())
                 .retrieve()
