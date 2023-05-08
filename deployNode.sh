@@ -1,4 +1,4 @@
-if [ $1 -eq 0]; then
+if [ $1 -eq 0 ]; then
     echo "No arguments given"
     exit 1
 fi
