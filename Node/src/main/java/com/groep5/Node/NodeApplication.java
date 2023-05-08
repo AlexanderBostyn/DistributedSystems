@@ -11,7 +11,10 @@ import java.util.logging.Logger;
 
 @SpringBootApplication
 public class NodeApplication {
-	private static Node node = new Node();
+	public NodeApplication(){
+		node =  new Node();
+	}
+	private static Node node;
 
 	@Bean
 	public Node getNode() {
@@ -21,6 +24,7 @@ public class NodeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(NodeApplication.class, args);
 		Logger.getAnonymousLogger().info(Arrays.toString(args));
+
 		node.start(args[0]);
 	}
 
