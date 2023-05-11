@@ -1,4 +1,4 @@
-package com.groep5.Node.Replication;
+package com.groep5.Node.Service.Replication;
 
 import com.groep5.Node.Node;
 import com.groep5.Node.SpringContext;
@@ -6,7 +6,6 @@ import com.groep5.Node.SpringContext;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class UpdateRemovedNode {

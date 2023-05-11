@@ -1,4 +1,4 @@
-package com.groep5.Node.Unicast;
+package com.groep5.Node.Service.Unicast;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.groep5.Node.Replication;
+package com.groep5.Node.Service.Replication;
 
 import com.groep5.Node.Node;
 import com.groep5.Node.SpringContext;

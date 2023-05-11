@@ -1,8 +1,6 @@
 package com.groep5.Node;
 
-import com.groep5.Node.Replication.StartUp;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
 import java.net.ServerSocket;

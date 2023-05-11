@@ -1,9 +1,4 @@
-package com.groep5.Node.Unicast;
-
-import com.groep5.Node.Node;
-import com.groep5.Node.Unicast.UnicastHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+package com.groep5.Node.Service.Unicast;
 
 import java.io.IOException;
 import java.net.ServerSocket;

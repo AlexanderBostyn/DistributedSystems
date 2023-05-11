@@ -1,12 +1,14 @@
 package com.groep5.Node;
 
-import com.groep5.Node.Multicast.MulticastReceiver;
-import com.groep5.Node.Multicast.MulticastSender;
-import com.groep5.Node.Replication.Detection;
-import com.groep5.Node.Replication.StartUp;
-import com.groep5.Node.Replication.UpdateNewNode;
-import com.groep5.Node.Replication.UpdateRemovedNode;
-import com.groep5.Node.Unicast.UnicastReceiver;
+import com.groep5.Node.Service.Discovery.DiscoveryService;
+import com.groep5.Node.Service.Multicast.MulticastReceiver;
+import com.groep5.Node.Service.Multicast.MulticastSender;
+import com.groep5.Node.Service.Replication.Detection;
+import com.groep5.Node.Service.Replication.StartUp;
+import com.groep5.Node.Service.Replication.UpdateRemovedNode;
+import com.groep5.Node.Service.Unicast.UnicastReceiver;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,10 +19,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 @Service
 @SuppressWarnings("DataFlowIssue")
+@Data
 public class Node {
     private String nodeName;
     public int nodeHash;
@@ -34,6 +36,8 @@ public class Node {
     private Failure failure;
     public HashMap<File, ArrayList<String>> log = new HashMap<>();
     public File latestFile;
+    private @Autowired
+    DiscoveryService discoveryService;
 
     public Node() {
         try {
@@ -48,7 +52,8 @@ public class Node {
 
     public void startNode(String nodeName) {
         this.nodeName = nodeName;
-        discovery();
+        //discovery();
+        discoveryService.startDiscovery();
         bootstrap();
         //new StartUp(this);
         new StartUp();
@@ -57,12 +62,14 @@ public class Node {
     }
 
 
-    public void discovery() {
+    /*public void discovery() {
         logger.info("started discovery");
         sendMulticast();
         listenToResponses();
         logger.info("Finished discovery");
     }
+
+     */
 
     private void bootstrap() {
         logger.info("started bootstrap");
@@ -104,13 +111,15 @@ public class Node {
         m.start();
     }
 
-    private synchronized void sendMulticast() {
+    /*private synchronized void sendMulticast() {
         String message = "discovery;" + this.nodeName + ";" + this.nodeAddress.getHostAddress();
         MulticastSender m = new MulticastSender(message);
         m.start();
     }
 
-    private void listenToResponses() {
+     */
+
+    /*private void listenToResponses() {
         //UnicastReceiver unicastReceiver = new UnicastReceiver(this);
         UnicastReceiver unicastReceiver = new UnicastReceiver();
         unicastReceiver.start();
@@ -129,6 +138,8 @@ public class Node {
         }
 //        unicastReceiver.stopTask();
     }
+
+     */
 
     public synchronized void finishConnection() {
         connectionsFinished++;

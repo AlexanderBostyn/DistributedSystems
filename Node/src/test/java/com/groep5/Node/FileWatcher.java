@@ -1,6 +1,5 @@
 package com.groep5.Node;
 
-import com.groep5.Node.Replication.SendFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

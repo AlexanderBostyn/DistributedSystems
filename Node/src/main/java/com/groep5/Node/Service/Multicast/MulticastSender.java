@@ -1,4 +1,4 @@
-package com.groep5.Node.Multicast;
+package com.groep5.Node.Service.Multicast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

@@ -1,10 +1,9 @@
-package com.groep5.Node.Replication;
+package com.groep5.Node.Service.Replication;
 
 import com.groep5.Node.Node;
 import com.groep5.Node.SpringContext;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class StartUp {

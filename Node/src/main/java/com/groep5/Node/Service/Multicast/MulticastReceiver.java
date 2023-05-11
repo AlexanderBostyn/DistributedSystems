@@ -1,8 +1,8 @@
-package com.groep5.Node.Multicast;
+package com.groep5.Node.Service.Multicast;
 
 import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
-import com.groep5.Node.Replication.UpdateNewNode;
+import com.groep5.Node.Service.Replication.UpdateNewNode;
 import com.groep5.Node.SpringContext;
 
 import java.io.IOException;
