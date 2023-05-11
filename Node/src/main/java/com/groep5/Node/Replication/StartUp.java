@@ -1,6 +1,7 @@
 package com.groep5.Node.Replication;
 
 import com.groep5.Node.Node;
+import com.groep5.Node.SpringContext;
 
 import java.io.File;
 import java.util.Arrays;
@@ -18,15 +19,26 @@ public class StartUp {
     }
     public void sendFiles() {
         for(File file : files) {
-            new SendFile(this.node, file).start();
+            //new SendFile(this.node, file).start();
+            new SendFile(file).start();
         }
     }
 
-    public StartUp(Node node) {
+    /*public StartUp(Node node) {
         this.node = node;
         logger.info("Start up file sharing");
         lookForFiles();
         sendFiles();
+    }
+    */
+    public StartUp() {
+        this.node = getNode();
+        logger.info("Start up file sharing");
+        lookForFiles();
+        sendFiles();
+    }
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
     }
 }
 

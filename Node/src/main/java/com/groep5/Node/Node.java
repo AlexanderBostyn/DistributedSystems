@@ -7,6 +7,7 @@ import com.groep5.Node.Replication.StartUp;
 import com.groep5.Node.Replication.UpdateNewNode;
 import com.groep5.Node.Replication.UpdateRemovedNode;
 import com.groep5.Node.Unicast.UnicastReceiver;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
+@Service
 @SuppressWarnings("DataFlowIssue")
 public class Node {
     private String nodeName;
@@ -45,16 +46,18 @@ public class Node {
         }
     }
 
-    public void start(String nodeName) {
+    public void startNode(String nodeName) {
         this.nodeName = nodeName;
         discovery();
         bootstrap();
-        new StartUp(this);
-        new Detection(this).start();
+        //new StartUp(this);
+        new StartUp();
+        //new Detection(this).start();
+        new Detection().start();
     }
 
 
-    private void discovery() {
+    public void discovery() {
         logger.info("started discovery");
         sendMulticast();
         listenToResponses();
@@ -96,7 +99,8 @@ public class Node {
 
     private void listenToMulticasts() {
         logger.info("");
-        MulticastReceiver m = new MulticastReceiver(this);
+        //MulticastReceiver m = new MulticastReceiver(this);
+        MulticastReceiver m = new MulticastReceiver();
         m.start();
     }
 
@@ -107,7 +111,8 @@ public class Node {
     }
 
     private void listenToResponses() {
-        UnicastReceiver unicastReceiver = new UnicastReceiver(this);
+        //UnicastReceiver unicastReceiver = new UnicastReceiver(this);
+        UnicastReceiver unicastReceiver = new UnicastReceiver();
         unicastReceiver.start();
         while (numberOfNodes < 0 || (connectionsFinished < 3 && numberOfNodes > 0)) {
             logger.info("Number of nodes: " + numberOfNodes);
@@ -218,7 +223,8 @@ public class Node {
             InetAddress nextIp = getIp(nextHash);
             InetSocketAddress nextAddr = new InetSocketAddress(nextIp, 4321);
             sendUnicast(("shutdown;previous;" + previousHash), nextAddr);
-            new UpdateRemovedNode(this);
+            //new UpdateRemovedNode(this);
+            new UpdateRemovedNode();
             logger.info("start updating nodes");
         }
         //move files to prev node unless prev node is local owner, then move to prev of prev node

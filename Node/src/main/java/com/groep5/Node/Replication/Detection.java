@@ -1,6 +1,7 @@
 package com.groep5.Node.Replication;
 
 import com.groep5.Node.Node;
+import com.groep5.Node.SpringContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,8 +12,16 @@ public class Detection extends Thread {
     public Node node;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public Detection(Node node) {
+    /*public Detection(Node node) {
         this.node = node;
+    }
+
+     */
+    public Detection() {
+        this.node = getNode();
+    }
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
     }
 
     public void lookForFiles() throws IOException, InterruptedException {
@@ -32,7 +41,8 @@ public class Detection extends Thread {
                     File newFile = new File("src/main/resources/local/" + fileName);
                     if (newFile != node.latestFile) {
                         logger.info("File created: " + fileName);
-                        new SendFile(this.node, newFile).start();
+                        //new SendFile(this.node, newFile).start();
+                        new SendFile(newFile).start();
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package com.groep5.Node.Replication;
 
 import com.groep5.Node.Node;
+import com.groep5.Node.SpringContext;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -12,10 +13,18 @@ public class UpdateRemovedNode {
     public Node node;
     public File[] files;
     private Logger logger = Logger.getLogger(this.getClass().getName());
-    public UpdateRemovedNode(Node node) throws UnknownHostException {
+    /*public UpdateRemovedNode(Node node) throws UnknownHostException {
         this.node = node;
         lookForFiles();
         resendFiles();
+    }*/
+    public UpdateRemovedNode( ) throws UnknownHostException {
+        this.node = getNode();
+        lookForFiles();
+        resendFiles();
+    }
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
     }
 
     public void lookForFiles() {
@@ -34,7 +43,8 @@ public class UpdateRemovedNode {
                 //file moet naar de previous node van de previous node gestuurd worden
             }
             else {
-                new SendFile(node, f, ip.toString()).start();
+                //new SendFile(node, f, ip.toString()).start();
+                new SendFile(f, ip.toString()).start();
                 deleteFile(f);
             }
         }

@@ -3,7 +3,9 @@ package com.groep5.Node.Unicast;
 import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 
+import com.groep5.Node.SpringContext;
 import net.officefloor.plugin.variable.In;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.net.Inet4Address;
@@ -17,11 +19,20 @@ public class UnicastHandler extends Thread {
     private Logger logger = Logger.getLogger(this.getClass().getName());
     private Socket socket;
     private Node node;
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
+    }
 
-    public UnicastHandler(Socket socket, Node node) {
+    /*public UnicastHandler(Socket socket, Node node) {
         logger.info("Received connection");
         this.socket = socket;
         this.node = node;
+    }
+     */
+    public UnicastHandler(Socket socket) {
+        logger.info("Received connection");
+        this.socket = socket;
+        this.node= getNode();
     }
 
     @Override
@@ -47,7 +58,7 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void failureHandler(String[] message) {
-        node.getFailure().stop();
+       node.getFailure().stop();
         switch (message[1]) {
             case "previous" -> {
                 logger.info("previous Node failed");

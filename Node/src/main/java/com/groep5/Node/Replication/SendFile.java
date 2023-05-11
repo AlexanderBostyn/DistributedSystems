@@ -1,6 +1,7 @@
 package com.groep5.Node.Replication;
 
 import com.groep5.Node.Node;
+import com.groep5.Node.SpringContext;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.*;
@@ -17,7 +18,7 @@ public class SendFile extends Thread {
     String ip = "";
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public SendFile(Node node, File file, String ip) {
+    /*public SendFile(Node node, File file, String ip) {
         this.node = node;
         this.file = file;
         this.ip = ip;
@@ -25,7 +26,20 @@ public class SendFile extends Thread {
     public SendFile(Node node, File file) {
         this.node = node;
         this.file = file;
+    }*/
+    public SendFile(File file, String ip) {
+        this.node=getNode();
+        this.file = file;
+        this.ip = ip;
     }
+    public SendFile(File file) {
+        this.node = getNode();
+        this.file = file;
+    }
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
+    }
+
 
     public void calcHash() {
         fileHash = node.calculateHash(file.getName());

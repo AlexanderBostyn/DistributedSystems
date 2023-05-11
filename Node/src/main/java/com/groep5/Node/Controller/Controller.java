@@ -12,15 +12,11 @@ import java.net.UnknownHostException;
 
 @RestController
 public class Controller {
-
-    private final Node node;
-
-    public Controller(Node getNode) {
-        this.node = getNode;
-    }
+    @Autowired
+    private  Node node;
 
     @PutMapping("/shutdown")//shutdown
-    public void random() throws IOException {
+    public void shutDownNode() throws IOException {
         node.shutDownNode();
     }
 }

@@ -3,6 +3,7 @@ package com.groep5.Node.Multicast;
 import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 import com.groep5.Node.Replication.UpdateNewNode;
+import com.groep5.Node.SpringContext;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,8 +15,15 @@ public class MulticastReceiver extends Thread {
     private Node node;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public MulticastReceiver(Node node ) {
+    /*public MulticastReceiver(Node node ) {
         this.node = node;
+    }
+     */
+    public MulticastReceiver() {
+        this.node = getNode();
+    }
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
     }
 
     public void receiveUDPMessage() {
@@ -120,7 +128,8 @@ public class MulticastReceiver extends Thread {
                 logger.info("restarting Failure thread");
                 node.setFailure(new Failure(node));
                 node.getFailure().start();
-                new UpdateNewNode(node, receivedNodeHash);
+                //new UpdateNewNode(node, receivedNodeHash);
+                new UpdateNewNode( receivedNodeHash);
                 logger.info("start updating nodes");
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
