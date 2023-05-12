@@ -200,7 +200,8 @@ public class Node {
             list = new ArrayList<>();
         }
         list.add(s);
-        log.replace(f, list);
+        logger.info(list.toString());
+        log.put(f, list);
         logger.info(log.entrySet().toString());
     }
 }
