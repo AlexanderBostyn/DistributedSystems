@@ -219,4 +219,9 @@ public class Node {
         log.put(f, list);
         logger.info("Current log: " + log.entrySet().toString());
     }
+
+    public void dellLog(File f) {
+        log.remove(f);
+        logger.info("Current log: " + log.entrySet().toString());
+    }
 }
