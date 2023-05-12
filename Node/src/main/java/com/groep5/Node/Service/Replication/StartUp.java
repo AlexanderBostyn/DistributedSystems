@@ -4,6 +4,7 @@ import com.groep5.Node.Node;
 import com.groep5.Node.SpringContext;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class StartUp {
@@ -12,24 +13,16 @@ public class StartUp {
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public void lookForFiles() {
-        File directory = new File("src/main/resources");
+        File directory = new File("src/main/resources/local");
         files = directory.listFiles();
-        logger.info("Files: " + files);
+        logger.info("Files: " + Arrays.toString(files));
     }
     public void sendFiles() {
         for(File file : files) {
-            //new SendFile(this.node, file).start();
             new SendFile(file).start();
         }
     }
 
-    /*public StartUp(Node node) {
-        this.node = node;
-        logger.info("Start up file sharing");
-        lookForFiles();
-        sendFiles();
-    }
-    */
     public StartUp() {
         this.node = getNode();
         logger.info("Start up file sharing");

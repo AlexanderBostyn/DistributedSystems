@@ -51,7 +51,7 @@ public class Node {
         discoveryService.startDiscovery();
         bootstrap();
         new StartUp();
-        new Detection().start();
+//        new Detection().start();
     }
 
     //TODO kan ook in een service eigenlijk

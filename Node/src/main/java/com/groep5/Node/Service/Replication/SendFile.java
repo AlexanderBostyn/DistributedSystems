@@ -16,17 +16,8 @@ public class SendFile extends Thread {
     public File file;
     public int fileHash;
     String ip = "";
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    /*public SendFile(Node node, File file, String ip) {
-        this.node = node;
-        this.file = file;
-        this.ip = ip;
-    }
-    public SendFile(Node node, File file) {
-        this.node = node;
-        this.file = file;
-    }*/
     public SendFile(File file, String ip) {
         this.node=getNode();
         this.file = file;
@@ -67,6 +58,7 @@ public class SendFile extends Thread {
             Socket socket = new Socket(ip, 4321);
             if (this.file != null) {
                 if (file.isFile()) {
+                    logger.info("Sending file: " + file.getName() + ", to: " + ip);
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
                     printWriter.println("replication;" + file.getName() + ";" + file.length());
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -79,10 +71,9 @@ public class SendFile extends Thread {
                     }
                     fileInputStream.close();
                     dataOutputStream.close();
-
                     socket.close();
 
-                    logger.info("Sent file: " + file.getName());
+                    logger.info("Finished sending file: " + file.getName());
                 }
             }
             this.node.addLog(file, ip);
