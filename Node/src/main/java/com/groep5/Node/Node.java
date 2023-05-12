@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 @Service
 @SuppressWarnings("DataFlowIssue")
@@ -195,7 +196,11 @@ public class Node {
 
     public void addLog(File f, String s) {
         ArrayList<String> list = log.get(f);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
         list.add(s);
         log.replace(f, list);
+        logger.info(log.entrySet().toString());
     }
 }
