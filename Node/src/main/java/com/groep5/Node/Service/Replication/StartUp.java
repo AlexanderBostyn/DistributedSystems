@@ -19,8 +19,8 @@ public class StartUp {
         File[] fileArray = directory.listFiles();
         if (fileArray != null) {
             files.addAll(List.of(fileArray));
+            logger.info("Files: " + files);
         }
-        logger.info("Files: " + Arrays.toString(files.toArray()));
     }
     public void sendFiles() {
         for(File file : files) {
