@@ -137,7 +137,7 @@ public class UnicastHandler extends Thread {
     private void replicationHandler(String[] message) {
         String filename = message[1];
         long size = Long.parseLong(message[2]);
-        File file = new File("src/main/resources/replicas" + filename);
+        File file = new File("src/main/resources/replicated/" + filename);
         int bytes = 0;
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -150,6 +150,8 @@ public class UnicastHandler extends Thread {
             dis.close();
             fileOutputStream.flush();
             fileOutputStream.close();
+
+            //If we are the owner of the file, indicated by namingserver we should at the file to our log
             InetAddress fileOwner = node.findNodeOwner(node.calculateHash(filename));
             if (fileOwner.getHostAddress().equals(node.getNodeAddress().getHostAddress())) {
                 node.addLog(file, fileOwner.getHostAddress());
