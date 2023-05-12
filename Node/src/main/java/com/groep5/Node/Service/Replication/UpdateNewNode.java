@@ -10,14 +10,7 @@ public class UpdateNewNode {
     public Node node;
     public File[] files;
     public int recievedNodeHash;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
-    /*public UpdateNewNode(Node node, int recievedNodeHash) {
-        this.node = node;
-        this.recievedNodeHash = recievedNodeHash;
-        lookForFiles();
-        resendFiles();
-    }
-     */
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
     public UpdateNewNode( int recievedNodeHash) {
         this.node = getNode();
         this.recievedNodeHash = recievedNodeHash;

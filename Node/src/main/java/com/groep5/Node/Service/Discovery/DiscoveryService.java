@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
 
+@SuppressWarnings("BusyWait")
 @Service
 public class DiscoveryService {
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Autowired
     private Node node;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -28,7 +30,6 @@ public class DiscoveryService {
         m.start();
     }
     public void listenToResponses(){
-//UnicastReceiver unicastReceiver = new UnicastReceiver(this);
         UnicastReceiver unicastReceiver = new UnicastReceiver();
         unicastReceiver.start();
         while (node.getNumberOfNodes() < 0 || (node.getConnectionsFinished() < 3 && node.getNumberOfNodes() > 0)) {
@@ -42,9 +43,7 @@ public class DiscoveryService {
             //if the number of nodes is less than 0: naming server hasn't responded yet
             //in the other cases naming server has responded, if the network size is greater than 0 then it should receive 3 connections in total
             //if the network size is zero only the namingServer response is necessary.
-//           logger.info("blocking");
         }
-//        unicastReceiver.stopTask();
     }
 
 }

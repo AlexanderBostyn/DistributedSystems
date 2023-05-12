@@ -15,7 +15,6 @@ public class NodeApplication {
 	//private Node thisNode;
 	private static Node node;
 	@Autowired
-
 	public NodeApplication(Node thisNode){
 		node =  thisNode;
 	}

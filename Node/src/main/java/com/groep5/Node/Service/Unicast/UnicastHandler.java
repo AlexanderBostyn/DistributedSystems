@@ -4,31 +4,22 @@ import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 
 import com.groep5.Node.SpringContext;
-import net.officefloor.plugin.variable.In;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class UnicastHandler extends Thread {
-    private Logger logger = Logger.getLogger(this.getClass().getName());
-    private Socket socket;
-    private Node node;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Socket socket;
+    private final Node node;
     private Node getNode() {
         return SpringContext.getBean(Node.class);
     }
 
-    /*public UnicastHandler(Socket socket, Node node) {
-        logger.info("Received connection");
-        this.socket = socket;
-        this.node = node;
-    }
-     */
     public UnicastHandler(Socket socket) {
         logger.info("Received connection");
         this.socket = socket;
@@ -50,7 +41,7 @@ public class UnicastHandler extends Thread {
             }
             socket.close();
         } catch (NullPointerException e) {
-            logger.info("Got pinged");
+            logger.fine("Got pinged");
         } catch (IOException e) {
             logger.severe("Idk wat er gebeurd is but you fucked up");
             throw new RuntimeException(e);
@@ -61,7 +52,7 @@ public class UnicastHandler extends Thread {
        node.getFailure().stop();
         switch (message[1]) {
             case "previous" -> {
-                logger.info("previous Node failed");
+                logger.severe("previous Node failed");
                 if (node.previousHash != Integer.parseInt(message[2])) {
                     node.previousHash = Integer.parseInt(message[2]);
                     try {
@@ -72,7 +63,7 @@ public class UnicastHandler extends Thread {
                 }
             }
             case "next" -> {
-                logger.info("Next Node Failed");
+                logger.severe("Next Node Failed");
                 if (node.nextHash != Integer.parseInt(message[2])) {
                     node.nextHash = Integer.parseInt(message[2]);
                     try {
@@ -108,7 +99,7 @@ public class UnicastHandler extends Thread {
                 logger.info("next Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
                 node.nextHash = Integer.parseInt(message[2]);
             }
-            default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
+            default -> logger.severe("Message could not be parsed: " + Arrays.toString(message));
         }
         node.finishConnection();
         if (node.getFailure() != null) {

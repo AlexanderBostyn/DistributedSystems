@@ -2,11 +2,9 @@ package com.groep5.Node;
 
 import com.groep5.Node.Service.Discovery.DiscoveryService;
 import com.groep5.Node.Service.Multicast.MulticastReceiver;
-import com.groep5.Node.Service.Multicast.MulticastSender;
 import com.groep5.Node.Service.Replication.Detection;
 import com.groep5.Node.Service.Replication.StartUp;
 import com.groep5.Node.Service.Replication.UpdateRemovedNode;
-import com.groep5.Node.Service.Unicast.UnicastReceiver;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,35 +40,21 @@ public class Node {
     public Node() {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
-//            discovery();
-            //this.namingServerAddress = (Inet4Address) Inet4Address.getLocalHost();
-//            listenToMulticasts();
         } catch (UnknownHostException e) {
+            logger.severe("Couldn't fetch own IP");
             throw new RuntimeException(e);
         }
     }
 
     public void startNode(String nodeName) {
         this.nodeName = nodeName;
-        //discovery();
         discoveryService.startDiscovery();
         bootstrap();
-        //new StartUp(this);
         new StartUp();
-        //new Detection(this).start();
         new Detection().start();
     }
 
-
-    /*public void discovery() {
-        logger.info("started discovery");
-        sendMulticast();
-        listenToResponses();
-        logger.info("Finished discovery");
-    }
-
-     */
-
+    //TODO kan ook in een service eigenlijk
     private void bootstrap() {
         logger.info("started bootstrap");
         this.nodeHash = calculateHash(nodeName);
@@ -106,40 +90,10 @@ public class Node {
 
     private void listenToMulticasts() {
         logger.info("");
-        //MulticastReceiver m = new MulticastReceiver(this);
         MulticastReceiver m = new MulticastReceiver();
         m.start();
     }
 
-    /*private synchronized void sendMulticast() {
-        String message = "discovery;" + this.nodeName + ";" + this.nodeAddress.getHostAddress();
-        MulticastSender m = new MulticastSender(message);
-        m.start();
-    }
-
-     */
-
-    /*private void listenToResponses() {
-        //UnicastReceiver unicastReceiver = new UnicastReceiver(this);
-        UnicastReceiver unicastReceiver = new UnicastReceiver();
-        unicastReceiver.start();
-        while (numberOfNodes < 0 || (connectionsFinished < 3 && numberOfNodes > 0)) {
-            logger.info("Number of nodes: " + numberOfNodes);
-            logger.info("Finished connections: " + connectionsFinished);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            //if the number of nodes is less than 0: naming server hasn't responded yet
-            //in the other cases naming server has responded, if the network size is greater than 0 then it should receive 3 connections in total
-            //if the network size is zero only the namingServer response is necessary.
-//           logger.info("blocking");
-        }
-//        unicastReceiver.stopTask();
-    }
-
-     */
 
     public synchronized void finishConnection() {
         connectionsFinished++;
@@ -149,7 +103,13 @@ public class Node {
         this.namingServerAddress = namingServerAddress;
     }
 
+    /**
+     * Calculate the hash by requesting GET/hash/{name}.
+     * @param nodeName the name of the node
+     * @return the node generated from the namingserver
+     */
     public int calculateHash(String nodeName) {
+        logger.fine("Calculating hash: " + nodeName);
         return WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
                 .get()
                 .uri("/hash/" + nodeName)
@@ -173,35 +133,8 @@ public class Node {
         logger.info(result);
     }
 
-//    public void addNodeMap(int hash, InetAddress inetAddress) {
-//        this.nodeMap.put(hash, inetAddress);
-//    }
-//
-//    public void listenToMulticast() {
-//        MulticastReciever multicastReciever = new MulticastReciever(this);
-//        multicastReciever.run();
-//    }
-//
-//    public int getPreviousHash() {
-//        return previousHash;
-//    }
-//
-//    public void setPreviousHash(int previousHash) {
-//        this.previousHash = previousHash;
-//    }
-//
-//    public int getNextHash() {
-//        return nextHash;
-//    }
-//
-//    public void setNextHash(int nextHash) {
-//        this.nextHash = nextHash;
-//    }
-//
-//    public int getNodeHash() {
-//        return nodeHash;
-//    }
 
+    //TODO not used
     public void setNodeHash(int nodeHash) {
         this.nodeHash = nodeHash;
     }
@@ -220,13 +153,13 @@ public class Node {
         this.numberOfNodes = numberOfNodes;
     }
 
-    public synchronized void shutDownNode() throws IOException {
+    public synchronized void shutdownNode() throws IOException {
 
         //send id of next node to prev node
         //get address of node from namingserver
+        logger.info("Shutting Down Node");
         failure.stop();
         if (nextHash != nodeHash) {
-            logger.info(this.namingServerAddress.getHostAddress());
             InetAddress prevIp = getIp(previousHash);
             InetSocketAddress prevAddr = new InetSocketAddress(prevIp, 4321);
             sendUnicast(("shutdown;next;" + nextHash), prevAddr);

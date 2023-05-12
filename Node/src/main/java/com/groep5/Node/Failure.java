@@ -25,7 +25,7 @@ public class Failure extends Thread {
                 if (node.nextHash != node.nodeHash) {
                     checkNodes(nextNodeIp, previousNodeIp);
                 } else {
-                    logger.info("Only node in network: skipping failure detection");
+                    logger.fine("Only node in network: skipping failure detection");
                 }
                 //noinspection BusyWait
                 Thread.sleep(5000);
@@ -53,7 +53,7 @@ public class Failure extends Thread {
                 node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(newNextIp, 4321));
 
             } else {
-                logger.info("NextNode is still reachable");
+                logger.fine("NextNode is still reachable");
             }
             if (hasFailed(previousNodeIp) && !hasFailed(nextNodeIp)) {
                 logger.severe("PreviousNode unreachable, starting recovery protocol");
@@ -67,7 +67,7 @@ public class Failure extends Thread {
                 InetAddress newPreviousIp = node.getIp(newPreviousHash);
                 node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
             } else {
-                logger.info("PreviousNode is still reachable");
+                logger.fine("PreviousNode is still reachable");
             }
         } catch (UnknownHostException e) {
             logger.severe("Host Not found");
@@ -80,11 +80,11 @@ public class Failure extends Thread {
 
     private synchronized boolean hasFailed(Inet4Address address) {
         try {
-            logger.info("pining: " + address.getHostAddress());
+            logger.fine("pining: " + address.getHostAddress());
             Socket socket = new Socket();
             socket.connect(new InetSocketAddress(address, 4321));
             socket.close();
-            logger.info("received answer");
+            logger.fine("received answer");
             return false;
         } catch (ConnectException e) {
             return true;

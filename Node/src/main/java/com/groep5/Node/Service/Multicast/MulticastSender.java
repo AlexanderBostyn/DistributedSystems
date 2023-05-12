@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class MulticastSender extends Thread{
     private final String message;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public static void sendUDPMessage(String message, String ipAddress, int port) throws IOException {
         DatagramSocket socket = new DatagramSocket();

@@ -1,14 +1,15 @@
 package com.groep5.Node.Service.Unicast;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+//TODO kan verwijderst worden atm
+//zit momenteel in Node
 public class UnicastSender {
-    private Socket socket;
-    private int previous;
-    private int next;
+    private final Socket socket;
+    private final int previous;
+    private final int next;
     public UnicastSender(int previous, int next, String IP) throws IOException {
         this.previous = previous;
         this.next = next;

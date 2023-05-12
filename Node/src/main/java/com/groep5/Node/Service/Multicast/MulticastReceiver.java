@@ -11,14 +11,11 @@ import java.net.*;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+@SuppressWarnings("resource")
 public class MulticastReceiver extends Thread {
-    private Node node;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Node node;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    /*public MulticastReceiver(Node node ) {
-        this.node = node;
-    }
-     */
     public MulticastReceiver() {
         this.node = getNode();
     }
@@ -43,8 +40,6 @@ public class MulticastReceiver extends Thread {
             logger.severe("Error creating multicastReceiver socket");
             throw new RuntimeException(e);
         }
-        /*socket.leaveGroup(group);
-        socket.close();*/
     }
 
     @Override

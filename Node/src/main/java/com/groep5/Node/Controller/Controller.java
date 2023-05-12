@@ -16,7 +16,7 @@ public class Controller {
     private  Node node;
 
     @PutMapping("/shutdown")//shutdown
-    public void shutDownNode() throws IOException {
-        node.shutDownNode();
+    public void shutdownNode() throws IOException {
+        node.shutdownNode();
     }
 }
