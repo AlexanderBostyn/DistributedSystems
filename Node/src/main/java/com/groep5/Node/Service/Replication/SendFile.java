@@ -36,22 +36,12 @@ public class SendFile extends Thread {
         fileHash = node.calculateHash(file.getName());
     }
 
-    public String findNodeHash() throws UnknownHostException {
-        String result = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
-                .get()
-                .uri("/file/" + fileHash)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        this.node.addLog(file, result);
-        return result;
-    }
 
     public void Send() throws UnknownHostException {
         if (ip.equals(""))
         {
             calcHash();
-            ip = findNodeHash();
+            ip = node.findNodeOwner(fileHash).getHostAddress();
         }
 
         try {
@@ -76,7 +66,6 @@ public class SendFile extends Thread {
                     logger.info("Finished sending file: " + file.getName());
                 }
             }
-            this.node.addLog(file, ip);
         } catch (IOException e) {
             e.printStackTrace();
         }

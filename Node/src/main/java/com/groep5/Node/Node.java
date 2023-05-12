@@ -150,6 +150,22 @@ public class Node {
         return InetAddress.getByName(result);
     }
 
+    /**
+     * Finds the owner of the file by filehash returning an Ipaddress
+     * @param fileHash the hash of the file
+     * @return InetAddress of owner
+     * @throws UnknownHostException
+     */
+    public InetAddress findNodeOwner(int fileHash) throws UnknownHostException {
+        String result = WebClient.create("http://" + this.namingServerAddress.getHostAddress() + ":54321")
+                .get()
+                .uri("/file/" + fileHash)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        return Inet4Address.getByName(result);
+    }
+
     public synchronized void setNumberOfNodes(int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
     }
@@ -200,8 +216,7 @@ public class Node {
             list = new ArrayList<>();
         }
         list.add(s);
-        logger.info(list.toString());
         log.put(f, list);
-        logger.info(log.entrySet().toString());
+        logger.info("Current log: " + log.entrySet().toString());
     }
 }

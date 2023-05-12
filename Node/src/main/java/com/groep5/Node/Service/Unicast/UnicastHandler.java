@@ -7,6 +7,7 @@ import com.groep5.Node.SpringContext;
 
 import java.io.*;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
@@ -149,6 +150,10 @@ public class UnicastHandler extends Thread {
             dis.close();
             fileOutputStream.flush();
             fileOutputStream.close();
+            InetAddress fileOwner = node.findNodeOwner(node.calculateHash(filename));
+            if (fileOwner.getHostAddress().equals(node.getNodeAddress().getHostAddress())) {
+                node.addLog(file, fileOwner.getHostAddress());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
