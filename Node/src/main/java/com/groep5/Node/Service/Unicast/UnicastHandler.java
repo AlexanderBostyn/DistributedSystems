@@ -21,7 +21,7 @@ public class UnicastHandler extends Thread {
     }
 
     public UnicastHandler(Socket socket) {
-        logger.info("Received connection");
+        logger.fine("Received connection");
         this.socket = socket;
         this.node= getNode();
     }

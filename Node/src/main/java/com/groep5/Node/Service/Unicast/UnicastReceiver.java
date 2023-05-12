@@ -23,7 +23,7 @@ public class UnicastReceiver extends Thread {
     public void run() {
         while (!isInterrupted()) {
             try {
-                logger.info("Waiting on connection:");
+                logger.fine("Waiting on connection:");
                 new UnicastHandler(socket.accept()).start();
             } catch (IOException e) {
                 if (!isInterrupted()) {
