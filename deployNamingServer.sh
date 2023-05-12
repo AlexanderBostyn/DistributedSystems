@@ -1,6 +1,6 @@
 #Script to pull latest code and to deploy the naming server
 cd Naming-server/
-git reset --hard
+git reset --hard origin/test
 git pull origin test
 chmod +x ../deployNamingServer.sh
 mvn clean install

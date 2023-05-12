@@ -3,7 +3,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 cd Node/
-git reset --hard
+git reset --hard origin/test
 git pull origin test
 chmod +x ../deployNode.sh
 mvn clean install
