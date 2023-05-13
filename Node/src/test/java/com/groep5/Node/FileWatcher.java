@@ -30,7 +30,7 @@ public class FileWatcher {
                     BufferedReader reader = new BufferedReader( new FileReader(file));
                     Assertions.assertEquals(reader.readLine(), "Hello vriendjes");
                     reader.close();
-                    file.delete();
+                    System.out.println(file.delete());
                     isFound = true;
                 }
             }

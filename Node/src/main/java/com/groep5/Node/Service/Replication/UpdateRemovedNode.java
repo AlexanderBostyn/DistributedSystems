@@ -1,24 +1,24 @@
 package com.groep5.Node.Service.Replication;
 
 import com.groep5.Node.Node;
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.SpringContext;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class UpdateRemovedNode {
     public Node node;
     public File[] files;
     private Logger logger = Logger.getLogger(this.getClass().getName());
-    /*public UpdateRemovedNode(Node node) throws UnknownHostException {
-        this.node = node;
-        lookForFiles();
-        resendFiles();
-    }*/
+    private final NamingServerService namingServerService;
+
     public UpdateRemovedNode( ) throws UnknownHostException {
         this.node = getNode();
+        this.namingServerService = node.getNamingServerService();
         lookForFiles();
         resendFiles();
     }
@@ -29,7 +29,7 @@ public class UpdateRemovedNode {
     public void lookForFiles() {
         File directory = new File("src/main/resources");
         files = directory.listFiles();
-        logger.info("Files: " + files);
+        logger.info("Files: " + Arrays.toString(files));
     }
 
     public void resendFiles() throws UnknownHostException {
@@ -37,7 +37,7 @@ public class UpdateRemovedNode {
             logger.info("send file " + f.getName() + " to new location");
             // edge case: see if the previous node is the owner of the node
             logger.info("test file log: " + (node.log.get(f)).get(0));
-            InetAddress ip = node.getIp(node.previousHash);
+            InetAddress ip = namingServerService.getIp(node.previousHash);
             if (node.log.get(f).get(0).equals(ip.toString())) {
                 //file moet naar de previous node van de previous node gestuurd worden
             }

@@ -1,6 +1,6 @@
 package com.groep5.Node;
 
-import org.springframework.web.reactive.function.client.WebClient;
+import com.groep5.Node.Service.NamingServerService;
 
 import java.io.IOException;
 import java.net.*;
@@ -9,10 +9,12 @@ import java.util.logging.Logger;
 @SuppressWarnings("DataFlowIssue")
 public class Failure extends Thread {
     public final Node node;
+    public final NamingServerService namingServerService;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public Failure(Node node) {
         this.node = node;
+        this.namingServerService = node.getNamingServerService();
     }
 
     @Override
@@ -20,8 +22,8 @@ public class Failure extends Thread {
         try {
             logger.info("Running failure check");
             while (!isInterrupted()) {
-                Inet4Address nextNodeIp = (Inet4Address) node.getIp(node.nextHash);
-                Inet4Address previousNodeIp = (Inet4Address) node.getIp(node.previousHash);
+                Inet4Address nextNodeIp = (Inet4Address) getIp(node.nextHash);
+                Inet4Address previousNodeIp = (Inet4Address) getIp(node.previousHash);
                 if (node.nextHash != node.nodeHash) {
                     checkNodes(nextNodeIp, previousNodeIp);
                 } else {
@@ -42,14 +44,9 @@ public class Failure extends Thread {
         try {
             if (hasFailed(nextNodeIp)) {
                 logger.severe("NextNode unreachable, starting recovery protocol");
-                int newNextHash = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
-                        .get()
-                        .uri("/node/" + node.nextHash + "/next")
-                        .retrieve()
-                        .bodyToMono(Integer.class)
-                        .block();
-                deleteFromNamingServer(node, node.nextHash);
-                InetAddress newNextIp = node.getIp(newNextHash);
+                int newNextHash = namingServerService.getNextHash(node.nextHash);
+                namingServerService.deleteNode(node.nextHash);
+                InetAddress newNextIp = getIp(newNextHash);
                 node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(newNextIp, 4321));
 
             } else {
@@ -57,14 +54,9 @@ public class Failure extends Thread {
             }
             if (hasFailed(previousNodeIp) && !hasFailed(nextNodeIp)) {
                 logger.severe("PreviousNode unreachable, starting recovery protocol");
-                int newPreviousHash = WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
-                        .get()
-                        .uri("/node/" + node.previousHash + "/previous")
-                        .retrieve()
-                        .bodyToMono(Integer.class)
-                        .block();
-                deleteFromNamingServer(node, node.previousHash);
-                InetAddress newPreviousIp = node.getIp(newPreviousHash);
+                int newPreviousHash = namingServerService.getPreviousHash(node.previousHash);
+                namingServerService.deleteNode(node.previousHash);
+                InetAddress newPreviousIp = getIp(newPreviousHash);
                 node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
             } else {
                 logger.fine("PreviousNode is still reachable");
@@ -92,12 +84,8 @@ public class Failure extends Thread {
             throw new RuntimeException(e);
         }
     }
-    public static synchronized void deleteFromNamingServer(Node node, int hash) {
-        WebClient.create("http://" + node.namingServerAddress.getHostAddress() + ":54321")
-                .delete()
-                .uri("/node/" + hash)
-                .retrieve()
-                .bodyToMono(String.class).block();
-        Logger.getAnonymousLogger().info("Removed the failed from the namingserver");
+
+    private Inet4Address getIp(int nodeHash) throws UnknownHostException {
+        return namingServerService.getIp(nodeHash);
     }
 }

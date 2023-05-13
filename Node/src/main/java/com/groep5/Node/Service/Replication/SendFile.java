@@ -1,11 +1,10 @@
 package com.groep5.Node.Service.Replication;
 
 import com.groep5.Node.Node;
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.SpringContext;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.*;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -15,18 +14,21 @@ public class SendFile extends Thread {
     public Node node;
     public File file;
     public int fileHash;
-    String ip = "";
+    private String ip = "";
+    private final NamingServerService namingServerService;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public SendFile(File file, String ip) {
-        this.node=getNode();
+        this.node = getNode();
+        this.namingServerService = node.getNamingServerService();
         this.file = file;
         this.ip = ip;
     }
+
     public SendFile(File file) {
-        this.node = getNode();
-        this.file = file;
+        this(file, "");
     }
+
     private Node getNode() {
         return SpringContext.getBean(Node.class);
     }
@@ -38,10 +40,10 @@ public class SendFile extends Thread {
 
 
     public void Send() throws UnknownHostException {
-        if (ip.equals(""))
-        {
+        if (ip.equals("")) {
             calcHash();
-            ip = node.findNodeOwner(fileHash).getHostAddress();
+            InetAddress ipAddress = namingServerService.getFileOwner(fileHash);
+            ip = ipAddress.getHostAddress();
         }
 
         try {
@@ -53,10 +55,10 @@ public class SendFile extends Thread {
                     printWriter.println("replication;" + file.getName() + ";" + file.length());
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     FileInputStream fileInputStream = new FileInputStream(file);
-                    byte[] buf = new byte[4*1024];
+                    byte[] buf = new byte[4 * 1024];
                     int bytes = 0;
-                    while((bytes = fileInputStream.read(buf)) != -1) {
-                        dataOutputStream.write(buf,0,bytes);
+                    while ((bytes = fileInputStream.read(buf)) != -1) {
+                        dataOutputStream.write(buf, 0, bytes);
                         dataOutputStream.flush();
                     }
                     fileInputStream.close();

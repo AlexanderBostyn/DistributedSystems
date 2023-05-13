@@ -2,13 +2,12 @@ package com.groep5.Node;
 
 import com.groep5.Node.Service.Discovery.DiscoveryService;
 import com.groep5.Node.Service.Multicast.MulticastReceiver;
-import com.groep5.Node.Service.Replication.Detection;
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Replication.StartUp;
 import com.groep5.Node.Service.Replication.UpdateRemovedNode;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
 import java.net.*;
@@ -17,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Logger;
 @Service
 @SuppressWarnings("DataFlowIssue")
@@ -28,7 +26,6 @@ public class Node {
     public int previousHash;
     public int nextHash;
     private final Inet4Address nodeAddress;
-    public Inet4Address namingServerAddress;
     private final Logger logger = Logger.getLogger("Node");
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
@@ -37,6 +34,9 @@ public class Node {
     public File latestFile;
     private @Autowired
     DiscoveryService discoveryService;
+
+    @Autowired
+    private NamingServerService namingServerService;
 
     public Node() {
         try {
@@ -72,8 +72,8 @@ public class Node {
         logger.info("previousHash: " + previousHash);
         logger.info("nodeHash: " + nodeHash);
         logger.info("nextHash: " + nextHash);
+        namingServerService.registerDevice(this);
 
-        registerDevice();
         this.failure = new Failure(this);
         failure.start();
         listenToMulticasts();
@@ -100,9 +100,6 @@ public class Node {
         connectionsFinished++;
     }
 
-    public void setNamingServerAddress(Inet4Address namingServerAddress) {
-        this.namingServerAddress = namingServerAddress;
-    }
 
     /**
      * Calculate the hash by requesting GET/hash/{name}.
@@ -111,59 +108,17 @@ public class Node {
      */
     public int calculateHash(String nodeName) {
         logger.fine("Calculating hash: " + nodeName);
-        return WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                .get()
-                .uri("/hash/" + nodeName)
-                .retrieve()
-                .bodyToMono(Integer.class)
-                .block();
+        return namingServerService.calculateHash(nodeName);
     }
 
     /**
      * Register device with the nameServer using PUT/node/{nodeName}
      */
-    private void registerDevice() {
-        logger.info("registering device with the NamingServer");
-        String result = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                .post()
-                .uri("/node/" + nodeName)
-                .bodyValue(this.nodeAddress.getHostAddress())
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        logger.info(result);
-    }
 
 
     //TODO not used
     public void setNodeHash(int nodeHash) {
         this.nodeHash = nodeHash;
-    }
-
-    public InetAddress getIp(int nodeHash) throws UnknownHostException {
-        String result = WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
-                .get()
-                .uri("/node/" + nodeHash)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        return InetAddress.getByName(result);
-    }
-
-    /**
-     * Finds the owner of the file by filehash returning an Ipaddress
-     * @param fileHash the hash of the file
-     * @return InetAddress of owner
-     * @throws UnknownHostException
-     */
-    public InetAddress findNodeOwner(int fileHash) throws UnknownHostException {
-        String result = WebClient.create("http://" + this.namingServerAddress.getHostAddress() + ":54321")
-                .get()
-                .uri("/file/" + fileHash)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        return Inet4Address.getByName(result);
     }
 
     public synchronized void setNumberOfNodes(int numberOfNodes) {
@@ -177,11 +132,11 @@ public class Node {
         logger.info("Shutting Down Node");
         failure.stop();
         if (nextHash != nodeHash) {
-            InetAddress prevIp = getIp(previousHash);
+            InetAddress prevIp = namingServerService.getIp(previousHash);
             InetSocketAddress prevAddr = new InetSocketAddress(prevIp, 4321);
             sendUnicast(("shutdown;next;" + nextHash), prevAddr);
             //send id of prev node to next node
-            InetAddress nextIp = getIp(nextHash);
+            InetAddress nextIp = namingServerService.getIp(nextHash);
             InetSocketAddress nextAddr = new InetSocketAddress(nextIp, 4321);
             sendUnicast(("shutdown;previous;" + previousHash), nextAddr);
             //new UpdateRemovedNode(this);
@@ -194,8 +149,7 @@ public class Node {
         //send files to prev node
 
         //remove node rom naming server
-        InetSocketAddress namingAddr = new InetSocketAddress(namingServerAddress, 4321);
-        Failure.deleteFromNamingServer(this, nodeHash);
+        namingServerService.deleteNode(nodeHash);
         logger.info("test");
         System.out.println("node shutting down\n 0/ bye bye 0/");
         System.exit(0);

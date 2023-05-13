@@ -3,6 +3,7 @@ package com.groep5.Node.Service.Unicast;
 import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.SpringContext;
 
 import java.io.*;
@@ -17,6 +18,7 @@ public class UnicastHandler extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final Socket socket;
     private final Node node;
+    private final NamingServerService namingServerService;
     private Node getNode() {
         return SpringContext.getBean(Node.class);
     }
@@ -25,6 +27,7 @@ public class UnicastHandler extends Thread {
         logger.fine("Received connection");
         this.socket = socket;
         this.node= getNode();
+        this.namingServerService = node.getNamingServerService();
     }
 
     @Override
@@ -88,8 +91,7 @@ public class UnicastHandler extends Thread {
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
-                node.setNamingServerAddress((Inet4Address) socket.getInetAddress());
-//                    node.setNumberOfNodes(Integer.parseInt(message[1]));
+                node.getNamingServerService().setNamingServerAddress((Inet4Address) socket.getInetAddress());
                 node.setNumberOfNodes(Integer.parseInt(message[2]));
             }
             case "previous" -> {
@@ -152,7 +154,7 @@ public class UnicastHandler extends Thread {
             fileOutputStream.close();
 
             //If we are the owner of the file, indicated by namingserver we should at the file to our log
-            InetAddress fileOwner = node.findNodeOwner(node.calculateHash(filename));
+            InetAddress fileOwner = namingServerService.getFileOwner(node.calculateHash(filename));
             if (fileOwner.getHostAddress().equals(node.getNodeAddress().getHostAddress())) {
                 node.addLog(file, fileOwner.getHostAddress());
             }

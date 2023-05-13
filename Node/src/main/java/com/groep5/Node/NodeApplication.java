@@ -38,4 +38,8 @@ public class NodeApplication {
 		System.out.println("shutting down!");
 	}
 
+	public static Node getNode() {
+		return SpringContext.getBean(Node.class);
+	}
+
 }

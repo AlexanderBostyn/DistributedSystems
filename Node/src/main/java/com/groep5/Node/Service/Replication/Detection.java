@@ -39,7 +39,7 @@ public class Detection extends Thread {
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                     File newFile = new File("src/main/resources/local/" + fileName);
-                    if (newFile != node.latestFile) {
+                    if (!newFile.equals(node.latestFile)) {
                         logger.info("File created: " + fileName);
                         //new SendFile(this.node, newFile).start();
                         new SendFile(newFile).start();
