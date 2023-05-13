@@ -1,6 +1,7 @@
 package com.groep5.Node;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.util.Assert;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -45,6 +46,7 @@ class FileReceiver extends Thread {
                 dis.close();
                 fileOutputStream.flush();
                 fileOutputStream.close();
+                Assert.isTrue(file.delete(), "File deleted");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
