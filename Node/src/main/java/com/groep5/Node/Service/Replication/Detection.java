@@ -17,10 +17,8 @@ import java.util.logging.Logger;
 public class Detection extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public Detection() {
-    }
-
     public void lookForFiles() throws IOException, InterruptedException {
+        //TODO deletion
         Path directory = Paths.get("src/main/resources/local");
         WatchService watchService = FileSystems.getDefault().newWatchService();
         directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);

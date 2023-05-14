@@ -72,7 +72,8 @@ public class Replication {
 
     /**
      * This helper function determines if we are the owner of the file.
-     * this means we should at our file to our log
+     * this means we should add/location our file to our log.
+     * use {@link com.groep5.Node.Service.NamingServerService#getFileOwner(int)}
      * @param fileName the name of the file we need to determine ownership off.
      * @return true if we are the owner.
      */

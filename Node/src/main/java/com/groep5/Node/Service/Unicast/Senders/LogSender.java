@@ -23,5 +23,6 @@ public class LogSender extends Thread{
     @Override
     public void run() {
         //TODO
+        // zie ook bij testFiles
     }
 }
