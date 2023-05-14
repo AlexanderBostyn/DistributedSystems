@@ -1,6 +1,6 @@
-package com.groep5.Node.Service.Replication;
+package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
-import com.groep5.Node.Node;
+import com.groep5.Node.Model.Node;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
 
@@ -21,17 +21,23 @@ public class UpdateNewNode {
     public ArrayList<File> files;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final ReplicationService replicationService;
+
 
     public UpdateNewNode(int recievedNodeHash) {
         this.node = getNode();
         this.receivedNodeHash = recievedNodeHash;
-        this.files = Replication.listDirectory("src/main/resources/replicated");
+        this.replicationService = getReplicationService();
+        this.files = replicationService.listDirectory("src/main/resources/replicated");
         try {
             resendFiles();
         } catch (UnknownHostException e) {
             logger.severe("Error in retrieving ip from: " + recievedNodeHash);
             throw new RuntimeException(e);
         }
+    }
+    private ReplicationService getReplicationService() {
+        return SpringContext.getBean(ReplicationService.class);
     }
 
     private int calcHash(File file) {

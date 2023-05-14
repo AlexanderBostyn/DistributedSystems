@@ -1,6 +1,5 @@
-package com.groep5.Node.Service.Replication;
+package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
-import com.groep5.Node.Node;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
 
@@ -16,6 +15,14 @@ import java.util.logging.Logger;
  */
 public class Detection extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private ReplicationService replicationService;
+
+    public Detection() {
+        this.replicationService = getReplicationService();
+    }
+    private ReplicationService getReplicationService() {
+        return SpringContext.getBean(ReplicationService.class);
+    }
 
     public void lookForFiles() throws IOException, InterruptedException {
         //TODO deletion
@@ -37,7 +44,7 @@ public class Detection extends Thread {
                     if (!newFile.equals(latestFile)) {
                         logger.info("File created: " + fileName);
 
-                        Inet4Address ip = Replication.findIp(newFile.getName(), ReplicationState.DETECTION); //using newFile because it ensures only the last part is used.
+                        Inet4Address ip = replicationService.findIp(newFile.getName(), ReplicationState.DETECTION); //using newFile because it ensures only the last part is used.
                         UnicastSender.sendFile(newFile, ip);
 
                         latestFile = newFile;

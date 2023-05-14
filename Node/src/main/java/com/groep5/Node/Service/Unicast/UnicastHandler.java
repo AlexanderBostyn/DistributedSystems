@@ -1,18 +1,16 @@
 package com.groep5.Node.Service.Unicast;
 
-import com.groep5.Node.Failure;
-import com.groep5.Node.Node;
+import com.groep5.Node.Service.NodeLifeCycle.Failure;
+import com.groep5.Node.Model.Node;
 
 import com.groep5.Node.Service.NamingServerService;
-import com.groep5.Node.Service.Replication.Replication;
+import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import com.groep5.Node.Service.Unicast.Receivers.FileReceiver;
 import com.groep5.Node.Service.Unicast.Receivers.LogReceiver;
 import com.groep5.Node.SpringContext;
 
 import java.io.*;
 import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,15 +22,23 @@ public class UnicastHandler extends Thread {
     private final Socket socket;
     private final Node node;
     private final NamingServerService namingServerService;
+    private final ReplicationService replicationService;
     private Node getNode() {
         return SpringContext.getBean(Node.class);
+    }
+    private ReplicationService getReplicationService() {
+        return SpringContext.getBean(ReplicationService.class);
+    }
+    private NamingServerService getNamingServerService() {
+        return SpringContext.getBean(NamingServerService.class);
     }
 
     public UnicastHandler(Socket socket) {
         logger.fine("Received connection");
         this.socket = socket;
         this.node= getNode();
-        this.namingServerService = node.getNamingServerService();
+        this.namingServerService = getNamingServerService();
+        this.replicationService = getReplicationService();
     }
 
     @Override
@@ -147,7 +153,7 @@ public class UnicastHandler extends Thread {
         File file = new FileReceiver(message, socket).receive();
 
         //If we are the owner of the file, indicated by namingserver we should at the file to our log
-        if (new Replication().isOwner(file.getName())) {
+        if( replicationService.isOwner(file.getName())) {
             node.addLog(file, ip);
         }
     }

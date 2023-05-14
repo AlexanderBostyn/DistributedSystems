@@ -1,5 +1,6 @@
-package com.groep5.Node;
+package com.groep5.Node.Service.NodeLifeCycle;
 
+import com.groep5.Node.Model.Node;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 

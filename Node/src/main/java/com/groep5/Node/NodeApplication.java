@@ -1,10 +1,10 @@
 package com.groep5.Node;
 
+import com.groep5.Node.Model.Node;
 import com.groep5.Node.Service.NamingServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;

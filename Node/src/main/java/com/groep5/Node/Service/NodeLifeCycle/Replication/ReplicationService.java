@@ -1,11 +1,12 @@
-package com.groep5.Node.Service.Replication;
+package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
-import com.groep5.Node.Node;
+import com.groep5.Node.Model.Node;
 import com.groep5.Node.NodeApplication;
+import com.groep5.Node.Service.Unicast.UnicastSender;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -43,16 +44,22 @@ Lokaal bestand wordt verwijdert:
         alle locaties bijgehouden in de log moeten ook verwijderen
 
  */
-public class Replication {
-    private final Node node = NodeApplication.getNode();
+@Service
+public class ReplicationService {
+    private Node node = NodeApplication.getNode();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public ReplicationService(Node node) {
+        this.node = node;
+    }
 
     /**
      * All the functions needed for Replication.
      * Called from main thread.
      */
-    public static void start() {
-        new StartUp().start(); //Not a thread
+    public  void startReplication() {
+        startup();
+        //new StartUp().start(); //Not a thread
         new Detection().start();
     }
 
@@ -65,7 +72,7 @@ public class Replication {
      * @param state The {@link ReplicationState state} of replication.
      * @return the ip address where we should send the file.
      */
-    public static Inet4Address findIp(String fileName, ReplicationState state) {
+    public  Inet4Address findIp(String fileName, ReplicationState state) {
         //TODO
         return null;
     }
@@ -87,7 +94,7 @@ public class Replication {
      * @param pathToDirectory the path to the directory from root of project: "src/..".
      * @return A list of files, list will be empty if directory is empty.
      */
-    public static ArrayList<File> listDirectory(String pathToDirectory) {
+    public ArrayList<File> listDirectory(String pathToDirectory) {
         File directory = new File(pathToDirectory);
         File[] fileArray = directory.listFiles();
         if (fileArray != null) {
@@ -96,5 +103,17 @@ public class Replication {
             return files;
         }
         return new ArrayList<File>();
+    }
+
+    public void startup()
+    {
+        logger.info("Start up file sharing");
+        ArrayList<File> files= listDirectory("src/main/resources/local");
+
+        //sending File
+        for (File file: files) {
+            Inet4Address ip = findIp(file.getName(), ReplicationState.STARTUP);
+            UnicastSender.sendFile(file, ip);
+        }
     }
 }

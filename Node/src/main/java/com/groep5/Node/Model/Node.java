@@ -1,57 +1,58 @@
-package com.groep5.Node;
+package com.groep5.Node.Model;
 
-import com.groep5.Node.Service.Discovery.DiscoveryService;
+import com.groep5.Node.Service.NodeLifeCycle.BootstrapService;
+import com.groep5.Node.Service.NodeLifeCycle.DiscoveryService;
 import com.groep5.Node.Service.Multicast.MulticastReceiver;
 import com.groep5.Node.Service.NamingServerService;
-import com.groep5.Node.Service.Replication.Replication;
-import com.groep5.Node.Service.Replication.UpdateRemovedNode;
+import com.groep5.Node.Service.NodeLifeCycle.Failure;
+import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
+import com.groep5.Node.Service.NodeLifeCycle.Replication.UpdateRemovedNode;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import lombok.Data;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.net.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Logger;
-@Service
+
+@Component
 @Data
 public class Node {
-    private String nodeName;
-    public int nodeHash;
-    public int previousHash;
-    public int nextHash;
-    private final Inet4Address nodeAddress;
-    private final Logger logger = Logger.getLogger("Node");
-    private int connectionsFinished = 0;
-    public int numberOfNodes = -1;
-    private Failure failure;
-    public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
     private final DiscoveryService discoveryService;
     private final NamingServerService namingServerService;
+    private final BootstrapService bootstrapService;
+    private final ReplicationService replicationService;
+    private final NodePropreties nodePropreties;
+    @Autowired
+    public Node(DiscoveryService discoveryService, NamingServerService namingServerService, BootstrapService bootstrapService, ReplicationService replicationService, NodePropreties nodePropreties) {
+        this.nodePropreties = nodePropreties;
 
-    public Node(DiscoveryService discoveryService, NamingServerService namingServerService) {
-        try {
-            this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
-        } catch (UnknownHostException e) {
-            logger.severe("Couldn't fetch own IP");
-            throw new RuntimeException(e);
-        }
         this.discoveryService = discoveryService;
         this.namingServerService = namingServerService;
+        this.bootstrapService = bootstrapService;
+        this.replicationService = replicationService;
     }
 
     public void startNode(String nodeName) {
-        this.nodeName = nodeName;
+        nodePropreties.setNodeName( nodeName);
         discoveryService.startDiscovery();
-        bootstrap();
-        Replication.start();
+        bootstrapService.startBootstrap();
+        namingServerService.registerDevice();
+
+        nodePropreties.failure = new Failure(this);
+        failure.start();
+        listenToMulticasts();
+        replicationService.startReplication();
     }
 
     //TODO kan ook in een service eigenlijk
-    private void bootstrap() {
+    /*private void bootstrap() {
         logger.info("started bootstrap");
         this.nodeHash = calculateHash(nodeName);
         logger.info("this NodeHash: " + this.nodeHash);
@@ -73,6 +74,8 @@ public class Node {
         failure.start();
         listenToMulticasts();
     }
+
+     */
 
     private void listenToMulticasts() {
         logger.info("");

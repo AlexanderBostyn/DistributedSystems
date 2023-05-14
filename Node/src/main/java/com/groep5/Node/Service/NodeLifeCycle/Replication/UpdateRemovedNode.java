@@ -1,13 +1,12 @@
-package com.groep5.Node.Service.Replication;
+package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
-import com.groep5.Node.Node;
+import com.groep5.Node.Model.Node;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
 
 import java.io.File;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.logging.Logger;

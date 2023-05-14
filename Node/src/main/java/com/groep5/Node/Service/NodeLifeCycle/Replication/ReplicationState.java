@@ -1,4 +1,4 @@
-package com.groep5.Node.Service.Replication;
+package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 public enum ReplicationState {
     STARTUP,
