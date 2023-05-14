@@ -33,19 +33,4 @@ public class UnicastReceiver extends Thread {
             }
         }
     }
-
-
-
-// TODO verwijderen als alles nog werkt.
-
-//    public void stopTask() {
-//        this.interrupt();
-//        try {
-//            socket.close();
-//            logger.info("closed socket");
-//        } catch (IOException e) {
-//            logger.severe("error closing socket");
-//            throw new RuntimeException(e);
-//        }
-//    }
 }

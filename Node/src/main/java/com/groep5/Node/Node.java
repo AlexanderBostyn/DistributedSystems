@@ -28,7 +28,7 @@ public class Node {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
-    public HashMap<File, ArrayList<String>> log = new HashMap<>();
+    public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
     private final DiscoveryService discoveryService;
     private final NamingServerService namingServerService;
 
@@ -100,12 +100,6 @@ public class Node {
      * Register device with the nameServer using PUT/node/{nodeName}
      */
 
-
-    //TODO not used
-    public void setNodeHash(int nodeHash) {
-        this.nodeHash = nodeHash;
-    }
-
     public synchronized void setNumberOfNodes(int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
     }
@@ -127,8 +121,6 @@ public class Node {
             new UpdateRemovedNode();
             logger.info("start updating nodes");
         }
-        //move files to prev node unless prev node is local owner, then move to prev of prev node
-        //TODO
 
         //remove node rom naming server
         namingServerService.deleteNode(nodeHash);
@@ -146,12 +138,12 @@ public class Node {
         this.failure = failure;
     }
 
-    public void addLog(File f, String s) {
-        ArrayList<String> list = log.get(f);
+    public void addLog(File f, Inet4Address ip) {
+        ArrayList<Inet4Address> list = log.get(f);
         if (list == null) {
             list = new ArrayList<>();
         }
-        list.add(s);
+        list.add(ip);
         log.put(f, list);
         logger.info("Current log: " + log.entrySet().toString());
     }

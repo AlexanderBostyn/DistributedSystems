@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class UpdateRemovedNode {
     public Node node;
     public File[] files;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final NamingServerService namingServerService;
 
     public UpdateRemovedNode( ) throws UnknownHostException {
@@ -34,6 +34,7 @@ public class UpdateRemovedNode {
         logger.info("Files: " + Arrays.toString(files));
     }
 
+    //TODO functie afwerken zie specs bovenaan Replication
     public void resendFiles() throws UnknownHostException {
         for (File f : files) {
             logger.info("send file " + f.getName() + " to new location");
@@ -42,6 +43,7 @@ public class UpdateRemovedNode {
             Inet4Address ip = namingServerService.getIp(node.previousHash);
             if (node.log.get(f).get(0).equals(ip.toString())) {
                 //file moet naar de previous node van de previous node gestuurd worden
+                //TODO
             }
             else {
 

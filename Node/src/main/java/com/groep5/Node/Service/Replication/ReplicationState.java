@@ -1,6 +1,6 @@
 package com.groep5.Node.Service.Replication;
 
-public enum ReplicationStates {
+public enum ReplicationState {
     STARTUP,
     DETECTION,
     SHUTDOWN,

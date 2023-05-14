@@ -3,7 +3,12 @@ package com.groep5.Node.Service.Replication;
 import com.groep5.Node.Node;
 import com.groep5.Node.NodeApplication;
 
+import java.io.File;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /*
 Node start: scanned zijn eigen files en stuur deze door naar:
@@ -39,16 +44,28 @@ Lokaal bestand wordt verwijdert:
 
  */
 public class Replication {
-    private Node node = NodeApplication.getNode();
+    private final Node node = NodeApplication.getNode();
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    /**
+     * All the functions needed for Replication.
+     * Called from main thread.
+     */
+    public static void start() {
+        new StartUp().start(); //Not a thread
+        new Detection().start();
+    }
 
     /**
      * This helper function should determine where a file needs to be sent to.
      * This is based on the hash o filename and the namingServer GET /file/hash
-     * If the namingServer responds with our own ip, we should send it to our previous
-     * @param fileName the name of the file;
-     * @return the ip address where we should send the file;
+     * If the namingServer responds with our own ip, we should send it to our previous.
+     * Should be possible from a static context.
+     * @param fileName the name of the file.
+     * @param state The {@link ReplicationState state} of replication.
+     * @return the ip address where we should send the file.
      */
-    public InetAddress findIp(String fileName) {
+    public static Inet4Address findIp(String fileName, ReplicationState state) {
         //TODO
         return null;
     }
@@ -62,5 +79,21 @@ public class Replication {
     public boolean isOwner(String fileName) {
         //TODO
         return false;
+    }
+
+    /**
+     * This Function lists all files from a directory.
+     * @param pathToDirectory the path to the directory from root of project: "src/..".
+     * @return A list of files, list will be empty if directory is empty.
+     */
+    public static ArrayList<File> listDirectory(String pathToDirectory) {
+        File directory = new File(pathToDirectory);
+        File[] fileArray = directory.listFiles();
+        if (fileArray != null) {
+            ArrayList<File> files = new ArrayList<>(List.of(fileArray));
+            Logger.getGlobal().fine("Files scanned at " + pathToDirectory + ":" + files);
+            return files;
+        }
+        return new ArrayList<File>();
     }
 }

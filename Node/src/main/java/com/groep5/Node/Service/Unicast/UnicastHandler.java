@@ -154,9 +154,9 @@ public class UnicastHandler extends Thread {
             fileOutputStream.close();
 
             //If we are the owner of the file, indicated by namingserver we should at the file to our log
-            InetAddress fileOwner = namingServerService.getFileOwner(node.calculateHash(filename));
+            Inet4Address fileOwner = namingServerService.getFileOwner(node.calculateHash(filename));
             if (fileOwner.getHostAddress().equals(node.getNodeAddress().getHostAddress())) {
-                node.addLog(file, fileOwner.getHostAddress());
+                node.addLog(file, fileOwner);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

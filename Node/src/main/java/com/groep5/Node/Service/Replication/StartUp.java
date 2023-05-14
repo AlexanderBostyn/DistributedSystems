@@ -1,41 +1,28 @@
 package com.groep5.Node.Service.Replication;
 
-import com.groep5.Node.Node;
-import com.groep5.Node.SpringContext;
+import com.groep5.Node.Service.Unicast.UnicastSender;
 
 import java.io.File;
+import java.net.Inet4Address;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class StartUp {
-    public Node node;
-    public ArrayList<File> files = new ArrayList<>();
+    public ArrayList<File> files;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public void lookForFiles() {
-        File directory = new File("src/main/resources/local");
-        File[] fileArray = directory.listFiles();
-        if (fileArray != null) {
-            files.addAll(List.of(fileArray));
-            logger.info("Files: " + files);
-        }
-    }
-    public void sendFiles() {
-        for(File file : files) {
-            new SendFile(file).start();
-        }
+    public StartUp() {
     }
 
-    public StartUp() {
-        this.node = getNode();
+    public void start() {
         logger.info("Start up file sharing");
-        lookForFiles();
-        sendFiles();
-    }
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
+        this.files = Replication.listDirectory("src/main/resources/local");
+
+        //sending File
+        for (File file: files) {
+            Inet4Address ip = Replication.findIp(file.getName(), ReplicationState.STARTUP);
+            UnicastSender.sendFile(file, ip);
+        }
     }
 }
 
