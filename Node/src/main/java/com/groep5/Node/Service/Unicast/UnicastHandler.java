@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.Unicast;
 
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import com.groep5.Node.Model.Node;
 
@@ -20,11 +21,11 @@ import java.util.logging.Logger;
 public class UnicastHandler extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final Socket socket;
-    private final Node node;
+    private final NodePropreties nodePropreties;
     private final NamingServerService namingServerService;
     private final ReplicationService replicationService;
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
+    private NodePropreties getNodePropreties() {
+        return SpringContext.getBean(NodePropreties.class);
     }
     private ReplicationService getReplicationService() {
         return SpringContext.getBean(ReplicationService.class);
@@ -36,7 +37,7 @@ public class UnicastHandler extends Thread {
     public UnicastHandler(Socket socket) {
         logger.fine("Received connection");
         this.socket = socket;
-        this.node= getNode();
+        this.nodePropreties= getNodePropreties();
         this.namingServerService = getNamingServerService();
         this.replicationService = getReplicationService();
     }
@@ -65,14 +66,15 @@ public class UnicastHandler extends Thread {
     }
 
     private synchronized void failureHandler(String[] message) {
-       node.getFailure().stop();
+        nodePropreties.stopFailure();
+       //node.getFailure().stop();
         switch (message[1]) {
             case "previous" -> {
                 logger.severe("previous Node failed");
-                if (node.previousHash != Integer.parseInt(message[2])) {
-                    node.previousHash = Integer.parseInt(message[2]);
+                if (nodePropreties.previousHash != Integer.parseInt(message[2])) {
+                    nodePropreties.previousHash = Integer.parseInt(message[2]);
                     try {
-                        UnicastSender.sendMessage("failure;next;" + node.nodeHash, (Inet4Address) socket.getInetAddress());
+                        UnicastSender.sendMessage("failure;next;" + nodePropreties.nodeHash, (Inet4Address) socket.getInetAddress());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -80,10 +82,10 @@ public class UnicastHandler extends Thread {
             }
             case "next" -> {
                 logger.severe("Next Node Failed");
-                if (node.nextHash != Integer.parseInt(message[2])) {
-                    node.nextHash = Integer.parseInt(message[2]);
+                if (nodePropreties.nextHash != Integer.parseInt(message[2])) {
+                    nodePropreties.nextHash = Integer.parseInt(message[2]);
                     try {
-                        UnicastSender.sendMessage("failure;previous;" + node.nodeHash, (Inet4Address) socket.getInetAddress());
+                        UnicastSender.sendMessage("failure;previous;" + nodePropreties.nodeHash, (Inet4Address) socket.getInetAddress());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -92,60 +94,60 @@ public class UnicastHandler extends Thread {
             default -> logger.severe("Message could not be parsed");
         }
         logger.info("Parameters set: ");
-        logger.info("previousHash: " + node.previousHash);
-        logger.info("nodeHash: " + node.nodeHash);
-        logger.info("nextHash: " + node.nextHash);
+        logger.info("previousHash: " + nodePropreties.previousHash);
+        logger.info("nodeHash: " + nodePropreties.nodeHash);
+        logger.info("nextHash: " + nodePropreties.nextHash);
     }
 
     private synchronized void discoveryHandler(String[] message) {
-        Failure failure = node.getFailure();
-        if (failure!= null && failure.isAlive()) failure.stop();
+        Failure failure = nodePropreties.getFailure();
+        if (failure!= null && failure.isAlive()) nodePropreties.stopFailure();;
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
-                node.getNamingServerService().setNamingServerAddress((Inet4Address) socket.getInetAddress());
-                node.setNumberOfNodes(Integer.parseInt(message[2]));
+                namingServerService.setNamingServerAddress((Inet4Address) socket.getInetAddress());
+                nodePropreties.setNumberOfNodes(Integer.parseInt(message[2]));
             }
             case "previous" -> {
                 logger.info("previous Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
-                node.previousHash = Integer.parseInt(message[2]);
+                nodePropreties.previousHash = Integer.parseInt(message[2]);
             }
             case "next" -> {
                 logger.info("next Node at: " + socket.getInetAddress() + ", with hash: " + message[1]);
-                node.nextHash = Integer.parseInt(message[2]);
+                nodePropreties.nextHash = Integer.parseInt(message[2]);
             }
             default -> logger.severe("Message could not be parsed: " + Arrays.toString(message));
         }
-        node.finishConnection();
-        if (node.getFailure() != null) {
-            node.setFailure(new Failure(node));
+        nodePropreties.finishConnection();
+        if (nodePropreties.getFailure() != null) {
+            nodePropreties.setFailure(new Failure());
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            node.getFailure().start();
+            nodePropreties.startNewFailure();
         }
     }
 
 
     private synchronized void shutdownHandler(String[] message) {
-        node.getFailure().stop();
+        //node.getFailure().stop();
+        nodePropreties.stopFailure();
         switch (message[1]) {
             case "previous" -> {
-                node.previousHash = Integer.parseInt(message[2]);
+                nodePropreties.previousHash = Integer.parseInt(message[2]);
             }
             case "next" -> {
-                node.nextHash = Integer.parseInt(message[2]);
+                nodePropreties.nextHash = Integer.parseInt(message[2]);
             }
             default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
         }
         logger.info("Parameters set: ");
-        logger.info("previousHash: " + node.previousHash);
-        logger.info("nodeHash: " + node.nodeHash);
-        logger.info("nextHash: " + node.nextHash);
-        node.setFailure(new Failure(node));
-        node.getFailure().start();
+        logger.info("previousHash: " + nodePropreties.previousHash);
+        logger.info("nodeHash: " + nodePropreties.nodeHash);
+        logger.info("nextHash: " + nodePropreties.nextHash);
+        nodePropreties.startNewFailure();
     }
 
     private void replicationHandler(String[] message) {
@@ -154,7 +156,7 @@ public class UnicastHandler extends Thread {
 
         //If we are the owner of the file, indicated by namingserver we should at the file to our log
         if( replicationService.isOwner(file.getName())) {
-            node.addLog(file, ip);
+            nodePropreties.addLog(file, ip);
         }
     }
 

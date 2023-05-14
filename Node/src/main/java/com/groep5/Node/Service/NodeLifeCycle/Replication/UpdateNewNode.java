@@ -1,6 +1,8 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
 
@@ -17,15 +19,17 @@ import java.util.logging.Logger;
  * Then it should resend the files with hashes greater than the new nextNode.
  */
 public class UpdateNewNode {
-    public Node node;
+    public NodePropreties nodePropreties;
     public ArrayList<File> files;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final ReplicationService replicationService;
+    private final NamingServerService namingServerService;
 
 
     public UpdateNewNode(int recievedNodeHash) {
-        this.node = getNode();
+        this.namingServerService = getNamingServerService();
+        this.nodePropreties = getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
         this.replicationService = getReplicationService();
         this.files = replicationService.listDirectory("src/main/resources/replicated");
@@ -41,30 +45,30 @@ public class UpdateNewNode {
     }
 
     private int calcHash(File file) {
-        return node.calculateHash(file.getName());
+        return namingServerService.calculateHash(file.getName());
     }
 
     private void resendFiles() throws UnknownHostException {
 
         HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
-        Inet4Address ip = node.getNamingServerService().getIp(receivedNodeHash);
+        Inet4Address ip = namingServerService.getIp(receivedNodeHash);
         for (File file : files) {
             int fileHash = calcHash(file);
             int newNextNodeHash = receivedNodeHash;
             // The new next NodeHash is smaller than our hash, this means we are at the end of our ring.
             // This creates problems for linearity that can be fixed if we just add 32768 to all the hashes that are at the beginning of the ring
-            if (newNextNodeHash < node.nodeHash) {
+            if (newNextNodeHash < nodePropreties.nodeHash) {
                 newNextNodeHash += 32768;
 
                 // The file is also located at the beginning of the ring, adding 32768 will make the ring linear again.
-                if (fileHash < node.nodeHash) {
+                if (fileHash < nodePropreties.nodeHash) {
                     fileHash += 32768;
                 }
             }
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash);
                 UnicastSender.sendFile(file, ip);
-                ArrayList<Inet4Address> entry = (ArrayList<Inet4Address>) node.log.get(file).clone();
+                ArrayList<Inet4Address> entry = (ArrayList<Inet4Address>) nodePropreties.log.get(file).clone();
                 log.put(file, entry);
                 deleteFile(file);
             }
@@ -74,12 +78,15 @@ public class UpdateNewNode {
 
     private void deleteFile(File f) {
         if (f.delete()) {
-            node.dellLog(f);
+            nodePropreties.dellLog(f);
             logger.info(f.getName() + " is deleted");
         }
     }
 
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
+    private NodePropreties getNodePropreties() {
+        return SpringContext.getBean(NodePropreties.class);
+    }
+    private NamingServerService getNamingServerService() {
+        return SpringContext.getBean(NamingServerService.class);
     }
 }

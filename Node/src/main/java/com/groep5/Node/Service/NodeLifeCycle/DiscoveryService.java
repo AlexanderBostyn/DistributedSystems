@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.NodeLifeCycle;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.Multicast.MulticastSender;
 import com.groep5.Node.Service.Unicast.UnicastReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 public class DiscoveryService {
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Autowired
-    private Node node;
+    private NodePropreties nodePropreties;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public void startDiscovery()
@@ -25,16 +26,16 @@ public class DiscoveryService {
     }
 
     public  void sendMulticast() {
-        String message = "discovery;" + node.getNodeName() + ";" + node.getNodeAddress().getHostAddress();
+        String message = "discovery;" + nodePropreties.getNodeName() + ";" + nodePropreties.getNodeAddress().getHostAddress();
         MulticastSender m = new MulticastSender(message);
         m.start();
     }
     public void listenToResponses(){
         UnicastReceiver unicastReceiver = new UnicastReceiver();
         unicastReceiver.start();
-        while (node.getNumberOfNodes() < 0 || (node.getConnectionsFinished() < 3 && node.getNumberOfNodes() > 0)) {
-            logger.info("Number of nodes: " + node.getNumberOfNodes());
-            logger.info("Finished connections: " + node.getConnectionsFinished());
+        while (nodePropreties.getNumberOfNodes() < 0 || (nodePropreties.getConnectionsFinished() < 3 && nodePropreties.getNumberOfNodes() > 0)) {
+            logger.info("Number of nodes: " + nodePropreties.getNumberOfNodes());
+            logger.info("Finished connections: " + nodePropreties.getConnectionsFinished());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

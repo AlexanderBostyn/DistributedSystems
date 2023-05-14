@@ -33,5 +33,32 @@ public class NodePropreties {
             throw new RuntimeException(e);
         }
     }
+    public void startNewFailure()
+    {
+        failure = new Failure();
+        failure.start();
+    }
+    public void stopFailure()
+    {
+
+        failure.stop();
+    }
+    public void finishConnection(){
+        connectionsFinished++;
+    }
+    public void addLog(File f, Inet4Address ip) {
+        ArrayList<Inet4Address> list = log.get(f);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        list.add(ip);
+        log.put(f, list);
+        logger.info("Current log: " + log.entrySet().toString());
+    }
+
+    public void dellLog(File f) {
+        log.remove(f);
+        logger.info("Current log: " + log.entrySet().toString());
+    }
 
 }

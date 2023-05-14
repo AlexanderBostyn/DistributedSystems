@@ -1,6 +1,7 @@
 package com.groep5.Node.Service;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,10 +20,10 @@ import java.util.logging.Logger;
 public class NamingServerService {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private Inet4Address namingServerAddress;
-    private final Node node;
+    private final NodePropreties nodePropreties;
     @Autowired
-    public NamingServerService(Node node) {
-        this.node = node;
+    public NamingServerService(NodePropreties nodePropreties) {
+        this.nodePropreties = nodePropreties;
     }
 
 
@@ -113,8 +114,8 @@ public class NamingServerService {
         if (namingServerAddress != null) {
             WebClient.create("http://" + namingServerAddress.getHostAddress() + ":54321")
                     .post()
-                    .uri("/node/" + node.getNodeName())
-                    .bodyValue(node.getNodeAddress().getHostAddress())
+                    .uri("/node/" + nodePropreties.getNodeName())
+                    .bodyValue(nodePropreties.getNodeAddress().getHostAddress())
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();

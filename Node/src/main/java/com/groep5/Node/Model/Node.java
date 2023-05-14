@@ -4,7 +4,6 @@ import com.groep5.Node.Service.NodeLifeCycle.BootstrapService;
 import com.groep5.Node.Service.NodeLifeCycle.DiscoveryService;
 import com.groep5.Node.Service.Multicast.MulticastReceiver;
 import com.groep5.Node.Service.NamingServerService;
-import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.UpdateRemovedNode;
 import com.groep5.Node.Service.Unicast.UnicastSender;
@@ -12,20 +11,18 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.net.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 @Component
 @Data
 public class Node {
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private  final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private final DiscoveryService discoveryService;
-    private final NamingServerService namingServerService;
+    private  final NamingServerService namingServerService;
     private final BootstrapService bootstrapService;
     private final ReplicationService replicationService;
     private final NodePropreties nodePropreties;
@@ -44,9 +41,8 @@ public class Node {
         discoveryService.startDiscovery();
         bootstrapService.startBootstrap();
         namingServerService.registerDevice();
+        nodePropreties.startNewFailure();
 
-        nodePropreties.failure = new Failure(this);
-        failure.start();
         listenToMulticasts();
         replicationService.startReplication();
     }
@@ -84,9 +80,7 @@ public class Node {
     }
 
 
-    public synchronized void finishConnection() {
-        connectionsFinished++;
-    }
+
 
 
     /**
@@ -94,7 +88,7 @@ public class Node {
      * @param nodeName the name of the node
      * @return the node generated from the namingserver
      */
-    public int calculateHash(String nodeName) {
+    public  int calculateHash(String nodeName) {
         logger.fine("Calculating hash: " + nodeName);
         return namingServerService.calculateHash(nodeName);
     }
@@ -104,7 +98,7 @@ public class Node {
      */
 
     public synchronized void setNumberOfNodes(int numberOfNodes) {
-        this.numberOfNodes = numberOfNodes;
+        nodePropreties.numberOfNodes = numberOfNodes;
     }
 
     public synchronized void shutdownNode() throws IOException {
@@ -112,28 +106,28 @@ public class Node {
         //send id of next node to prev node
         //get address of node from namingserver
         logger.info("Shutting Down Node");
-        failure.stop();
-        if (nextHash != nodeHash) {
-            Inet4Address prevIp = namingServerService.getIp(previousHash);
-            UnicastSender.sendMessage("shutdown;next;" + nextHash, prevIp);
+        nodePropreties.stopFailure();
+        if (nodePropreties.nextHash != nodePropreties.nodeHash) {
+            Inet4Address prevIp = namingServerService.getIp(nodePropreties.previousHash);
+            UnicastSender.sendMessage("shutdown;next;" + nodePropreties.nextHash, prevIp);
 
             //send id of prev node to next node
-            Inet4Address nextIp = namingServerService.getIp(nextHash);
-            UnicastSender.sendMessage("shutdown;previous;" + previousHash, nextIp);
+            Inet4Address nextIp = namingServerService.getIp(nodePropreties.nextHash);
+            UnicastSender.sendMessage("shutdown;previous;" + nodePropreties.previousHash, nextIp);
 
             new UpdateRemovedNode();
             logger.info("start updating nodes");
         }
 
         //remove node rom naming server
-        namingServerService.deleteNode(nodeHash);
+        namingServerService.deleteNode(nodePropreties.nodeHash);
         logger.info("test");
         System.out.println("node shutting down\n 0/ bye bye 0/");
         System.exit(0);
     }
 
 
-    public synchronized Failure getFailure() {
+    /*public synchronized Failure getFailure() {
         return failure;
     }
 
@@ -141,18 +135,7 @@ public class Node {
         this.failure = failure;
     }
 
-    public void addLog(File f, Inet4Address ip) {
-        ArrayList<Inet4Address> list = log.get(f);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-        list.add(ip);
-        log.put(f, list);
-        logger.info("Current log: " + log.entrySet().toString());
-    }
+     */
 
-    public void dellLog(File f) {
-        log.remove(f);
-        logger.info("Current log: " + log.entrySet().toString());
-    }
+
 }

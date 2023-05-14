@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
@@ -12,19 +13,22 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class UpdateRemovedNode {
-    public Node node;
+    public NodePropreties nodePropreties;
     public File[] files;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final NamingServerService namingServerService;
 
     public UpdateRemovedNode( ) throws UnknownHostException {
-        this.node = getNode();
-        this.namingServerService = node.getNamingServerService();
+        this.nodePropreties=getNodePropreties();
+        this.namingServerService = getNamingServerService();
         lookForFiles();
         resendFiles();
     }
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
+    private NodePropreties getNodePropreties() {
+        return SpringContext.getBean(NodePropreties.class);
+    }
+    private NamingServerService getNamingServerService() {
+        return SpringContext.getBean(NamingServerService.class);
     }
 
     public void lookForFiles() {
@@ -38,9 +42,9 @@ public class UpdateRemovedNode {
         for (File f : files) {
             logger.info("send file " + f.getName() + " to new location");
             // edge case: see if the previous node is the owner of the node
-            logger.info("test file log: " + (node.log.get(f)).get(0));
-            Inet4Address ip = namingServerService.getIp(node.previousHash);
-            if (node.log.get(f).get(0).equals(ip.toString())) {
+            logger.info("test file log: " + (nodePropreties.log.get(f)).get(0));
+            Inet4Address ip = namingServerService.getIp(nodePropreties.previousHash);
+            if (nodePropreties.log.get(f).get(0).equals(ip.toString())) {
                 //file moet naar de previous node van de previous node gestuurd worden
                 //TODO
             }

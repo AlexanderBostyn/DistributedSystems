@@ -46,12 +46,8 @@ Lokaal bestand wordt verwijdert:
  */
 @Service
 public class ReplicationService {
-    private Node node = NodeApplication.getNode();
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public ReplicationService(Node node) {
-        this.node = node;
-    }
 
     /**
      * All the functions needed for Replication.

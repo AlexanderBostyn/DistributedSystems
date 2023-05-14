@@ -1,7 +1,8 @@
 package com.groep5.Node.Service.Multicast;
 
-import com.groep5.Node.Service.NodeLifeCycle.Failure;
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.UpdateNewNode;
 import com.groep5.Node.SpringContext;
 
@@ -13,14 +14,21 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("resource")
 public class MulticastReceiver extends Thread {
-    private final Node node;
+    private final NodePropreties nodePropreties;
+    private final NamingServerService namingServerService;
+    //private  final  Node node;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public MulticastReceiver() {
-        this.node = getNode();
+        this.namingServerService = getNamingServerService();
+        //this.node = getNode();
+        this.nodePropreties = getNodePropreties();
     }
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
+    private NodePropreties getNodePropreties() {
+        return SpringContext.getBean(NodePropreties.class);
+    }
+    private NamingServerService getNamingServerService() {
+        return SpringContext.getBean(NamingServerService.class);
     }
 
     public void receiveUDPMessage() {
@@ -58,74 +66,73 @@ public class MulticastReceiver extends Thread {
         public void run() {
             try {
                 logger.info("Stopping Failure task");
-                node.getFailure().stop();
+                nodePropreties.stopFailure();
                 String[] splitMessage = msg.split(";");
                 if (!splitMessage[0].equals("discovery")) return;
-                int receivedNodeHash = node.calculateHash(splitMessage[1]);
+                int receivedNodeHash = namingServerService.calculateHash(splitMessage[1]);
                 InetAddress address = InetAddress.getByName(splitMessage[2]);
                 logger.info("Received message: " + Arrays.toString(splitMessage));
-                logger.info("receivedNodeHash < node.nextHash " + (receivedNodeHash < node.nextHash));
-                logger.info("receivedNodeHash > node.previousHash " + (receivedNodeHash > node.previousHash));
+                logger.info("receivedNodeHash < node.nextHash " + (receivedNodeHash < nodePropreties.nextHash));
+                logger.info("receivedNodeHash > node.previousHash " + (receivedNodeHash > nodePropreties.previousHash));
                 //check if node is first or last in the ring
-                if (node.previousHash == node.nextHash && node.previousHash == node.nodeHash) {
+                if (nodePropreties.previousHash == nodePropreties.nextHash && nodePropreties.previousHash == nodePropreties.nodeHash) {
                     logger.info("The current network size was one, new node is next and previous");
-                    node.nextHash = receivedNodeHash;
-                    node.previousHash = receivedNodeHash;
-                    sendMessage("discovery;next;" + node.nodeHash, address);
-                    sendMessage("discovery;previous;" + node.nodeHash, address);
+                    nodePropreties.nextHash = receivedNodeHash;
+                    nodePropreties.previousHash = receivedNodeHash;
+                    sendMessage("discovery;next;" + nodePropreties.nodeHash, address);
+                    sendMessage("discovery;previous;" + nodePropreties.nodeHash, address);
                 }
-                else if (node.nodeHash > node.nextHash) { //last node in ring
+                else if (nodePropreties.nodeHash > nodePropreties.nextHash) { //last node in ring
                     logger.info("We are the last node in the ring");
-                    if (receivedNodeHash > node.nodeHash || receivedNodeHash < node.nextHash) {
+                    if (receivedNodeHash > nodePropreties.nodeHash || receivedNodeHash < nodePropreties.nextHash) {
                         //because this is the last ring, if the received hash is bigger than itself or smaller than the next hash it must be the new next node
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
                         //send files that now belong to new node to new node
-                        node.nextHash = receivedNodeHash;
-                        sendMessage("discovery;previous;" + node.nodeHash, address);
-                    } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
+                        nodePropreties.nextHash = receivedNodeHash;
+                        sendMessage("discovery;previous;" + nodePropreties.nodeHash, address);
+                    } else if (receivedNodeHash > nodePropreties.previousHash && receivedNodeHash < nodePropreties.nodeHash) {
                         //if the new hash is smaller than the current hash but bigger than the previous hash than it becomes the new previous hash.
                         logger.info("received node is the new previousNode: " + receivedNodeHash);
-                        node.previousHash = receivedNodeHash;
-                        sendMessage("discovery;next;" + node.nodeHash, address);
+                        nodePropreties.previousHash = receivedNodeHash;
+                        sendMessage("discovery;next;" + nodePropreties.nodeHash, address);
                     }
                 }
-                else if(node.nodeHash < node.previousHash) { //first node in ring
-                    if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
+                else if(nodePropreties.nodeHash < nodePropreties.previousHash) { //first node in ring
+                    if (receivedNodeHash < nodePropreties.nextHash && receivedNodeHash > nodePropreties.nodeHash) {
                         //if the received hash is smaller than the nexthash but bigger than the next hash it must be the new next node
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
                         //send files that now belong to new node to new node
-                        node.nextHash = receivedNodeHash;
-                        sendMessage("discovery;previous;" + node.nodeHash, address);
-                    } else if (receivedNodeHash < node.nodeHash || receivedNodeHash > node.nextHash) {
+                        nodePropreties.nextHash = receivedNodeHash;
+                        sendMessage("discovery;previous;" + nodePropreties.nodeHash, address);
+                    } else if (receivedNodeHash < nodePropreties.nodeHash || receivedNodeHash > nodePropreties.nextHash) {
                         //because this is the first node in the ring, if the received hash is smaller than itself or bigger than the nexthash it must be the new previous node.
                         logger.info("received node is the new previousNode: " + receivedNodeHash);
-                        node.previousHash = receivedNodeHash;
-                        sendMessage("discovery;next;" + node.nodeHash, address);
+                        nodePropreties.previousHash = receivedNodeHash;
+                        sendMessage("discovery;next;" + nodePropreties.nodeHash, address);
                     }
                 } else { //must be a normal node
-                    if (receivedNodeHash < node.nextHash && receivedNodeHash > node.nodeHash) {
+                    if (receivedNodeHash < nodePropreties.nextHash && receivedNodeHash > nodePropreties.nodeHash) {
                         //if the received hash is smaller than the nexthash but bigger than the next hash it must be the new next node
                         logger.info("received node is the new nextNode: " + receivedNodeHash);
-                        node.nextHash = receivedNodeHash;
-                        sendMessage("discovery;previous;" + node.nodeHash, address);
-                    } else if (receivedNodeHash > node.previousHash && receivedNodeHash < node.nodeHash) {
+                        nodePropreties.nextHash = receivedNodeHash;
+                        sendMessage("discovery;previous;" + nodePropreties.nodeHash, address);
+                    } else if (receivedNodeHash > nodePropreties.previousHash && receivedNodeHash < nodePropreties.nodeHash) {
                         //if the received hash is bigger than the previous hash but smaller than self than it must be the new previous node
                         logger.info("received node is the new previousNode: " + receivedNodeHash);
-                        node.previousHash = receivedNodeHash;
-                        sendMessage("discovery;next;" + node.nodeHash, address);
+                        nodePropreties.previousHash = receivedNodeHash;
+                        sendMessage("discovery;next;" + nodePropreties.nodeHash, address);
                     }
                 }
                 logger.info("Parameters set: ");
-                logger.info("previousHash: " + node.previousHash);
-                logger.info("nodeHash: " + node.nodeHash);
-                logger.info("nextHash: " + node.nextHash);
+                logger.info("previousHash: " + nodePropreties.previousHash);
+                logger.info("nodeHash: " + nodePropreties.nodeHash);
+                logger.info("nextHash: " + nodePropreties.nextHash);
                 Thread.sleep(5000);
                 logger.info("restarting Failure thread");
-                node.setFailure(new Failure(node));
-                node.getFailure().start();
+                nodePropreties.startNewFailure();
 
                 //Our nextNode was updated
-                if (node.nextHash == receivedNodeHash) {
+                if (nodePropreties.nextHash == receivedNodeHash) {
                     logger.info("start updating nodes");
                     new UpdateNewNode( receivedNodeHash);
                 }
