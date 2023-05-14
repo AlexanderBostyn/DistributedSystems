@@ -4,6 +4,9 @@ import com.groep5.Node.Failure;
 import com.groep5.Node.Node;
 
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.Replication.Replication;
+import com.groep5.Node.Service.Unicast.Receivers.FileReceiver;
+import com.groep5.Node.Service.Unicast.Receivers.LogReceiver;
 import com.groep5.Node.SpringContext;
 
 import java.io.*;
@@ -11,7 +14,9 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class UnicastHandler extends Thread {
@@ -41,6 +46,7 @@ public class UnicastHandler extends Thread {
                 case "failure" -> failureHandler(message);
                 case "shutdown" -> shutdownHandler(message);
                 case "replication" -> replicationHandler(message);
+                case "log" -> logHandler(message);
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
@@ -137,29 +143,17 @@ public class UnicastHandler extends Thread {
     }
 
     private void replicationHandler(String[] message) {
-        String filename = message[1];
-        long size = Long.parseLong(message[2]);
-        File file = new File("src/main/resources/replicated/" + filename);
-        int bytes = 0;
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            byte[] buffer = new byte[4*1024];
-            while (size > 0 && (bytes = dis.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
-                fileOutputStream.write(buffer, 0,bytes);
-                size -= bytes;
-            }
-            dis.close();
-            fileOutputStream.flush();
-            fileOutputStream.close();
+        Inet4Address ip = (Inet4Address) socket.getInetAddress();
+        File file = new FileReceiver(message, socket).receive();
 
-            //If we are the owner of the file, indicated by namingserver we should at the file to our log
-            Inet4Address fileOwner = namingServerService.getFileOwner(node.calculateHash(filename));
-            if (fileOwner.getHostAddress().equals(node.getNodeAddress().getHostAddress())) {
-                node.addLog(file, fileOwner);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        //If we are the owner of the file, indicated by namingserver we should at the file to our log
+        if (new Replication().isOwner(file.getName())) {
+            node.addLog(file, ip);
         }
+    }
+
+    private void logHandler(String[] message) {
+        HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
+        //TODO add to the node's log.
     }
 }

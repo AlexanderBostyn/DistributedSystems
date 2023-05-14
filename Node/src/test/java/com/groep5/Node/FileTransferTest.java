@@ -1,89 +1,84 @@
 package com.groep5.Node;
 
+import com.groep5.Node.Service.Unicast.Receivers.FileReceiver;
+import com.groep5.Node.Service.Unicast.Senders.FileSender;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.Assert;
 
 import java.io.*;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class FileTransferTest {
 
     @Test
     public void testFileTransfer() {
-        FileReceiver fileReceiver = new FileReceiver();
-        fileReceiver.start();
-        FileSender fileSender = new FileSender();
-        fileSender.start();
-
-    }
-}
-
-class FileReceiver extends Thread {
-    @Override
-    public void run() {
         try {
-            ServerSocket ss = new ServerSocket(54321);
-            Socket client = ss.accept();
+            String testLine = "Hello World!";
+            File file = new File("test.file");
+            PrintWriter writer = new PrintWriter(file);
+            writer.println(testLine);
+            writer.flush();
+            writer.close();
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            String[] message = bufferedReader.readLine().split(";");
-            System.out.println(Arrays.toString(message));
-//            bufferedReader.close();
-            String filename = message[1];
-            long size = Long.parseLong(message[2]);
-            File file = new File("src/main/resources/replicated/" + filename);
-            int bytes = 0;
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                DataInputStream dis = new DataInputStream(client.getInputStream());
-                byte[] buffer = new byte[4 * 1024];
-                while (size > 0 && (bytes = dis.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
-                    fileOutputStream.write(buffer, 0, bytes);
-                    size -= bytes;
-                }
-                dis.close();
-                fileOutputStream.flush();
-                fileOutputStream.close();
-                Assert.isTrue(file.delete(), "File deleted");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-}
+            FileReceiverTest fileReceiver = new FileReceiverTest();
+            fileReceiver.start();
 
-class FileSender extends Thread {
+            new FileSender(file, (Inet4Address) Inet4Address.getLocalHost()).start();
+            fileReceiver.join();
+            File receivedFile = fileReceiver.receivedFile;
 
-    @Override
-    public void run() {
-        File file = new File("src/main/resources/local/test.file");
-        Socket socket = null;
-        try {
-            socket = new Socket("localhost", 54321);
-            PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-            printWriter.println("replication;test.file;" + file.length());
-            if (file.isFile()) {
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                FileInputStream fileInputStream = new FileInputStream(file);
-                byte[] buf = new byte[4 * 1024];
-                int bytes = 0;
-                while ((bytes = fileInputStream.read(buf)) != -1) {
-                    dataOutputStream.write(buf, 0, bytes);
-                    dataOutputStream.flush();
-                }
-                fileInputStream.close();
-                dataOutputStream.close();
+            Assertions.assertNotNull(receivedFile);
 
-                socket.close();
+            BufferedReader reader = new BufferedReader(new FileReader(receivedFile));
+            Assertions.assertEquals(testLine, reader.readLine());
 
-            }
-        } catch (IOException e) {
+
+            Assertions.assertTrue(file.delete());
+
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            throw new RuntimeException(e);
+        } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+
+    static class FileReceiverTest extends Thread {
+        private final Logger logger = Logger.getLogger(this.getClass().getName());
+        public File receivedFile;
+
+        @Override
+        public void run() {
+            try {
+                ServerSocket serverSocket = new ServerSocket(4321);
+                logger.info("Opened socket");
+
+                Socket clientSocket = serverSocket.accept();
+                logger.info("Received Connection");
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                String[] message = reader.readLine().split(";");
+                logger.info("Received message: " + Arrays.toString(message));
+                Assertions.assertEquals("replication", message[0]);
+                Assertions.assertEquals("test.file", message[1]);
+                message[1] = "received.file";
+
+                this.receivedFile = new FileReceiver(message, clientSocket).receive();
+
+
+                serverSocket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
+
+
 

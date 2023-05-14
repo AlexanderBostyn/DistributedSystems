@@ -41,21 +41,19 @@ public class FileWatcher {
             }
         }
     }
-}
-
-class FileMaker extends Thread {
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(100);
-            File newFile = new File("src/main/resources/local/testfile.test");
-            PrintWriter printWriter = new PrintWriter(new FileOutputStream(newFile), true);
-            printWriter.println("Hello vriendjes");
-            printWriter.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    static class FileMaker extends Thread {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(100);
+                File newFile = new File("src/main/resources/local/testfile.test");
+                PrintWriter printWriter = new PrintWriter(new FileOutputStream(newFile), true);
+                printWriter.println("Hello vriendjes");
+                printWriter.close();
+            } catch (FileNotFoundException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
+
