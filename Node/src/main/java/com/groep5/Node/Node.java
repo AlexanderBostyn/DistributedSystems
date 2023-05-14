@@ -3,22 +3,20 @@ package com.groep5.Node;
 import com.groep5.Node.Service.Discovery.DiscoveryService;
 import com.groep5.Node.Service.Multicast.MulticastReceiver;
 import com.groep5.Node.Service.NamingServerService;
-import com.groep5.Node.Service.Replication.StartUp;
+import com.groep5.Node.Service.Replication.Replication;
 import com.groep5.Node.Service.Replication.UpdateRemovedNode;
+import com.groep5.Node.Service.Unicast.UnicastSender;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.*;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 @Service
-@SuppressWarnings("DataFlowIssue")
 @Data
 public class Node {
     private String nodeName;
@@ -31,28 +29,25 @@ public class Node {
     public int numberOfNodes = -1;
     private Failure failure;
     public HashMap<File, ArrayList<String>> log = new HashMap<>();
-    public File latestFile;
-    private @Autowired
-    DiscoveryService discoveryService;
+    private final DiscoveryService discoveryService;
+    private final NamingServerService namingServerService;
 
-    @Autowired
-    private NamingServerService namingServerService;
-
-    public Node() {
+    public Node(DiscoveryService discoveryService, NamingServerService namingServerService) {
         try {
             this.nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
         } catch (UnknownHostException e) {
             logger.severe("Couldn't fetch own IP");
             throw new RuntimeException(e);
         }
+        this.discoveryService = discoveryService;
+        this.namingServerService = namingServerService;
     }
 
     public void startNode(String nodeName) {
         this.nodeName = nodeName;
         discoveryService.startDiscovery();
         bootstrap();
-        new StartUp();
-//        new Detection().start();
+        Replication.start();
     }
 
     //TODO kan ook in een service eigenlijk
@@ -77,16 +72,6 @@ public class Node {
         this.failure = new Failure(this);
         failure.start();
         listenToMulticasts();
-    }
-
-
-    public synchronized void sendUnicast(String message, InetSocketAddress address) throws IOException {
-        logger.info("Sending Unicast to" + address + ", message: " + message);
-        Socket socket = new Socket();
-        socket.connect(address);
-        PrintWriter printer = new PrintWriter(socket.getOutputStream(), true);
-        printer.println(message);
-        socket.close();
     }
 
     private void listenToMulticasts() {
@@ -132,21 +117,18 @@ public class Node {
         logger.info("Shutting Down Node");
         failure.stop();
         if (nextHash != nodeHash) {
-            InetAddress prevIp = namingServerService.getIp(previousHash);
-            InetSocketAddress prevAddr = new InetSocketAddress(prevIp, 4321);
-            sendUnicast(("shutdown;next;" + nextHash), prevAddr);
+            Inet4Address prevIp = namingServerService.getIp(previousHash);
+            UnicastSender.sendMessage("shutdown;next;" + nextHash, prevIp);
+
             //send id of prev node to next node
-            InetAddress nextIp = namingServerService.getIp(nextHash);
-            InetSocketAddress nextAddr = new InetSocketAddress(nextIp, 4321);
-            sendUnicast(("shutdown;previous;" + previousHash), nextAddr);
-            //new UpdateRemovedNode(this);
+            Inet4Address nextIp = namingServerService.getIp(nextHash);
+            UnicastSender.sendMessage("shutdown;previous;" + previousHash, nextIp);
+
             new UpdateRemovedNode();
             logger.info("start updating nodes");
         }
         //move files to prev node unless prev node is local owner, then move to prev of prev node
-        File directory = new File("src/main/resources");
-        File[] files = directory.listFiles();
-        //send files to prev node
+        //TODO
 
         //remove node rom naming server
         namingServerService.deleteNode(nodeHash);

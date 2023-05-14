@@ -1,6 +1,7 @@
 package com.groep5.Node;
 
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.Unicast.UnicastSender;
 
 import java.io.IOException;
 import java.net.*;
@@ -46,8 +47,8 @@ public class Failure extends Thread {
                 logger.severe("NextNode unreachable, starting recovery protocol");
                 int newNextHash = namingServerService.getNextHash(node.nextHash);
                 namingServerService.deleteNode(node.nextHash);
-                InetAddress newNextIp = getIp(newNextHash);
-                node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(newNextIp, 4321));
+                Inet4Address newNextIp = getIp(newNextHash);
+                UnicastSender.sendMessage("failure;previous;" + node.nodeHash, newNextIp);
 
             } else {
                 logger.fine("NextNode is still reachable");
@@ -56,8 +57,8 @@ public class Failure extends Thread {
                 logger.severe("PreviousNode unreachable, starting recovery protocol");
                 int newPreviousHash = namingServerService.getPreviousHash(node.previousHash);
                 namingServerService.deleteNode(node.previousHash);
-                InetAddress newPreviousIp = getIp(newPreviousHash);
-                node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(newPreviousIp, 4321));
+                Inet4Address newPreviousIp = getIp(newPreviousHash);
+                UnicastSender.sendMessage("failure;next;" + node.nodeHash, newPreviousIp);
             } else {
                 logger.fine("PreviousNode is still reachable");
             }

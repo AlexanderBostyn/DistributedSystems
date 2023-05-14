@@ -60,7 +60,7 @@ public class UnicastHandler extends Thread {
                 if (node.previousHash != Integer.parseInt(message[2])) {
                     node.previousHash = Integer.parseInt(message[2]);
                     try {
-                        node.sendUnicast("failure;next;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
+                        UnicastSender.sendMessage("failure;next;" + node.nodeHash, (Inet4Address) socket.getInetAddress());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -71,7 +71,7 @@ public class UnicastHandler extends Thread {
                 if (node.nextHash != Integer.parseInt(message[2])) {
                     node.nextHash = Integer.parseInt(message[2]);
                     try {
-                        node.sendUnicast("failure;previous;" + node.nodeHash, new InetSocketAddress(socket.getInetAddress(), 4321));
+                        UnicastSender.sendMessage("failure;previous;" + node.nodeHash, (Inet4Address) socket.getInetAddress());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

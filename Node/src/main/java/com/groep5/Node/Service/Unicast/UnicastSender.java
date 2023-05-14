@@ -1,24 +1,47 @@
 package com.groep5.Node.Service.Unicast;
 
+import com.groep5.Node.Service.Unicast.Senders.FileSender;
+import com.groep5.Node.Service.Unicast.Senders.LogSender;
+import com.groep5.Node.Service.Unicast.Senders.MessageSender;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-//TODO kan verwijderst worden atm
-//zit momenteel in Node
-public class UnicastSender {
-    private final Socket socket;
-    private final int previous;
-    private final int next;
-    public UnicastSender(int previous, int next, String IP) throws IOException {
-        this.previous = previous;
-        this.next = next;
-        socket = new Socket(IP, 4321);
+/**
+ * Class that covers all our Unicast (TCP) sending needs.
+ * Port 4321 is always used.
+ */
+public class UnicastSender{
+
+    /**
+     * Sends a message over TCP synchronously.
+     * @param message message you want to send
+     * @param destination the destination ip-address
+     * @throws IOException when an error occurred in creating a socket.
+     */
+    public static synchronized void sendMessage(String message, Inet4Address destination) throws IOException {
+        new MessageSender(message, destination).send();
     }
 
-    private void SendMessage() throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        out.println(previous + ";" + next);
-        socket.close();
-    }
+    /**
+     * Sends a file in a thread using {@link FileSender}.
+     * @param file the file that needs to be sent.
+     * @param destination the destination ip.
+     */
+    public static void sendFile(File file, Inet4Address destination) {
+       new FileSender(file, destination).start();
+    };
+
+    /**
+     * Sends a log to the destination in a thread using {@link com.groep5.Node.Service.Unicast.Senders.LogSender}
+     * @param log the log we need to send. A map of file keys with Arraylists of Inet4Addresses as values.
+     * @param destination the destination ip.
+     */
+    public static void sendLog(HashMap<File, ArrayList<Inet4Address>> log, Inet4Address destination) {
+        new LogSender(log, destination).start();
+    };
+
 }
