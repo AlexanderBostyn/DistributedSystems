@@ -5,6 +5,7 @@ import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
+import org.apache.juli.logging.Log;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -84,7 +85,6 @@ public class ReplicationService {
      */
     public static Inet4Address findIp(String fileName, ReplicationState state) throws UnknownHostException {
         Logger logger = Logger.getLogger("ReplicationService.findIp");
-
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
         int currentHash = SpringContext.getBean(Node.class).getNodePropreties().nodeHash;
