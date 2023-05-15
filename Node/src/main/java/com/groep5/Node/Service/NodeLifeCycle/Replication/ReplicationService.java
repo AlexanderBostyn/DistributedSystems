@@ -1,10 +1,10 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 import com.groep5.Node.Model.Node;
-import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
+import com.groep5.Node.SpringContext;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -56,7 +56,7 @@ public class ReplicationService {
      * All the functions needed for Replication.
      * Called from main thread.
      */
-    public  void startReplication() {
+    public  void startReplication() throws UnknownHostException {
         startup();
         //new StartUp().start(); //Not a thread
         new Detection().start();
@@ -71,9 +71,31 @@ public class ReplicationService {
      * @param state The {@link ReplicationState state} of replication.
      * @return the ip address where we should send the file.
      */
-    public  Inet4Address findIp(String fileName, ReplicationState state) {
-        //TODO
-        return null;
+    public  Inet4Address findIp(String fileName, ReplicationState state) throws UnknownHostException {
+
+        NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
+        int fileHash = namingServerService.calculateHash(fileName);
+        int currentHash = SpringContext.getBean(Node.class).getNodePropreties().nodeHash;
+
+        if (state == ReplicationState.SHUTDOWN) {
+            currentHash = namingServerService.getPreviousHash(currentHash);
+            if (isOwner(fileName, currentHash)) {
+                currentHash = namingServerService.getPreviousHash(currentHash);
+            }
+        }
+        else {
+            while(namingServerService.getNextHash(currentHash) < fileHash) {
+                if (namingServerService.getNextHash(currentHash) < currentHash) {
+                    currentHash = namingServerService.getNextHash(currentHash);
+                    break;
+                }
+                currentHash = namingServerService.getNextHash(currentHash);
+            }
+            if (namingServerService.getIp(currentHash) == namingServerService.getFileOwner(fileHash)) {
+                currentHash = namingServerService.getPreviousHash(currentHash);
+            }
+        }
+        return namingServerService.getIp(currentHash);
     }
 
     /**
@@ -83,17 +105,10 @@ public class ReplicationService {
      * @param fileName the name of the file we need to determine ownership off.
      * @return true if we are the owner.
      */
-    public static boolean isOwner(String fileName) {
-        NamingServerService namingServer = NodeApplication.getNamingServer();
-        NodePropreties nodePropreties = NodeApplication.getNodeProperties();
-        try {
-            Inet4Address ownerIp = namingServer.getFileOwner(namingServer.calculateHash(fileName));
-            Inet4Address ownIp = nodePropreties.getNodeAddress();
-            return ownerIp.equals(ownIp);
-        } catch (UnknownHostException e) {
-            Logger.getAnonymousLogger().severe("Couldn't parse Ip: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
+    public boolean isOwner(String fileName, int nodeHash) throws UnknownHostException {
+        NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
+        int fileHash = namingServerService.calculateHash(fileName);
+        return (namingServerService.getFileOwner(fileHash) == namingServerService.getIp(nodeHash));
     }
 
     /**
@@ -112,8 +127,7 @@ public class ReplicationService {
         return new ArrayList<File>();
     }
 
-    public void startup()
-    {
+    public void startup() throws UnknownHostException {
         logger.info("Start up file sharing");
         ArrayList<File> files= listDirectory("src/main/resources/local");
 

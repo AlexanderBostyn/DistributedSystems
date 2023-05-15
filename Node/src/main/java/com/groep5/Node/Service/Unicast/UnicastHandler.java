@@ -13,6 +13,7 @@ import com.groep5.Node.SpringContext;
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -150,12 +151,12 @@ public class UnicastHandler extends Thread {
         nodePropreties.startNewFailure();
     }
 
-    private void replicationHandler(String[] message) {
+    private void replicationHandler(String[] message) throws UnknownHostException {
         Inet4Address ip = (Inet4Address) socket.getInetAddress();
         File file = new FileReceiver(message, socket).receive();
 
         //If we are the owner of the file, indicated by namingserver we should at the file to our log
-        if( replicationService.isOwner(file.getName())) {
+        if( replicationService.isOwner(file.getName(), this.nodePropreties.nodeHash)) {
             nodePropreties.addLog(file, ip);
         }
     }
