@@ -33,22 +33,19 @@ public class LogSender extends Thread{
                 logger.info("log size is : "+log.size());
                 printWriter.println("log;" +  log.size() +";");
                 // Serialize the HashMap into a byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos.flush();
                 oos.writeObject(log);
                 oos.flush();
-                byte[] hashMapBytes = bos.toByteArray();
-                // Send the HashMap size and data
-                DataOutputStream dataOutputStream = new DataOutputStream(bos);
-                dataOutputStream.writeInt(hashMapBytes.length);
-                logger.info("hashmapBytes lenght: "+ hashMapBytes.length);
-                dataOutputStream.flush();
-                dataOutputStream.write(hashMapBytes);
-                dataOutputStream.flush();
-
-
-
+                socket.getOutputStream().flush();
+//                byte[] hashMapBytes = bos.toByteArray();
+//                // Send the HashMap size and data
+//                DataOutputStream dataOutputStream = new DataOutputStream(bos);
+//                dataOutputStream.writeInt(hashMapBytes.length);
+//                logger.info("hashmapBytes lenght: "+ hashMapBytes.length);
+//                dataOutputStream.flush();
+//                dataOutputStream.write(hashMapBytes);
+//                dataOutputStream.flush();
                 socket.close();
 
                 logger.info("Finished sending log to: "+destination );

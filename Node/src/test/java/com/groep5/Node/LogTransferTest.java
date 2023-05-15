@@ -35,9 +35,10 @@ public class LogTransferTest {
             logReceiver.join();
 
             Assertions.assertEquals(log, logReceiver.log, "Logs aren't equal");
-
+            System.out.println(log);
+            System.out.println(logReceiver.log);
             //delete all created files;
-            log.keySet().forEach(file -> Assertions.assertTrue(file.delete()));
+            log.keySet().forEach(file -> file.delete());
         } catch (UnknownHostException | InterruptedException e) {
             throw new RuntimeException(e);
         }

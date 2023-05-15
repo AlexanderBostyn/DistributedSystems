@@ -70,6 +70,7 @@ public class MulticastReceiver extends Thread {
                 nodePropreties.stopFailure();
                 String[] splitMessage = msg.split(";");
                 if (splitMessage[0].equals("deletion")) {
+                    //TODO update logs.
                     //delete file
                     File file = new File(splitMessage[1]);
                     if (file.delete()) {
