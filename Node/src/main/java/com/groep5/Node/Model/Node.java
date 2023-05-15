@@ -47,7 +47,7 @@ public class Node {
         replicationService.startReplication();
     }
 
-    //TODO kan ook in een service eigenlijk
+    //TODO remove if working
     /*private void bootstrap() {
         logger.info("started bootstrap");
         this.nodeHash = calculateHash(nodeName);

@@ -40,7 +40,6 @@ public class NodePropreties {
     }
     public void stopFailure()
     {
-
         failure.stop();
     }
     public void finishConnection(){

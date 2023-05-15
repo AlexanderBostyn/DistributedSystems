@@ -58,8 +58,18 @@ public class ReplicationService {
      */
     public  void startReplication() throws UnknownHostException {
         startup();
-        //new StartUp().start(); //Not a thread
         new Detection().start();
+    }
+
+    public void startup() throws UnknownHostException {
+        logger.info("Start up file sharing");
+        ArrayList<File> files= listDirectory("src/main/resources/local");
+
+        //sending File
+        for (File file: files) {
+            Inet4Address ip = findIp(file.getName(), ReplicationState.STARTUP);
+            UnicastSender.sendFile(file, ip);
+        }
     }
 
     /**
@@ -99,16 +109,17 @@ public class ReplicationService {
     }
 
     /**
-     * This helper function determines if we are the owner of the file.
+     * This helper function determines if a node is the owner of the file.
      * this means we should add/location our file to our log.
      * use {@link com.groep5.Node.Service.NamingServerService#getFileOwner(int)}
      * @param fileName the name of the file we need to determine ownership off.
+     * @param nodeHash the hash we want to check ownership againts.
      * @return true if we are the owner.
      */
     public static boolean isOwner(String fileName, int nodeHash) throws UnknownHostException {
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
-        return (namingServerService.getFileOwner(fileHash) == namingServerService.getIp(nodeHash));
+        return namingServerService.getFileOwner(fileHash).equals(namingServerService.getIp(nodeHash));
     }
 
     /**
@@ -116,7 +127,7 @@ public class ReplicationService {
      * @param pathToDirectory the path to the directory from root of project: "src/..".
      * @return A list of files, list will be empty if directory is empty.
      */
-    public ArrayList<File> listDirectory(String pathToDirectory) {
+    public static ArrayList<File> listDirectory(String pathToDirectory) {
         File directory = new File(pathToDirectory);
         File[] fileArray = directory.listFiles();
         if (fileArray != null) {
@@ -127,14 +138,5 @@ public class ReplicationService {
         return new ArrayList<File>();
     }
 
-    public void startup() throws UnknownHostException {
-        logger.info("Start up file sharing");
-        ArrayList<File> files= listDirectory("src/main/resources/local");
 
-        //sending File
-        for (File file: files) {
-            Inet4Address ip = findIp(file.getName(), ReplicationState.STARTUP);
-            UnicastSender.sendFile(file, ip);
-        }
-    }
 }
