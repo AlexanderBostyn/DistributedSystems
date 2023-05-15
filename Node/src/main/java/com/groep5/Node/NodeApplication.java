@@ -1,6 +1,7 @@
 package com.groep5.Node;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NamingServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -44,6 +45,10 @@ public class NodeApplication {
 	}
 	public static NamingServerService getNamingServer() {
 		return SpringContext.getBean(NamingServerService.class);
+	}
+
+	public static NodePropreties getNodeProperties() {
+		return SpringContext.getBean(NodePropreties.class);
 	}
 
 }

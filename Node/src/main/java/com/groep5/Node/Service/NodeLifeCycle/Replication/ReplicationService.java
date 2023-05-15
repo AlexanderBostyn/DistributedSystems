@@ -1,12 +1,15 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
+import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -80,9 +83,17 @@ public class ReplicationService {
      * @param fileName the name of the file we need to determine ownership off.
      * @return true if we are the owner.
      */
-    public boolean isOwner(String fileName) {
-        //TODO
-        return false;
+    public static boolean isOwner(String fileName) {
+        NamingServerService namingServer = NodeApplication.getNamingServer();
+        NodePropreties nodePropreties = NodeApplication.getNodeProperties();
+        try {
+            Inet4Address ownerIp = namingServer.getFileOwner(namingServer.calculateHash(fileName));
+            Inet4Address ownIp = nodePropreties.getNodeAddress();
+            return ownerIp.equals(ownIp);
+        } catch (UnknownHostException e) {
+            Logger.getAnonymousLogger().severe("Couldn't parse Ip: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     /**
