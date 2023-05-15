@@ -23,7 +23,6 @@ public class LogSender extends Thread{
 
     @Override
     public void run() {
-        //TODO
         try {
             Socket socket = new Socket(destination, 4321);
             if (this.log != null) {
@@ -38,14 +37,6 @@ public class LogSender extends Thread{
                 oos.writeObject(log);
                 oos.flush();
                 socket.getOutputStream().flush();
-//                byte[] hashMapBytes = bos.toByteArray();
-//                // Send the HashMap size and data
-//                DataOutputStream dataOutputStream = new DataOutputStream(bos);
-//                dataOutputStream.writeInt(hashMapBytes.length);
-//                logger.info("hashmapBytes lenght: "+ hashMapBytes.length);
-//                dataOutputStream.flush();
-//                dataOutputStream.write(hashMapBytes);
-//                dataOutputStream.flush();
                 socket.close();
 
                 logger.info("Finished sending log to: "+destination );

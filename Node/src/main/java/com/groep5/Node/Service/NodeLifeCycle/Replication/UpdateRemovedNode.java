@@ -23,7 +23,6 @@ public class UpdateRemovedNode {
         resendFiles();
     }
 
-    //TODO functie afwerken zie specs bovenaan Replication
     public void resendFiles() throws UnknownHostException {
         ArrayList<File> replicatedFiles = ReplicationService.listDirectory("src/main/resources/replicated");
         for (File file : replicatedFiles) {
@@ -35,6 +34,8 @@ public class UpdateRemovedNode {
         Inet4Address previousIp = namingServerService.getIp(previousHash);
         UnicastSender.sendLog(nodePropreties.getLog(), previousIp);
         logger.info("send entire log to " +  previousIp.getHostAddress());
+        //send log
+        UnicastSender.sendLog(nodePropreties.log, previousIp);
 
         ArrayList<File> localFiles = ReplicationService.listDirectory("src/main/resources/local");
         for (File file: localFiles) {

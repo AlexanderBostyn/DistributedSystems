@@ -42,7 +42,7 @@ Node shutdown:
         de owner waarschuwen
         die moeten hun logs dan aanpassen
 
-Lokaal bestand wordt verwijdert:
+Lokaal bestand wordt verwijderd:
     De fileOwner waarschuwen
         deze moet dan de replica verwijderen
         alle locaties bijgehouden in de log moeten ook verwijderen
