@@ -58,8 +58,18 @@ public class ReplicationService {
      */
     public  void startReplication() throws UnknownHostException {
         startup();
-        //new StartUp().start(); //Not a thread
         new Detection().start();
+    }
+
+    public void startup() throws UnknownHostException {
+        logger.info("Start up file sharing");
+        ArrayList<File> files= listDirectory("src/main/resources/local");
+
+        //sending File
+        for (File file: files) {
+            Inet4Address ip = findIp(file.getName(), ReplicationState.STARTUP);
+            UnicastSender.sendFile(file, ip);
+        }
     }
 
     /**
@@ -128,14 +138,5 @@ public class ReplicationService {
         return new ArrayList<File>();
     }
 
-    public void startup() throws UnknownHostException {
-        logger.info("Start up file sharing");
-        ArrayList<File> files= listDirectory("src/main/resources/local");
 
-        //sending File
-        for (File file: files) {
-            Inet4Address ip = findIp(file.getName(), ReplicationState.STARTUP);
-            UnicastSender.sendFile(file, ip);
-        }
-    }
 }

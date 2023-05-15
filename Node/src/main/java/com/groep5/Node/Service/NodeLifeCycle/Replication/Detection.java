@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.Multicast.MulticastSender;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
@@ -59,6 +60,8 @@ public class Detection extends Thread {
                     //delete all files --> multicast
                     File newFile = new File("src/main/resources/local/" + fileName);
                     new MulticastSender("deletion;" + newFile + "; ").start();
+                    NodePropreties nodePropreties = SpringContext.getBean(NodePropreties.class);
+                    nodePropreties.dellLog(newFile);
                 }
             }
             boolean valid = watchKey.reset();
