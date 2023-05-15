@@ -83,6 +83,7 @@ public class ReplicationService {
      * @return the ip address where we should send the file.
      */
     public static Inet4Address findIp(String fileName, ReplicationState state) throws UnknownHostException {
+        Logger logger = Logger.getLogger("ReplicationService.findIp");
 
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
