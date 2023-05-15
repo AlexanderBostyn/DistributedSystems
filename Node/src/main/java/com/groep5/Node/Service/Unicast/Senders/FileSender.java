@@ -1,5 +1,8 @@
 package com.groep5.Node.Service.Unicast.Senders;
 
+import com.groep5.Node.Model.Node;
+import com.groep5.Node.SpringContext;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
@@ -18,6 +21,10 @@ public class FileSender extends Thread {
     public FileSender(File file, Inet4Address destination) {
         this.file = file;
         this.destination = destination;
+    }
+
+    private Node getNode() {
+        return SpringContext.getBean(Node.class);
     }
 
     @Override

@@ -36,7 +36,7 @@ public class Node {
         this.replicationService = replicationService;
     }
 
-    public void startNode(String nodeName) {
+    public void startNode(String nodeName) throws UnknownHostException {
         nodePropreties.setNodeName( nodeName);
         discoveryService.startDiscovery();
         bootstrapService.startBootstrap();
