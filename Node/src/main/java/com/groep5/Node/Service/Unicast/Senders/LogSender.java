@@ -1,7 +1,8 @@
 package com.groep5.Node.Service.Unicast.Senders;
 
-import java.io.File;
+import java.io.*;
 import java.net.Inet4Address;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -23,6 +24,31 @@ public class LogSender extends Thread{
     @Override
     public void run() {
         //TODO
-        // zie ook bij testFiles
+        try {
+            Socket socket = new Socket(destination, 4321);
+            if (this.log != null) {
+
+                logger.info("Sending log to: " + destination);
+                PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                printWriter.println("replication;" +  log.size());
+                // Serialize the HashMap into a byte array
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(log);
+                oos.flush();
+                byte[] hashMapBytes = bos.toByteArray();
+                // Send the HashMap size and data
+                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                dataOutputStream.writeInt(hashMapBytes.length);
+                dataOutputStream.write(hashMapBytes);
+                dataOutputStream.flush();
+
+                socket.close();
+
+                logger.info("Finished sending log to: "+destination );
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
