@@ -71,7 +71,7 @@ public class ReplicationService {
      * @param state The {@link ReplicationState state} of replication.
      * @return the ip address where we should send the file.
      */
-    public  Inet4Address findIp(String fileName, ReplicationState state) throws UnknownHostException {
+    public static Inet4Address findIp(String fileName, ReplicationState state) throws UnknownHostException {
 
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
@@ -105,7 +105,7 @@ public class ReplicationService {
      * @param fileName the name of the file we need to determine ownership off.
      * @return true if we are the owner.
      */
-    public boolean isOwner(String fileName, int nodeHash) throws UnknownHostException {
+    public static boolean isOwner(String fileName, int nodeHash) throws UnknownHostException {
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
         return (namingServerService.getFileOwner(fileHash) == namingServerService.getIp(nodeHash));

@@ -132,7 +132,7 @@ public class MulticastReceiver extends Thread {
                 nodePropreties.startNewFailure();
 
                 //Our nextNode was updated
-                if (nodePropreties.nextHash == receivedNodeHash) {
+                if (nodePropreties.nextHash == receivedNodeHash || nodePropreties.previousHash == receivedNodeHash) {
                     logger.info("start updating nodes");
                     new UpdateNewNode( receivedNodeHash);
                 }
