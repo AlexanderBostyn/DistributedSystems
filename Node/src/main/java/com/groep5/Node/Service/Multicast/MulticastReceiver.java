@@ -6,6 +6,7 @@ import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.UpdateNewNode;
 import com.groep5.Node.SpringContext;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
@@ -68,6 +69,16 @@ public class MulticastReceiver extends Thread {
                 logger.info("Stopping Failure task");
                 nodePropreties.stopFailure();
                 String[] splitMessage = msg.split(";");
+                if (splitMessage[0].equals("deletion")) {
+                    //delete file
+                    File file = new File(splitMessage[1]);
+                    if (file.delete()) {
+                        logger.info("file " + file + " is deleted");
+                    }
+                    else {
+                        logger.info("error: " + file + " could not be deleted");
+                    }
+                }
                 if (!splitMessage[0].equals("discovery")) return;
                 int receivedNodeHash = namingServerService.calculateHash(splitMessage[1]);
                 InetAddress address = InetAddress.getByName(splitMessage[2]);
