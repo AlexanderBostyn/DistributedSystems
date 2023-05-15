@@ -47,40 +47,13 @@ public class Node {
         replicationService.startReplication();
     }
 
-    //TODO remove if working
-    /*private void bootstrap() {
-        logger.info("started bootstrap");
-        this.nodeHash = calculateHash(nodeName);
-        logger.info("this NodeHash: " + this.nodeHash);
 
-        // Check if the node is the only then set its parameters
-        // in the other case the setting of parameters will already be handled by the unicasts received from other nodes.
-        if (numberOfNodes == 0) {
-            logger.info("Only node in network");
-            this.previousHash = this.nodeHash;
-            this.nextHash = this.nodeHash;
-        }
-        logger.info("Parameters set: ");
-        logger.info("previousHash: " + previousHash);
-        logger.info("nodeHash: " + nodeHash);
-        logger.info("nextHash: " + nextHash);
-        namingServerService.registerDevice(this);
-
-        this.failure = new Failure(this);
-        failure.start();
-        listenToMulticasts();
-    }
-
-     */
 
     private void listenToMulticasts() {
         logger.info("");
         MulticastReceiver m = new MulticastReceiver();
         m.start();
     }
-
-
-
 
 
     /**
