@@ -5,6 +5,7 @@ import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
+import org.apache.juli.logging.Log;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -82,16 +83,18 @@ public class ReplicationService {
      * @return the ip address where we should send the file.
      */
     public static Inet4Address findIp(String fileName, ReplicationState state) throws UnknownHostException {
-
+        Logger logger = Logger.getLogger("ReplicationService.findIp");
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
         int currentHash = SpringContext.getBean(Node.class).getNodePropreties().nodeHash;
 
         if (state == ReplicationState.SHUTDOWN) {
-            currentHash = namingServerService.getPreviousHash(currentHash);
-            if (isOwner(fileName, currentHash)) {
-                currentHash = namingServerService.getPreviousHash(currentHash);
+            int previousHash = NodeApplication.getNodeProperties().getPreviousHash();
+            if (isOwner(fileName, previousHash)) {
+                logger.severe("Previous node was owner of file: " + fileName + "Sending to their previous instead");
+                previousHash = namingServerService.getPreviousHash(previousHash);
             }
+            return namingServerService.getIp(previousHash);
         }
         else {
             while(namingServerService.getNextHash(currentHash) < fileHash) {
