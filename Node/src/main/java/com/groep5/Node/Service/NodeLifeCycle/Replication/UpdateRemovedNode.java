@@ -1,57 +1,48 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
-import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
-import com.groep5.Node.SpringContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class UpdateRemovedNode {
     public NodePropreties nodePropreties;
-    public File[] files;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final NamingServerService namingServerService;
 
-    public UpdateRemovedNode( ) throws UnknownHostException {
-        this.nodePropreties=getNodePropreties();
-        this.namingServerService = getNamingServerService();
-        lookForFiles();
+    public UpdateRemovedNode() throws UnknownHostException {
+        this.nodePropreties = NodeApplication.getNodeProperties();
+        this.namingServerService = NodeApplication.getNamingServer();
         resendFiles();
-    }
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
-    }
-
-    public void lookForFiles() {
-        File directory = new File("src/main/resources");
-        files = directory.listFiles();
-        logger.info("Files: " + Arrays.toString(files));
     }
 
     //TODO functie afwerken zie specs bovenaan Replication
     public void resendFiles() throws UnknownHostException {
-        for (File f : files) {
-            logger.info("send file " + f.getName() + " to new location");
-            // edge case: see if the previous node is the owner of the node
-            logger.info("test file log: " + (nodePropreties.log.get(f)).get(0));
-            Inet4Address ip = namingServerService.getIp(nodePropreties.previousHash);
-            if (nodePropreties.log.get(f).get(0).equals(ip.toString())) {
-                //file moet naar de previous node van de previous node gestuurd worden
-                //TODO
-            }
-            else {
+        ArrayList<File> replicatedFiles = ReplicationService.listDirectory("src/main/resources/replicated");
+        for (File file : replicatedFiles) {
+            Inet4Address ip = ReplicationService.findIp(file.getName(), ReplicationState.SHUTDOWN);
+            UnicastSender.sendFile(file, ip);
+            logger.info("send file " + file.getName() + " to " + ip.getHostAddress());
+        }
+        int previousHash = nodePropreties.previousHash;
+        Inet4Address previousIp = namingServerService.getIp(previousHash);
+        logger.info("send entire log to " +  previousIp.getHostAddress());
 
-                UnicastSender.sendFile(f, ip);
-                deleteFile(f);
+        ArrayList<File> localFiles = ReplicationService.listDirectory("src/main/resources/replicated");
+        for (File file: localFiles) {
+            Inet4Address ownerIp = namingServerService.getFileOwner(namingServerService.calculateHash(file.getName()));
+            try {
+                UnicastSender.sendMessage("shutdown;file;" + file.getName(), ownerIp);
+            } catch (IOException e) {
+                logger.severe("Error sending shutdown notice of files to: " + ownerIp.getHostAddress());
+                throw new RuntimeException(e);
             }
         }
     }
@@ -61,5 +52,4 @@ public class UpdateRemovedNode {
             logger.info(f.getName() + " is deleted");
         }
     }
-
 }

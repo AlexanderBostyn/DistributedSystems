@@ -142,6 +142,15 @@ public class UnicastHandler extends Thread {
             case "next" -> {
                 nodePropreties.nextHash = Integer.parseInt(message[2]);
             }
+            case "file" -> {
+                File file = new File("src/main/resources/replicated/" + message[2]);
+                HashMap<File, ArrayList<Inet4Address>> log = nodePropreties.getLog();
+                ArrayList<Inet4Address> entry = log.get(file);
+                boolean isDeleted = entry.remove((Inet4Address) socket.getInetAddress());
+                if (!isDeleted) {
+                    logger.severe("Received shutdown message from node to update our fileLog, but our log didn't contain that entry");
+                }
+            }
             default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
         }
         logger.info("Parameters set: ");
