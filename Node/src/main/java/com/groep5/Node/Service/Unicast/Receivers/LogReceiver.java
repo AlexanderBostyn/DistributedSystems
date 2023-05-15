@@ -48,10 +48,12 @@ public class LogReceiver {
 //             */
 //            // Deserialize the HashMap
 //            logger.info(Arrays.toString(socket.getInputStream().readAllBytes()));
-            while (socket.getInputStream().read() != 10)
+            /*while (socket.getInputStream().read() != 10)
             {
 
             }
+
+             */
             //logger.info(Arrays.toString(socket.getInputStream().readNBytes(8)));
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 

@@ -5,8 +5,10 @@ import com.groep5.Node.Service.Unicast.Senders.LogSender;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -57,6 +59,8 @@ public class LogTransferTest {
                 Socket clientSocket = serverSocket.accept();
                 logger.info("Connection received");
                 String[] message = "log;3".split(";");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                message= reader.readLine().split(";");
                 this.log = new LogReceiver(message, clientSocket).receive();
                 logger.info("Log received and processed");
                 serverSocket.close();
