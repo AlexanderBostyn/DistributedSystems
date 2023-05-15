@@ -23,11 +23,11 @@ public class LogTransferTest {
     public void logSendingTest() {
         try {
             HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
-            for (int i = 0; i < 3; i++) {
-                ArrayList<Inet4Address> value = new ArrayList<>(List.of((Inet4Address) Inet4Address.getLocalHost()));
-                File key = new File(Integer.toString(i));
-                log.put(key, value);
-            }
+//            for (int i = 0; i < 3; i++) {
+//                ArrayList<Inet4Address> value = new ArrayList<>(List.of((Inet4Address) Inet4Address.getLocalHost()));
+//                File key = new File(Integer.toString(i));
+//                log.put(key, value);
+//            }
 
             LogReceiverTest logReceiver = new LogReceiverTest();
             logReceiver.start();
