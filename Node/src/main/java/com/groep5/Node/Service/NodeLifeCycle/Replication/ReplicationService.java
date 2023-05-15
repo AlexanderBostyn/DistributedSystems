@@ -90,6 +90,8 @@ public class ReplicationService {
 
         if (state == ReplicationState.SHUTDOWN) {
             int previousHash = NodeApplication.getNodeProperties().getPreviousHash();
+            logger.info("previousHash: " + previousHash);
+            logger.info("fileHash: " + namingServerService.calculateHash(fileName));
             if (isOwner(fileName, previousHash)) {
                 logger.severe("Previous node was owner of file: " + fileName + "Sending to their previous instead");
                 previousHash = namingServerService.getPreviousHash(previousHash);
