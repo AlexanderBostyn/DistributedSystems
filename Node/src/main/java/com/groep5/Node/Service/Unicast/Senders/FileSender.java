@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 /**
  * This Class sends a given file to a given destination.
  * This class should not be responsible for figuring out where a file should be sent.
- * message starts with: "replication"
+ * message starts with: "replication;filename;filelength"
  */
 public class FileSender extends Thread {
     private final File file;

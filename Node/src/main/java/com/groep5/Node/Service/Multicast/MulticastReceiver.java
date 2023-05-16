@@ -72,7 +72,7 @@ public class MulticastReceiver extends Thread {
                 if (splitMessage[0].equals("deletion")) {
                     //TODO update logs.
                     //delete file
-                    File file = new File(splitMessage[1]);
+                    File file = new File("src/main/resources/replicated/" + splitMessage[1]);
                     if (file.delete()) {
                         logger.info("file " + file + " is deleted");
                     }
