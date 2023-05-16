@@ -3,6 +3,7 @@ package com.groep5.Node.Service.NodeLifeCycle.Replication;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
 
@@ -23,7 +24,6 @@ public class UpdateNewNode {
     public ArrayList<File> files;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final ReplicationService replicationService;
     private final NamingServerService namingServerService;
 
 
@@ -31,17 +31,13 @@ public class UpdateNewNode {
         this.namingServerService = getNamingServerService();
         this.nodePropreties = getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
-        this.replicationService = getReplicationService();
-        this.files = replicationService.listDirectory("src/main/resources/replicated");
+        this.files = ReplicationService.listDirectory("src/main/resources/replicated");
         try {
             resendFiles();
         } catch (UnknownHostException e) {
             logger.severe("Error in retrieving ip from: " + recievedNodeHash);
             throw new RuntimeException(e);
         }
-    }
-    private ReplicationService getReplicationService() {
-        return SpringContext.getBean(ReplicationService.class);
     }
 
     private int calcHash(File file) {
@@ -66,13 +62,19 @@ public class UpdateNewNode {
                 }
             }
             if (fileHash > newNextNodeHash) {
-                logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash);
-                UnicastSender.sendFile(file, ip);
+                logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
+                FileSender fileSender = UnicastSender.sendFile(file, ip);
                 ArrayList<Inet4Address> entry =  nodePropreties.log.get(file);
                 if (entry != null) {
                     entry = (ArrayList<Inet4Address>) entry.clone();
                     log.put(file, entry);
-                    deleteFile(file);
+                    try {
+                        // Wait till the file is done sending before deleting it.
+                        fileSender.join();
+                        deleteFile(file);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

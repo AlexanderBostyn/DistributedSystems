@@ -14,11 +14,12 @@ import java.util.HashMap;
  * Class that covers all our Unicast (TCP) sending needs.
  * Port 4321 is always used.
  */
-public class UnicastSender{
+public class UnicastSender {
 
     /**
      * Sends a message over TCP synchronously.
-     * @param message message you want to send
+     *
+     * @param message     message you want to send
      * @param destination the destination ip-address
      * @throws IOException when an error occurred in creating a socket.
      */
@@ -28,20 +29,29 @@ public class UnicastSender{
 
     /**
      * Sends a file in a thread using {@link FileSender}.
-     * @param file the file that needs to be sent.
+     *
+     * @param file        the file that needs to be sent.
      * @param destination the destination ip.
+     * @return A reference to the fileSender thread.
      */
-    public static void sendFile(File file, Inet4Address destination) {
-       new FileSender(file, destination).start();
-    };
+    public static FileSender sendFile(File file, Inet4Address destination) {
+        FileSender fileSender = new FileSender(file, destination);
+        fileSender.start();
+        return fileSender;
+    }
+
+    ;
 
     /**
      * Sends a log to the destination in a thread using {@link com.groep5.Node.Service.Unicast.Senders.LogSender}
-     * @param log the log we need to send. A map of file keys with Arraylists of Inet4Addresses as values.
+     *
+     * @param log         the log we need to send. A map of file keys with Arraylists of Inet4Addresses as values.
      * @param destination the destination ip.
      */
     public static void sendLog(HashMap<File, ArrayList<Inet4Address>> log, Inet4Address destination) {
         new LogSender(log, destination).start();
-    };
+    }
+
+    ;
 
 }

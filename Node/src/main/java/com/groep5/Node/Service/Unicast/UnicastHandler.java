@@ -174,5 +174,6 @@ public class UnicastHandler extends Thread {
     private void logHandler(String[] message) {
         HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
         //TODO add to the node's log.
+        nodePropreties.getLog().putAll(log);
     }
 }
