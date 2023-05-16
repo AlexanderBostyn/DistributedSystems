@@ -68,18 +68,23 @@ public class UpdateNewNode {
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash);
                 UnicastSender.sendFile(file, ip);
-                ArrayList<Inet4Address> entry = (ArrayList<Inet4Address>) nodePropreties.log.get(file).clone();
-                log.put(file, entry);
-                deleteFile(file);
+                ArrayList<Inet4Address> entry =  nodePropreties.log.get(file);
+                if (entry != null) {
+                    entry = (ArrayList<Inet4Address>) entry.clone();
+                    log.put(file, entry);
+                    deleteFile(file);
+                }
             }
         }
-        UnicastSender.sendLog(log, ip);
+        if (log.size() > 0) {
+            UnicastSender.sendLog(log, ip);
+        }
     }
 
     private void deleteFile(File f) {
         if (f.delete()) {
             nodePropreties.dellLog(f);
-            logger.info(f.getName() + " is deleted");
+            logger.info(f.getName() + " is deleted from the replicas");
         }
     }
 
