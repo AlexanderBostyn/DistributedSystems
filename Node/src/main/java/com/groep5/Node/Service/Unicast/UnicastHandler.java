@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class UnicastHandler extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -174,6 +175,17 @@ public class UnicastHandler extends Thread {
     private void logHandler(String[] message) {
         HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
         //TODO add to the node's log.
-        nodePropreties.getLog().putAll(log);
+        HashMap<File, ArrayList<Inet4Address>> nodeLog = nodePropreties.getLog();
+
+        //Concatenate the two lists in correct order
+        //TODO check if this is correct.
+        log.entrySet().forEach(entry -> {
+            if (nodeLog.get(entry.getKey()) == null) {
+                nodeLog.put(entry.getKey(), entry.getValue());
+                return;
+            }
+            entry.getValue().addAll(nodeLog.get(entry.getKey()));
+            entry.setValue(entry.getValue().stream().distinct().collect(Collectors.toCollection(ArrayList::new)));
+        });
     }
 }

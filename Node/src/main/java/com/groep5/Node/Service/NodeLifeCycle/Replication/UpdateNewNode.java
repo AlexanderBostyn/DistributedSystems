@@ -67,6 +67,7 @@ public class UpdateNewNode {
                 ArrayList<Inet4Address> entry =  nodePropreties.log.get(file);
                 if (entry != null) {
                     entry = (ArrayList<Inet4Address>) entry.clone();
+                    entry.remove(nodePropreties.getNodeAddress());
                     log.put(file, entry);
                     try {
                         // Wait till the file is done sending before deleting it.
