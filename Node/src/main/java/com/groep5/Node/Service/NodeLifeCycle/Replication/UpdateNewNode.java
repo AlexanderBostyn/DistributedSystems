@@ -48,46 +48,42 @@ public class UpdateNewNode {
     }
 
     private void resendFiles() throws UnknownHostException {
-        try {
-            Log sentLog = new Log();
-            Inet4Address ip = namingServerService.getIp(receivedNodeHash);
-            for (File file : files) {
-                int fileHash = calcHash(file);
-                int newNextNodeHash = receivedNodeHash;
-                // The new next NodeHash is smaller than our hash, this means we are at the end of our ring.
-                // This creates problems for linearity that can be fixed if we just add 32768 to all the hashes that are at the beginning of the ring
-                if (newNextNodeHash < nodePropreties.nodeHash) {
-                    newNextNodeHash += 32768;
+        Log sentLog = new Log();
+        Inet4Address ip = namingServerService.getIp(receivedNodeHash);
+        for (File file : files) {
+            int fileHash = calcHash(file);
+            int newNextNodeHash = receivedNodeHash;
+            // The new next NodeHash is smaller than our hash, this means we are at the end of our ring.
+            // This creates problems for linearity that can be fixed if we just add 32768 to all the hashes that are at the beginning of the ring
+            if (newNextNodeHash < nodePropreties.nodeHash) {
+                newNextNodeHash += 32768;
 
-                    // The file is also located at the beginning of the ring, adding 32768 will make the ring linear again.
-                    if (fileHash < nodePropreties.nodeHash) {
-                        fileHash += 32768;
-                    }
-                }
-                if (fileHash > newNextNodeHash) {
-                    logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
-                    FileSender fileSender = UnicastSender.sendFile(file, ip, true);
-                    Log.LogEntry entry = log.get(file.getName());
-                    if (entry != null) {
-                        entry = entry.clone(); //copy our entry of that file
-                        entry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
-                        sentLog.put(entry); //add the entry to the sentLog
-
-                        // Wait till the file is done sending before deleting it.
-                        deleteFile(file);
-                    }
-                }
-                if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()).size() < 2) {
-                    //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
-                    UnicastSender.sendFile(file, ip, false);
-                    log.add(file.getName(), ip);
+                // The file is also located at the beginning of the ring, adding 32768 will make the ring linear again.
+                if (fileHash < nodePropreties.nodeHash) {
+                    fileHash += 32768;
                 }
             }
-            if (log.size() > 0) {
-                UnicastSender.sendLog(sentLog, ip);
+            if (fileHash > newNextNodeHash) {
+                logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
+                FileSender fileSender = UnicastSender.sendFile(file, ip, true);
+                Log.LogEntry entry = log.get(file.getName());
+                if (entry != null) {
+                    entry = entry.clone(); //copy our entry of that file
+                    entry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
+                    sentLog.put(entry); //add the entry to the sentLog
+
+                    // Wait till the file is done sending before deleting it.
+                    deleteFile(file);
+                }
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()).size() < 2) {
+                //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
+                UnicastSender.sendFile(file, ip, false);
+                log.add(file.getName(), ip);
+            }
+        }
+        if (log.size() > 0) {
+            UnicastSender.sendLog(sentLog, ip);
         }
     }
 

@@ -37,14 +37,18 @@ public class UnicastSender {
      * @param deleteFile if true, deletes the file and also the entry from log
      * @return A reference to the fileSender thread.
      */
-    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile) throws InterruptedException {
+    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile) {
         FileSender fileSender = new FileSender(file, destination, deleteFile);
         fileSender.start();
-        fileSender.join();
-        if (deleteFile) {
-            Log log = NodeApplication.getLog();
-            log.delete(file.getName());
-            file.delete();
+        try {
+            fileSender.join();
+            if (deleteFile) {
+                Log log = NodeApplication.getLog();
+                log.delete(file.getName());
+                file.delete();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return fileSender;
     }
