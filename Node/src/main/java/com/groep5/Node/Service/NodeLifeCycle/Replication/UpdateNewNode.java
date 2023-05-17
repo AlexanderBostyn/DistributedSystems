@@ -65,15 +65,12 @@ public class UpdateNewNode {
             }
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
-                FileSender fileSender = UnicastSender.sendFile(file, ip, true);
                 Log.LogEntry entry = log.get(file.getName());
+                FileSender fileSender = UnicastSender.sendFile(file, ip, true);
                 if (entry != null) {
                     entry = entry.clone(); //copy our entry of that file
                     entry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     sentLog.put(entry); //add the entry to the sentLog
-
-                    // Wait till the file is done sending before deleting it.
-                    deleteFile(file);
                 }
             }
             if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()).size() < 2) {
@@ -86,15 +83,5 @@ public class UpdateNewNode {
             UnicastSender.sendLog(sentLog, ip);
         }
     }
+}
 
-
-            private void deleteFile (File f){
-                logger.info("result of fetching " + f.getName() + " from logs:" + log.get(f.getName()));
-                logger.info("result of deleting " + f.getName() + " from logs: " + log.delete(f.getName()));
-                if (f.delete()) {
-                    logger.info(f.getName() + " is deleted from the replicas");
-                } else {
-                    logger.severe("Failed to remove file:" + f);
-                }
-            }
-        }
