@@ -52,9 +52,7 @@ public class LogReceiver {
         try {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
-            //HashMap<File, ArrayList<Inet4Address>> log = (HashMap<File, ArrayList<Inet4Address>>) ois.readObject();
-            Log incomingLog = (Log) ois.readObject();
-            return incomingLog;
+            return (Log) ois.readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

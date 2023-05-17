@@ -3,6 +3,7 @@ package com.groep5.Node.Model;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,12 +16,11 @@ import java.util.logging.Logger;
  */
 @Data
 @Component
-public class Log {
-//TODO bean maken?
+public class Log implements Cloneable, Serializable {
     /**
      * The set that contains all {@link LogEntry entries};
      */
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private transient final Logger logger = Logger.getLogger(this.getClass().getName());
     private Set<LogEntry> entrySet = new HashSet<>();//LogEntry has a fileName and a Set of addresses
 
     public boolean contains(String fileName) {
@@ -75,6 +75,20 @@ public class Log {
         return true;
     }
 
+    /**
+     * Add an entry to a log in a non-destructive way
+     * @param entry the entry you want to add.
+     * @return true if any changes where made.
+     */
+    public boolean add(LogEntry entry) {
+        if (contains(entry.fileName)) {
+            return get(entry.fileName).add(entry);
+
+        }
+        return entrySet.add(entry);
+
+    }
+
 
     /**
      * Delete an {@link LogEntry entry} by fileName.
@@ -99,11 +113,26 @@ public class Log {
         return entry.delete(address);
     }
 
+    public int size() {
+        return entrySet.size();
+    }
+
+    @Override
+    public Log clone() {
+        try {
+            Log clone = (Log) super.clone();
+            clone.setEntrySet(new HashSet<>(entrySet));
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
     /**
      * An entry in {@link Log log}.
      */
     @Data
-    public static class LogEntry {
+    public static class LogEntry implements Cloneable, Serializable{
         /**
          * The key of the entry, it's the last part of the filePath.
          * e.g: "src/main/replicated/file1.txt" -> "file1.txt"
@@ -141,6 +170,27 @@ public class Log {
          */
         public boolean add(Inet4Address address) {
             return addresses.add(address);
+        }
+
+        /**
+         * Combine the addresses from the entry with our addresses.
+         * @param entry the entry we want to add to our own addressSet
+         * @return true if the addressSet was changed.
+         */
+        public boolean add(LogEntry entry) {
+            return addresses.addAll(entry.addresses);
+        }
+
+        @Override
+        public LogEntry clone() {
+            try {
+                LogEntry clone = (LogEntry) super.clone();
+                clone.setAddresses(new HashSet<>(addresses));
+                clone.setFileName(fileName);
+                return clone;
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError();
+            }
         }
     }
 }

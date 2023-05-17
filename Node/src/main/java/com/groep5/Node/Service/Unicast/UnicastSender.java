@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.Unicast;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.Senders.LogSender;
 import com.groep5.Node.Service.Unicast.Senders.MessageSender;
@@ -48,7 +49,7 @@ public class UnicastSender {
      * @param log         the log we need to send. A map of file keys with Arraylists of Inet4Addresses as values.
      * @param destination the destination ip.
      */
-    public static void sendLog(HashMap<File, ArrayList<Inet4Address>> log, Inet4Address destination) {
+    public static void sendLog(Log log, Inet4Address destination) {
         new LogSender(log, destination).start();
     }
 

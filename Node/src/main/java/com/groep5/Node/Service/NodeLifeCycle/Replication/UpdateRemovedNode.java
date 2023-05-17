@@ -32,7 +32,8 @@ public class UpdateRemovedNode {
         }
         int previousHash = nodePropreties.previousHash;
         Inet4Address previousIp = namingServerService.getIp(previousHash);
-        UnicastSender.sendLog(nodePropreties.getLog(), previousIp);
+        //TODO ziet er niet helemaal koosjer uit
+        UnicastSender.sendLog(NodeApplication.getLog(), previousIp);
         logger.info("send entire log to " +  previousIp.getHostAddress());
 
         ArrayList<File> localFiles = ReplicationService.listDirectory("src/main/resources/local");

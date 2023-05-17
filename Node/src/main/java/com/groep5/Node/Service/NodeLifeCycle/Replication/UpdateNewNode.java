@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
@@ -25,6 +26,7 @@ public class UpdateNewNode {
     public ArrayList<File> files;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Log log = NodeApplication.getLog();
     private final NamingServerService namingServerService;
 
 
@@ -47,7 +49,7 @@ public class UpdateNewNode {
 
     private void resendFiles() throws UnknownHostException {
 
-        HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
+        Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
         for (File file : files) {
             int fileHash = calcHash(file);
@@ -65,11 +67,11 @@ public class UpdateNewNode {
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
                 FileSender fileSender = UnicastSender.sendFile(file, ip);
-                ArrayList<Inet4Address> entry =  nodePropreties.log.get(file);
+                Log.LogEntry entry =  log.get(file.getName());
                 if (entry != null) {
-                    entry = (ArrayList<Inet4Address>) entry.clone();
-                    entry.remove(nodePropreties.getNodeAddress());
-                    log.put(file, entry);
+                    entry =  entry.clone(); //copy our entry of that file
+                    entry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
+                    sentLog.put(entry); //add the entry to the sentLog
                     try {
                         // Wait till the file is done sending before deleting it.
                         fileSender.join();
@@ -81,14 +83,17 @@ public class UpdateNewNode {
             }
         }
         if (log.size() > 0) {
-            UnicastSender.sendLog(log, ip);
+            UnicastSender.sendLog(sentLog, ip);
         }
     }
 
     private void deleteFile(File f) {
         if (f.delete()) {
-            nodePropreties.dellLog(f);
+            log.delete(f.getName());
             logger.info(f.getName() + " is deleted from the replicas");
+        }
+        else {
+            logger.severe("Failed to remove file:" + f);
         }
     }
 }

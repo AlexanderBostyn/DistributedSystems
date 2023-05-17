@@ -2,6 +2,7 @@ package com.groep5.Node.Controller;
 
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +31,6 @@ public class Controller {
 
     @GetMapping("/log")//returns log in serialized form
     public String getLog(){
-
-        StringBuilder mapAsString = new StringBuilder("{");
-        HashMap<File,ArrayList<Inet4Address>> map = nodePropreties.getLog();
-        for (File key : map.keySet()) {
-            mapAsString.append(key.toString() + "=" + map.get(key) + ", ");
-        }
-//        mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
-        return mapAsString.toString();
+        return NodeApplication.getLog().toString();
     }
 }

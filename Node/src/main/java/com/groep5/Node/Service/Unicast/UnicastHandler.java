@@ -143,8 +143,8 @@ public class UnicastHandler extends Thread {
             case "file" -> {
                 File file = new File("src/main/resources/replicated/" + message[2]);
                 //HashMap<File, ArrayList<Inet4Address>> log = nodePropreties.getLog();
-                ArrayList<Inet4Address> entry = log.get(file);
-                boolean isDeleted = entry.remove((Inet4Address) socket.getInetAddress());
+                Log.LogEntry entry = log.get(file.getName());
+                boolean isDeleted = entry.delete((Inet4Address) socket.getInetAddress());
                 if (!isDeleted) {
                     logger.severe("Received shutdown message from node to update our fileLog, but our log didn't contain that entry");
                 }
@@ -188,17 +188,6 @@ public class UnicastHandler extends Thread {
             entry.setValue(entry.getValue().stream().distinct().collect(Collectors.toCollection(ArrayList::new)));
         });
         */
-        incomingLog.getEntrySet().forEach(logEntry -> {
-            if (log.get(logEntry.getFileName()) == null) {//if no entries for this file exist, make new entry
-                Log.LogEntry newEntry = new Log.LogEntry();
-                newEntry.setFileName(logEntry.getFileName());
-                newEntry.setAddresses(logEntry.getAddresses());
-                log.put(newEntry);
-                return;
-            }
-            //deze lijnen zijn nog wacko
-            logEntry.getAddresses().addAll(log.get(logEntry.getFileName()));
-            logEntry.setAddresses( logEntry.getAddresses().stream().distinct().collect(Collectors.toCollection(Set::new)));
-        });
+        incomingLog.getEntrySet().forEach(log::add);
     }
 }

@@ -1,5 +1,7 @@
 package com.groep5.Node.Service.Unicast.Senders;
 
+import com.groep5.Node.Model.Log;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
@@ -13,10 +15,10 @@ import java.util.logging.Logger;
  */
 public class LogSender extends Thread{
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final HashMap<File, ArrayList<Inet4Address>> log;
+    private final Log log;
     private final Inet4Address destination;
 
-    public LogSender(HashMap<File, ArrayList<Inet4Address>> log, Inet4Address destination) {
+    public LogSender(Log log, Inet4Address destination) {
         this.log = log;
         this.destination = destination;
     }
@@ -30,7 +32,7 @@ public class LogSender extends Thread{
                 logger.info("Sending log to: " + destination);
                 PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
                 logger.info("log size is : "+log.size());
-                logger.info("log: " + log.entrySet().toString());
+                logger.info("log: " + log);
                 printWriter.println("log;" +  log.size() +";");
                 // Serialize the HashMap into a byte array
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
@@ -39,7 +41,6 @@ public class LogSender extends Thread{
                 oos.flush();
                 socket.getOutputStream().flush();
                 socket.close();
-
                 logger.info("Finished sending log to: "+destination );
             }
         } catch (IOException e) {
