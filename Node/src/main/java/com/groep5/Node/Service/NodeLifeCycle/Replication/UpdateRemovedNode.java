@@ -18,7 +18,7 @@ public class UpdateRemovedNode {
     private final NamingServerService namingServerService;
 
     public UpdateRemovedNode() throws UnknownHostException {
-        this.nodePropreties = NodeApplication.getNodeProperties();
+        this.nodePropreties = NodeApplication.getNodePropreties();
         this.namingServerService = NodeApplication.getNamingServer();
         resendFiles();
     }

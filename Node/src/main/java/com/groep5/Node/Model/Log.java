@@ -1,6 +1,7 @@
 package com.groep5.Node.Model;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.net.Inet4Address;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
  * Also, all the logic in this class should be here.
  */
 @Data
+@Component
 public class Log {
 //TODO bean maken?
     /**

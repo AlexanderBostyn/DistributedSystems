@@ -1,8 +1,10 @@
 package com.groep5.Node;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,12 +24,6 @@ public class NodeApplication {
 		node =  thisNode;
 	}
 
-	/*@Bean
-	public Node getNode() {
-		return node;
-	}
-
-	 */
 
 	public static void main(String[] args) throws UnknownHostException {
 		SpringApplication.run(NodeApplication.class, args);
@@ -41,15 +37,25 @@ public class NodeApplication {
 		System.out.println("shutting down!");
 	}
 
-	public static Node getNode() {
-		return SpringContext.getBean(Node.class);
-	}
+	//static bean getters for non @Service/@Component classes
+
 	public static NamingServerService getNamingServer() {
 		return SpringContext.getBean(NamingServerService.class);
 	}
 
-	public static NodePropreties getNodeProperties() {
+	public static NodePropreties getNodePropreties() {
 		return SpringContext.getBean(NodePropreties.class);
 	}
-
+	public static Log getLog(){
+		return SpringContext.getBean(Log.class);
+	}
+	public static Node getNode() {
+		return SpringContext.getBean(Node.class);
+	}
+	public static NamingServerService getNamingServerService(){
+		return SpringContext.getBean(NamingServerService.class);
+	}
+	public static ReplicationService getReplicationService(){
+		return SpringContext.getBean(ReplicationService.class);
+	}
 }

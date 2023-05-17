@@ -2,6 +2,7 @@ package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.UnicastSender;
@@ -28,8 +29,8 @@ public class UpdateNewNode {
 
 
     public UpdateNewNode(int recievedNodeHash) {
-        this.namingServerService = getNamingServerService();
-        this.nodePropreties = getNodePropreties();
+        this.namingServerService = NodeApplication.getNamingServerService();
+        this.nodePropreties = NodeApplication.getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
         this.files = ReplicationService.listDirectory("src/main/resources/replicated");
         try {
@@ -89,12 +90,5 @@ public class UpdateNewNode {
             nodePropreties.dellLog(f);
             logger.info(f.getName() + " is deleted from the replicas");
         }
-    }
-
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
     }
 }

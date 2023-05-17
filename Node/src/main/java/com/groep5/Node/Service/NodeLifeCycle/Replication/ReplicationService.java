@@ -88,7 +88,7 @@ public class ReplicationService {
         NamingServerService namingServerService = SpringContext.getBean(NamingServerService.class);
         int fileHash = namingServerService.calculateHash(fileName);
         int currentHash = SpringContext.getBean(Node.class).getNodePropreties().nodeHash;
-        int previousHash = NodeApplication.getNodeProperties().getPreviousHash();
+        int previousHash = NodeApplication.getNodePropreties().getPreviousHash();
 
         if (state == ReplicationState.SHUTDOWN) {
             logger.info("previousHash: " + previousHash);

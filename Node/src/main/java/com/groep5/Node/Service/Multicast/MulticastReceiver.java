@@ -2,6 +2,7 @@ package com.groep5.Node.Service.Multicast;
 
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.UpdateNewNode;
 import com.groep5.Node.SpringContext;
@@ -21,15 +22,9 @@ public class MulticastReceiver extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public MulticastReceiver() {
-        this.namingServerService = getNamingServerService();
+        this.namingServerService = NodeApplication.getNamingServerService();
         //this.node = getNode();
-        this.nodePropreties = getNodePropreties();
-    }
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
+        this.nodePropreties = NodeApplication.getNodePropreties();
     }
 
     public void receiveUDPMessage() {

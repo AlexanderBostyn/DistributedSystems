@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.Unicast;
 
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import com.groep5.Node.Model.Node;
 
@@ -26,22 +27,14 @@ public class UnicastHandler extends Thread {
     private final NodePropreties nodePropreties;
     private final NamingServerService namingServerService;
     private final ReplicationService replicationService;
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private ReplicationService getReplicationService() {
-        return SpringContext.getBean(ReplicationService.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
-    }
+
 
     public UnicastHandler(Socket socket) {
         logger.fine("Received connection");
         this.socket = socket;
-        this.nodePropreties= getNodePropreties();
-        this.namingServerService = getNamingServerService();
-        this.replicationService = getReplicationService();
+        this.nodePropreties= NodeApplication.getNodePropreties();
+        this.namingServerService = NodeApplication.getNamingServerService();
+        this.replicationService = NodeApplication.getReplicationService();
     }
 
     @Override

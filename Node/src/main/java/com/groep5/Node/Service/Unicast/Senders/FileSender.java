@@ -23,9 +23,6 @@ public class FileSender extends Thread {
         this.destination = destination;
     }
 
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
-    }
 
     @Override
     public void run() {
