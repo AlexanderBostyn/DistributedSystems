@@ -52,6 +52,8 @@ public class LogReceiver {
         try {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
+            Log log = (Log) ois.readObject();
+            logger.info("received log: " + log);
             return (Log) ois.readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);

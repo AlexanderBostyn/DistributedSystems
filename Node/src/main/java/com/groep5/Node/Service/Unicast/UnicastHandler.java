@@ -161,7 +161,7 @@ public class UnicastHandler extends Thread {
         Inet4Address ip = (Inet4Address) socket.getInetAddress();
         File file = new FileReceiver(message, socket).receive();
 
-        //If we are the owner of the file, indicated by namingserver we should at the file to our log
+        //If we are the owner of the file, indicated by namingserver we should add the file to our log
         if( ReplicationService.isOwner(file.getName(), this.nodePropreties.nodeHash)) {
             //nodePropreties.addLog(file, ip);
             log.add(file.getName(),ip);

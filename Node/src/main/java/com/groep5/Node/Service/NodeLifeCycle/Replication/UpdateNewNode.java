@@ -93,8 +93,8 @@ public class UpdateNewNode {
     }
 
     private void deleteFile(File f) {
+        logger.info("result of deleting " + f.getName() + "from logs: " + log.delete(f.getName()));
         if (f.delete()) {
-            log.delete(f.getName());
             logger.info(f.getName() + " is deleted from the replicas");
         }
         else {
