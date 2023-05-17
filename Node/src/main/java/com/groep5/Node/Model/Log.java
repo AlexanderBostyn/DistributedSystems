@@ -98,7 +98,10 @@ public class Log implements Cloneable, Serializable {
      * @return false if entrySet didn't contain the fileName;
      */
     public boolean delete(String fileName) {
-        logger.info("fetching " + fileName + ":" + get(fileName) + "/" + get(fileName).hashCode());
+        logger.info("fetching " + fileName + ":" + get(fileName) + "/" );
+        if (get(fileName) != null) {
+            logger.info( Integer.toString(get(fileName).hashCode()));
+        }
         logger.info("hashCodes: " + entrySet.stream().map(LogEntry::hashCode).collect(Collectors.toCollection(ArrayList::new)));
         return entrySet.remove(get(fileName));
     }
