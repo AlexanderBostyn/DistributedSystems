@@ -25,6 +25,7 @@ public class UpdateRemovedNode {
 
     public void resendFiles() throws UnknownHostException {
         ArrayList<File> replicatedFiles = ReplicationService.listDirectory("src/main/resources/replicated");
+        // al onze replicated files sturen we door naar onze vorige node.
         for (File file : replicatedFiles) {
             Inet4Address ip = ReplicationService.findIp(file.getName(), ReplicationState.SHUTDOWN);
             UnicastSender.sendFile(file, ip);
@@ -36,7 +37,9 @@ public class UpdateRemovedNode {
         logger.info("send entire log to " +  previousIp.getHostAddress());
 
         ArrayList<File> localFiles = ReplicationService.listDirectory("src/main/resources/local");
-        for (File file: localFiles) {
+        replicatedFiles.addAll(localFiles);
+        //voor alle files moeten we vermelden dat we die niet meer bezitten.
+        for (File file: replicatedFiles) {
             Inet4Address ownerIp = namingServerService.getFileOwner(namingServerService.calculateHash(file.getName()));
             try {
                 UnicastSender.sendMessage("shutdown;file;" + file.getName(), ownerIp);

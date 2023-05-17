@@ -141,9 +141,8 @@ public class UnicastHandler extends Thread {
                 nodePropreties.nextHash = Integer.parseInt(message[2]);
             }
             case "file" -> {
-                File file = new File("src/main/resources/replicated/" + message[2]);
-                //HashMap<File, ArrayList<Inet4Address>> log = nodePropreties.getLog();
-                Log.LogEntry entry = log.get(file.getName());
+                //The sending node has been shutdown, meaning their location should be deleted from the log.
+                Log.LogEntry entry = log.get(message[2]);
                 boolean isDeleted = entry.delete((Inet4Address) socket.getInetAddress());
                 if (!isDeleted) {
                     logger.severe("Received shutdown message from node to update our fileLog, but our log didn't contain that entry");
