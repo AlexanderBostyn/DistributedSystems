@@ -1,5 +1,7 @@
 package com.groep5.Node.Service.Unicast.Receivers;
 
+import com.groep5.Node.Model.Log;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
@@ -25,7 +27,7 @@ public class LogReceiver {
         this.socket = socket;
     }
 
-    public HashMap<File, ArrayList<Inet4Address>> receive() {
+    /*public HashMap<File, ArrayList<Inet4Address>> receive() {
         int size = Integer.parseInt(message[1]);
         logger.info("log size is: "+size);
         int bytes = 0;
@@ -34,6 +36,25 @@ public class LogReceiver {
 
             HashMap<File, ArrayList<Inet4Address>> log = (HashMap<File, ArrayList<Inet4Address>>) ois.readObject();
             return log;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+     */
+    public Log receive() {
+        int size = Integer.parseInt(message[1]);
+        logger.info("log size is: "+size);
+        int bytes = 0;
+        try {
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
+            //HashMap<File, ArrayList<Inet4Address>> log = (HashMap<File, ArrayList<Inet4Address>>) ois.readObject();
+            Log incomingLog = (Log) ois.readObject();
+            return incomingLog;
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

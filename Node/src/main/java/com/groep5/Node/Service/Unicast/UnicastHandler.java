@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.Unicast;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
@@ -18,6 +19,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class UnicastHandler extends Thread {
     private final NodePropreties nodePropreties;
     private final NamingServerService namingServerService;
     private final ReplicationService replicationService;
+    private final Log log;
 
 
     public UnicastHandler(Socket socket) {
@@ -35,6 +38,7 @@ public class UnicastHandler extends Thread {
         this.nodePropreties= NodeApplication.getNodePropreties();
         this.namingServerService = NodeApplication.getNamingServerService();
         this.replicationService = NodeApplication.getReplicationService();
+        this.log = NodeApplication.getLog();
     }
 
     @Override
@@ -138,7 +142,7 @@ public class UnicastHandler extends Thread {
             }
             case "file" -> {
                 File file = new File("src/main/resources/replicated/" + message[2]);
-                HashMap<File, ArrayList<Inet4Address>> log = nodePropreties.getLog();
+                //HashMap<File, ArrayList<Inet4Address>> log = nodePropreties.getLog();
                 ArrayList<Inet4Address> entry = log.get(file);
                 boolean isDeleted = entry.remove((Inet4Address) socket.getInetAddress());
                 if (!isDeleted) {
@@ -160,25 +164,41 @@ public class UnicastHandler extends Thread {
 
         //If we are the owner of the file, indicated by namingserver we should at the file to our log
         if( ReplicationService.isOwner(file.getName(), this.nodePropreties.nodeHash)) {
-            nodePropreties.addLog(file, ip);
-            nodePropreties.addLog(file, nodePropreties.getNodeAddress());
+            //nodePropreties.addLog(file, ip);
+            log.add(file.getName(),ip);
+            //nodePropreties.addLog(file, nodePropreties.getNodeAddress());
+            log.add(file.getName(),nodePropreties.getNodeAddress());
         }
     }
 
     private void logHandler(String[] message) {
-        HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
+        //HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
+        Log incomingLog = new LogReceiver(message, socket).receive();
         //TODO add to the node's log.
-        HashMap<File, ArrayList<Inet4Address>> nodeLog = nodePropreties.getLog();
+        //HashMap<File, ArrayList<Inet4Address>> nodeLog = nodePropreties.getLog();
 
         //Concatenate the two lists in correct order
         //TODO check if this is correct.
-        log.entrySet().forEach(entry -> {
+        /*log.entrySet().forEach(entry -> {
             if (nodeLog.get(entry.getKey()) == null) {
                 nodeLog.put(entry.getKey(), entry.getValue());
                 return;
             }
             entry.getValue().addAll(nodeLog.get(entry.getKey()));
             entry.setValue(entry.getValue().stream().distinct().collect(Collectors.toCollection(ArrayList::new)));
+        });
+        */
+        incomingLog.getEntrySet().forEach(logEntry -> {
+            if (log.get(logEntry.getFileName()) == null) {//if no entries for this file exist, make new entry
+                Log.LogEntry newEntry = new Log.LogEntry();
+                newEntry.setFileName(logEntry.getFileName());
+                newEntry.setAddresses(logEntry.getAddresses());
+                log.put(newEntry);
+                return;
+            }
+            //deze lijnen zijn nog wacko
+            logEntry.getAddresses().addAll(log.get(logEntry.getFileName()));
+            logEntry.setAddresses( logEntry.getAddresses().stream().distinct().collect(Collectors.toCollection(Set::new)));
         });
     }
 }

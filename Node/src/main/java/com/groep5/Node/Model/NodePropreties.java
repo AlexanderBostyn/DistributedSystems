@@ -23,7 +23,7 @@ public class NodePropreties {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
-    public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
+    //public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
 
     public NodePropreties(){
         try {
@@ -45,7 +45,7 @@ public class NodePropreties {
     public void finishConnection(){
         connectionsFinished++;
     }
-    public void addLog(File f, Inet4Address ip) {
+    /*public void addLog(File f, Inet4Address ip) {
         ArrayList<Inet4Address> list = log.get(f);
         if (list == null) {
             list = new ArrayList<>();
@@ -59,5 +59,7 @@ public class NodePropreties {
         log.remove(f);
         logger.info("Current log: " + log.entrySet().toString());
     }
+
+     */
 
 }

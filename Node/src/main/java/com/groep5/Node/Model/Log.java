@@ -21,7 +21,7 @@ public class Log {
      * The set that contains all {@link LogEntry entries};
      */
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private Set<LogEntry> entrySet = new HashSet<>();
+    private Set<LogEntry> entrySet = new HashSet<>();//LogEntry has a fileName and a Set of addresses
 
     public boolean contains(String fileName) {
         return entrySet.stream().map(LogEntry::getFileName).anyMatch(s -> s.equals(fileName));
