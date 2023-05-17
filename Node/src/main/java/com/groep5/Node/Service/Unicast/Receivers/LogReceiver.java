@@ -54,7 +54,7 @@ public class LogReceiver {
 
             Log log = (Log) ois.readObject();
             logger.info("received log: " + log);
-            return (Log) ois.readObject();
+            return log;
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
