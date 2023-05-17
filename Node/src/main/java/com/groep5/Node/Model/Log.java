@@ -98,9 +98,10 @@ public class Log implements Cloneable, Serializable {
      * @return false if entrySet didn't contain the fileName;
      */
     public synchronized boolean  delete(String fileName) {
-        logger.info("fetching " + fileName + ":" + get(fileName) + "/" );
-        if (get(fileName) != null) {
-            logger.info( Integer.toString(get(fileName).hashCode()));
+        LogEntry entry = get(fileName);
+        logger.info("fetching " + fileName + ":" + entry + "/" );
+        if (entry != null) {
+            logger.info( Integer.toString(entry.hashCode()));
         }
         logger.info("hashCodes: " + entrySet.stream().map(LogEntry::hashCode).collect(Collectors.toCollection(ArrayList::new)));
         logger.info("contains: " + entrySet.contains(get(fileName)));
@@ -207,6 +208,16 @@ public class Log implements Cloneable, Serializable {
             } catch (CloneNotSupportedException e) {
                 throw new AssertionError();
             }
+        }
+
+        @Override
+        public int hashCode() {
+            return fileName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
         }
     }
 }
