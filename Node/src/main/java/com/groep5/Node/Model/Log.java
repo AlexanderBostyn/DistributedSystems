@@ -181,6 +181,14 @@ public class Log implements Cloneable, Serializable {
             return addresses.addAll(entry.addresses);
         }
 
+        /**
+         * get the size of the AddressSet.
+         * @return AddressSet.size()
+         */
+        public int size() {
+            return addresses.size();
+        }
+
         @Override
         public LogEntry clone() {
             try {

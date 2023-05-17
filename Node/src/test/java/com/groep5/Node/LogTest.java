@@ -52,6 +52,7 @@ public class LogTest {
         Log log = createLog();
         Assertions.assertNull(log.get("file.txt"));
         Assertions.assertNotNull(log.get("file1.txt"));
+        Assertions.assertEquals(4, log.get("file4.txt").size());
         Assertions.assertEquals("file1.txt",log.get("file1.txt").getFileName() );
         Assertions.assertTrue(log.get("file4.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.3")));
     }

@@ -81,6 +81,11 @@ public class UpdateNewNode {
                     }
                 }
             }
+            if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) &&  log.get(file.getName()).size() < 2) {
+                //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
+                UnicastSender.sendFile(file, ip);
+                log.add(file.getName(), ip);
+            }
         }
         if (log.size() > 0) {
             UnicastSender.sendLog(sentLog, ip);
