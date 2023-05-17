@@ -71,9 +71,15 @@ public class UpdateNewNode {
                     entry = entry.clone(); //copy our entry of that file
                     entry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     sentLog.put(entry); //add the entry to the sentLog
+
+                }
+                try {
+                    fileSender.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
-            else if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()).size() < 2) {
+            if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()) != null &&log.get(file.getName()).size() < 2) {
                 //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
                 UnicastSender.sendFile(file, ip, false);
                 log.add(file.getName(), ip);
