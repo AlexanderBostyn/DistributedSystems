@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.Unicast;
 
 import com.groep5.Node.Model.Log;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.Senders.LogSender;
 import com.groep5.Node.Service.Unicast.Senders.MessageSender;
@@ -33,11 +34,18 @@ public class UnicastSender {
      *
      * @param file        the file that needs to be sent.
      * @param destination the destination ip.
+     * @param deleteFile if true, deletes the file and also the entry from log
      * @return A reference to the fileSender thread.
      */
-    public static FileSender sendFile(File file, Inet4Address destination) {
-        FileSender fileSender = new FileSender(file, destination);
+    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile) throws InterruptedException {
+        FileSender fileSender = new FileSender(file, destination, deleteFile);
         fileSender.start();
+        fileSender.join();
+        if (deleteFile) {
+            Log log = NodeApplication.getLog();
+            log.delete(file.getName());
+            file.delete();
+        }
         return fileSender;
     }
 
