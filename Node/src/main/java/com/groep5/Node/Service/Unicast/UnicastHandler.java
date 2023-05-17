@@ -172,22 +172,8 @@ public class UnicastHandler extends Thread {
     }
 
     private void logHandler(String[] message) {
-        //HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
+        //Combine incoming logs into our log.
         Log incomingLog = new LogReceiver(message, socket).receive();
-        //TODO add to the node's log.
-        //HashMap<File, ArrayList<Inet4Address>> nodeLog = nodePropreties.getLog();
-
-        //Concatenate the two lists in correct order
-        //TODO check if this is correct.
-        /*log.entrySet().forEach(entry -> {
-            if (nodeLog.get(entry.getKey()) == null) {
-                nodeLog.put(entry.getKey(), entry.getValue());
-                return;
-            }
-            entry.getValue().addAll(nodeLog.get(entry.getKey()));
-            entry.setValue(entry.getValue().stream().distinct().collect(Collectors.toCollection(ArrayList::new)));
-        });
-        */
         incomingLog.getEntrySet().forEach(log::add);
     }
 }

@@ -65,14 +65,13 @@ public class MulticastReceiver extends Thread {
                 nodePropreties.stopFailure();
                 String[] splitMessage = msg.split(";");
                 if (splitMessage[0].equals("deletion")) {
-                    //TODO update logs.
-                    //delete file
+                    NodeApplication.getLog().delete(splitMessage[1]);
                     File file = new File("src/main/resources/replicated/" + splitMessage[1]);
                     if (file.delete()) {
                         logger.info("file " + file + " is deleted");
                     }
                     else {
-                        logger.info("error: " + file + " could not be deleted");
+                        logger.severe("error: " + file + " could not be deleted");
                     }
                 }
                 if (!splitMessage[0].equals("discovery")) return;
