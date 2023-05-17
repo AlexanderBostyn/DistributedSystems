@@ -5,10 +5,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.net.Inet4Address;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class contains all the data for the files we are owner of and where they are stored.
@@ -96,6 +98,8 @@ public class Log implements Cloneable, Serializable {
      * @return false if entrySet didn't contain the fileName;
      */
     public boolean delete(String fileName) {
+        logger.info("fetching " + fileName + ":" + get(fileName) + "/" + get(fileName).hashCode());
+        logger.info("hashCodes: " + entrySet.stream().map(LogEntry::hashCode).collect(Collectors.toCollection(ArrayList::new)));
         return entrySet.remove(get(fileName));
     }
 
