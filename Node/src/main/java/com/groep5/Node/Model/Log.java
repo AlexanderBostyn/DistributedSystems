@@ -97,7 +97,7 @@ public class Log implements Cloneable, Serializable {
      * @param fileName the name of the File
      * @return false if entrySet didn't contain the fileName;
      */
-    public boolean delete(String fileName) {
+    public synchronized boolean  delete(String fileName) {
         logger.info("fetching " + fileName + ":" + get(fileName) + "/" );
         if (get(fileName) != null) {
             logger.info( Integer.toString(get(fileName).hashCode()));
