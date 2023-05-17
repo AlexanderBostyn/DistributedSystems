@@ -23,7 +23,7 @@ public class Log implements Cloneable, Serializable {
      * The set that contains all {@link LogEntry entries};
      */
     private transient final Logger logger = Logger.getLogger(this.getClass().getName());
-    private Set<LogEntry> entrySet = new HashSet<>();//LogEntry has a fileName and a Set of addresses
+    private volatile Set<LogEntry> entrySet = new HashSet<>();//LogEntry has a fileName and a Set of addresses
 
     public boolean contains(String fileName) {
         return entrySet.stream().map(LogEntry::getFileName).anyMatch(s -> s.equals(fileName));
