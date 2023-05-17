@@ -61,6 +61,11 @@ public class LogTest {
     public void LogDeleteTest() throws UnknownHostException {
         Log log = createLog();
         Assertions.assertTrue(log.delete("file1.txt"));
+        logger.info(log.toString());
+        Assertions.assertNotNull(log.get("file3.txt"));
+        Assertions.assertTrue(log.delete("file3.txt"));
+        logger.info(log.toString());
+        Assertions.assertNull(log.get("file3.txt"));
         Assertions.assertFalse(log.delete("file.txt"));
         Assertions.assertTrue(log.delete("file2.txt", (Inet4Address) Inet4Address.getByName("8.8.8.0")));
         Assertions.assertFalse(log.delete("file2.txt", (Inet4Address) Inet4Address.getByName("8.8.8.8")));
