@@ -48,7 +48,6 @@ public class UpdateNewNode {
     }
 
     private void resendFiles() throws UnknownHostException {
-
         Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
         for (File file : files) {
@@ -66,39 +65,33 @@ public class UpdateNewNode {
             }
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
-                FileSender fileSender = UnicastSender.sendFile(file, ip);
-                Log.LogEntry entry =  log.get(file.getName());
-                if (entry != null) {
-                    entry =  entry.clone(); //copy our entry of that file
-                    entry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
-                    sentLog.put(entry); //add the entry to the sentLog
-                    try {
-                        // Wait till the file is done sending before deleting it.
-                        fileSender.join();
-                        deleteFile(file);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+//                Log.LogEntry entry = log.get(file.getName());
+                FileSender fileSender = UnicastSender.sendFile(file, ip, true);
+//                if (entry != null) {
+//                    Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
+//
+//                    //only if we do not contain the file locally we do not add our own ip.
+//                    if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(file.getName()))) {
+//                        clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
+//                    }
+//                    sentLog.put(clonedEntry); //add the entry to the sentLog
+//
+//                }
+                try {
+                    fileSender.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
-            if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) &&  log.get(file.getName()).size() < 2) {
+            if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()) != null &&log.get(file.getName()).size() < 2) {
                 //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
-                UnicastSender.sendFile(file, ip);
+                UnicastSender.sendFile(file, ip, false);
                 log.add(file.getName(), ip);
             }
         }
-        if (log.size() > 0) {
+        if (sentLog.size() > 0) {
             UnicastSender.sendLog(sentLog, ip);
         }
     }
-
-    private void deleteFile(File f) {
-        logger.info("result of deleting " + f.getName() + "from logs: " + log.delete(f.getName()));
-        if (f.delete()) {
-            logger.info(f.getName() + " is deleted from the replicas");
-        }
-        else {
-            logger.severe("Failed to remove file:" + f);
-        }
-    }
 }
+

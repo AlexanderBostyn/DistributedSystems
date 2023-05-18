@@ -162,11 +162,13 @@ public class UnicastHandler extends Thread {
         File file = new FileReceiver(message, socket).receive();
 
         //If we are the owner of the file, indicated by namingserver we should add the file to our log
-        if( ReplicationService.isOwner(file.getName(), this.nodePropreties.nodeHash)) {
-            //nodePropreties.addLog(file, ip);
-            log.add(file.getName(),ip);
-            //nodePropreties.addLog(file, nodePropreties.getNodeAddress());
+        if( ReplicationService.isOwner(file.getName(), this.nodePropreties.nodeHash) ) {
             log.add(file.getName(),nodePropreties.getNodeAddress());
+            
+            if (message[3].equals("false")) {
+                //But if the place where the file came from is deleting the file immediately after we shouldnt log the receiving ip
+                log.add(file.getName(),ip);
+            }
         }
     }
 

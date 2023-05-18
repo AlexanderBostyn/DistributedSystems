@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.Unicast;
 
 import com.groep5.Node.Model.Log;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.Senders.LogSender;
 import com.groep5.Node.Service.Unicast.Senders.MessageSender;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Class that covers all our Unicast (TCP) sending needs.
@@ -33,11 +35,25 @@ public class UnicastSender {
      *
      * @param file        the file that needs to be sent.
      * @param destination the destination ip.
+     * @param deleteFile if true, deletes the file and also the entry from log
      * @return A reference to the fileSender thread.
      */
-    public static FileSender sendFile(File file, Inet4Address destination) {
-        FileSender fileSender = new FileSender(file, destination);
+    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile) {
+        Logger logger = Logger.getLogger("ReplicationService.sendFile");
+        FileSender fileSender = new FileSender(file, destination, deleteFile);
         fileSender.start();
+        try {
+            fileSender.join();
+            if (deleteFile) {
+                Log log = NodeApplication.getLog();
+                logger.info("The entire log: " + log);
+                logger.info("Fetching " + file.getName() + " from the log:" + log.get(file.getName()));
+                logger.info("Result of deleting " + file.getName() + " from the log: " + log.delete(file.getName()));
+                file.delete();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return fileSender;
     }
 
