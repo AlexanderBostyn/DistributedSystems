@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
@@ -24,6 +25,12 @@ public class UpdateRemovedNode {
     }
 
     public void resendFiles() throws UnknownHostException {
+        //Sent our entire log to our previous node.
+        int previousHash = nodePropreties.previousHash;
+        Inet4Address previousIp = namingServerService.getIp(previousHash);
+        UnicastSender.sendLog(NodeApplication.getLog(), previousIp);
+        logger.info("send entire log to " +  previousIp.getHostAddress());
+
         ArrayList<File> replicatedFiles = ReplicationService.listDirectory("src/main/resources/replicated");
         // al onze replicated files sturen we door naar onze vorige node.
         for (File file : replicatedFiles) {
@@ -31,10 +38,6 @@ public class UpdateRemovedNode {
             UnicastSender.sendFile(file, ip, true);
             logger.info("send file " + file.getName() + " to " + ip.getHostAddress());
         }
-        int previousHash = nodePropreties.previousHash;
-        Inet4Address previousIp = namingServerService.getIp(previousHash);
-        UnicastSender.sendLog(NodeApplication.getLog(), previousIp);
-        logger.info("send entire log to " +  previousIp.getHostAddress());
 
         ArrayList<File> localFiles = ReplicationService.listDirectory("src/main/resources/local");
         replicatedFiles.addAll(localFiles);
@@ -47,12 +50,6 @@ public class UpdateRemovedNode {
                 logger.severe("Error sending shutdown notice of files to: " + ownerIp.getHostAddress());
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    public void deleteFile(File f) {
-        if (f.delete()) {
-            logger.info(f.getName() + " is deleted");
         }
     }
 }
