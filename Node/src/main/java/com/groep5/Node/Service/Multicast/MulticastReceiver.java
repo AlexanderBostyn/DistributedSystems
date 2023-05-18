@@ -2,6 +2,7 @@ package com.groep5.Node.Service.Multicast;
 
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Model.Node;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.UpdateNewNode;
 import com.groep5.Node.SpringContext;
@@ -21,15 +22,9 @@ public class MulticastReceiver extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public MulticastReceiver() {
-        this.namingServerService = getNamingServerService();
+        this.namingServerService = NodeApplication.getNamingServerService();
         //this.node = getNode();
-        this.nodePropreties = getNodePropreties();
-    }
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
+        this.nodePropreties = NodeApplication.getNodePropreties();
     }
 
     public void receiveUDPMessage() {
@@ -70,13 +65,13 @@ public class MulticastReceiver extends Thread {
                 nodePropreties.stopFailure();
                 String[] splitMessage = msg.split(";");
                 if (splitMessage[0].equals("deletion")) {
-                    //delete file
-                    File file = new File(splitMessage[1]);
+                    NodeApplication.getLog().delete(splitMessage[1]);
+                    File file = new File("src/main/resources/replicated/" + splitMessage[1]);
                     if (file.delete()) {
                         logger.info("file " + file + " is deleted");
                     }
                     else {
-                        logger.info("error: " + file + " could not be deleted");
+                        logger.severe("error: " + file + " could not be deleted");
                     }
                 }
                 if (!splitMessage[0].equals("discovery")) return;
@@ -143,7 +138,7 @@ public class MulticastReceiver extends Thread {
                 nodePropreties.startNewFailure();
 
                 //Our nextNode was updated
-                if (nodePropreties.nextHash == receivedNodeHash || nodePropreties.previousHash == receivedNodeHash) {
+                if (nodePropreties.nextHash == receivedNodeHash) {
                     logger.info("start updating nodes");
                     new UpdateNewNode( receivedNodeHash);
                 }

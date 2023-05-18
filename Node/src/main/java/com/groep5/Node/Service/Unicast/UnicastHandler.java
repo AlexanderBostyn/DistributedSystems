@@ -1,6 +1,8 @@
 package com.groep5.Node.Service.Unicast;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import com.groep5.Node.Model.Node;
 
@@ -17,7 +19,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class UnicastHandler extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -25,22 +29,16 @@ public class UnicastHandler extends Thread {
     private final NodePropreties nodePropreties;
     private final NamingServerService namingServerService;
     private final ReplicationService replicationService;
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private ReplicationService getReplicationService() {
-        return SpringContext.getBean(ReplicationService.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
-    }
+    private final Log log;
+
 
     public UnicastHandler(Socket socket) {
         logger.fine("Received connection");
         this.socket = socket;
-        this.nodePropreties= getNodePropreties();
-        this.namingServerService = getNamingServerService();
-        this.replicationService = getReplicationService();
+        this.nodePropreties= NodeApplication.getNodePropreties();
+        this.namingServerService = NodeApplication.getNamingServerService();
+        this.replicationService = NodeApplication.getReplicationService();
+        this.log = NodeApplication.getLog();
     }
 
     @Override
@@ -143,13 +141,19 @@ public class UnicastHandler extends Thread {
                 nodePropreties.nextHash = Integer.parseInt(message[2]);
             }
             case "file" -> {
-                File file = new File("src/main/resources/replicated/" + message[2]);
-                HashMap<File, ArrayList<Inet4Address>> log = nodePropreties.getLog();
-                ArrayList<Inet4Address> entry = log.get(file);
-                boolean isDeleted = entry.remove((Inet4Address) socket.getInetAddress());
+                //The sending node has been shutdown, meaning their location should be deleted from the log.
+                Log.LogEntry entry = log.get(message[2]);
+                boolean isDeleted = entry.delete((Inet4Address) socket.getInetAddress());
                 if (!isDeleted) {
                     logger.severe("Received shutdown message from node to update our fileLog, but our log didn't contain that entry");
                 }
+                ArrayList<File> files = ReplicationService.listDirectory("src/main/resources/local");
+                files.addAll(ReplicationService.listDirectory("src/main/resources/replicated"));
+                if(files.stream().anyMatch(file -> file.getName().equals(message[2]))) {
+                    //if we have the file in our directory we will add it to our log.
+                    log.add(message[2], nodePropreties.getNodeAddress());
+                };
+
             }
             default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
         }
@@ -164,14 +168,20 @@ public class UnicastHandler extends Thread {
         Inet4Address ip = (Inet4Address) socket.getInetAddress();
         File file = new FileReceiver(message, socket).receive();
 
-        //If we are the owner of the file, indicated by namingserver we should at the file to our log
-        if( replicationService.isOwner(file.getName(), this.nodePropreties.nodeHash)) {
-            nodePropreties.addLog(file, ip);
+        //If we are the owner of the file, indicated by namingserver we should add the file to our log
+        if( ReplicationService.isOwner(file.getName(), this.nodePropreties.nodeHash) ) {
+            log.add(file.getName(),nodePropreties.getNodeAddress());
+            
+            if (message[3].equals("false")) {
+                //But if the place where the file came from is deleting the file immediately after we shouldnt log the receiving ip
+                log.add(file.getName(),ip);
+            }
         }
     }
 
     private void logHandler(String[] message) {
-        HashMap<File, ArrayList<Inet4Address>> log = new LogReceiver(message, socket).receive();
-        //TODO add to the node's log.
+        //Combine incoming logs into our log.
+        Log incomingLog = new LogReceiver(message, socket).receive();
+        incomingLog.getEntrySet().forEach(log::add);
     }
 }

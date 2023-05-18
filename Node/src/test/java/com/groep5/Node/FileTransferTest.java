@@ -28,7 +28,7 @@ public class FileTransferTest {
             FileReceiverTest fileReceiver = new FileReceiverTest();
             fileReceiver.start();
 
-            new FileSender(file, (Inet4Address) Inet4Address.getLocalHost()).start();
+            new FileSender(file, (Inet4Address) Inet4Address.getLocalHost(), false).start();
             fileReceiver.join();
             File receivedFile = fileReceiver.receivedFile;
 
@@ -39,6 +39,8 @@ public class FileTransferTest {
 
 
             Assertions.assertTrue(file.delete());
+            receivedFile.delete();
+//            Assertions.assertTrue(receivedFile.delete());
 
         } catch (FileNotFoundException e) {
             System.out.println("file not found");

@@ -11,21 +11,20 @@ import java.util.logging.Logger;
 /**
  * This Class sends a given file to a given destination.
  * This class should not be responsible for figuring out where a file should be sent.
- * message starts with: "replication"
+ * message starts with: "replication;filename;filelength;deleteFile"
  */
 public class FileSender extends Thread {
     private final File file;
     private final Inet4Address destination;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private final boolean deleteFile;
 
-    public FileSender(File file, Inet4Address destination) {
+    public FileSender(File file, Inet4Address destination, boolean deleteFile) {
         this.file = file;
         this.destination = destination;
+        this.deleteFile = deleteFile;
     }
 
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
-    }
 
     @Override
     public void run() {
@@ -35,7 +34,7 @@ public class FileSender extends Thread {
                 if (file.isFile()) {
                     logger.info("Sending file: " + file.getName() + ", to: " + destination);
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                    printWriter.println("replication;" + file.getName() + ";" + file.length());
+                    printWriter.println("replication;" + file.getName() + ";" + file.length() + ";" + deleteFile);
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     FileInputStream fileInputStream = new FileInputStream(file);
                     byte[] buf = new byte[4 * 1024];

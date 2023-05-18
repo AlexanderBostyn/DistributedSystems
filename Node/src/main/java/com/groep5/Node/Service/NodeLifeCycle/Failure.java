@@ -2,6 +2,7 @@ package com.groep5.Node.Service.NodeLifeCycle;
 
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
@@ -17,16 +18,10 @@ public class Failure extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public Failure() {
-        this.nodePropreties = getNodePropreties();
-        this.namingServerService = getNamingServerService();
+        this.nodePropreties = NodeApplication.getNodePropreties();
+        this.namingServerService = NodeApplication.getNamingServerService();
     }
 
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
-    }
     @Override
     public void run() {
         try {

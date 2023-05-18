@@ -1,9 +1,12 @@
 package com.groep5.Node.Service.Unicast.Receivers;
 
-import java.io.File;
+import com.groep5.Node.Model.Log;
+
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -24,9 +27,39 @@ public class LogReceiver {
         this.socket = socket;
     }
 
-    public HashMap<File, ArrayList<Inet4Address>> receive() {
-        //TODO
-        //works together with LogSender
-        return null;
+    /*public HashMap<File, ArrayList<Inet4Address>> receive() {
+        int size = Integer.parseInt(message[1]);
+        logger.info("log size is: "+size);
+        int bytes = 0;
+        try {
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
+            HashMap<File, ArrayList<Inet4Address>> log = (HashMap<File, ArrayList<Inet4Address>>) ois.readObject();
+            return log;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+     */
+    public Log receive() {
+        int size = Integer.parseInt(message[1]);
+        logger.info("log size is: "+size);
+        int bytes = 0;
+        try {
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
+            Log log = (Log) ois.readObject();
+            logger.info("received log: " + log);
+            return log;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

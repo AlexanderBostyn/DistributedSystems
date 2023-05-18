@@ -1,8 +1,11 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
 
@@ -23,16 +26,15 @@ public class UpdateNewNode {
     public ArrayList<File> files;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final ReplicationService replicationService;
+    private final Log log = NodeApplication.getLog();
     private final NamingServerService namingServerService;
 
 
     public UpdateNewNode(int recievedNodeHash) {
-        this.namingServerService = getNamingServerService();
-        this.nodePropreties = getNodePropreties();
+        this.namingServerService = NodeApplication.getNamingServerService();
+        this.nodePropreties = NodeApplication.getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
-        this.replicationService = getReplicationService();
-        this.files = replicationService.listDirectory("src/main/resources/replicated");
+        this.files = ReplicationService.listDirectory("src/main/resources/replicated");
         try {
             resendFiles();
         } catch (UnknownHostException e) {
@@ -40,17 +42,13 @@ public class UpdateNewNode {
             throw new RuntimeException(e);
         }
     }
-    private ReplicationService getReplicationService() {
-        return SpringContext.getBean(ReplicationService.class);
-    }
 
     private int calcHash(File file) {
         return namingServerService.calculateHash(file.getName());
     }
 
     private void resendFiles() throws UnknownHostException {
-
-        HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
+        Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
         for (File file : files) {
             int fileHash = calcHash(file);
@@ -66,27 +64,34 @@ public class UpdateNewNode {
                 }
             }
             if (fileHash > newNextNodeHash) {
-                logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash);
-                UnicastSender.sendFile(file, ip);
-                ArrayList<Inet4Address> entry = (ArrayList<Inet4Address>) nodePropreties.log.get(file).clone();
-                log.put(file, entry);
-                deleteFile(file);
+                logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
+                Log.LogEntry entry = log.get(file.getName());
+                FileSender fileSender = UnicastSender.sendFile(file, ip, true);
+                if (entry != null) {
+                    Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
+
+                    //only if we do not contain the file locally we do not add our own ip.
+                    if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(file.getName()))) {
+                        clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
+                    }
+                    sentLog.put(clonedEntry); //add the entry to the sentLog
+
+                }
+                try {
+                    fileSender.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()) != null &&log.get(file.getName()).size() < 2) {
+                //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
+                UnicastSender.sendFile(file, ip, false);
+                log.add(file.getName(), ip);
             }
         }
-        UnicastSender.sendLog(log, ip);
-    }
-
-    private void deleteFile(File f) {
-        if (f.delete()) {
-            nodePropreties.dellLog(f);
-            logger.info(f.getName() + " is deleted");
+        if (sentLog.size() > 0) {
+            UnicastSender.sendLog(sentLog, ip);
         }
     }
-
-    private NodePropreties getNodePropreties() {
-        return SpringContext.getBean(NodePropreties.class);
-    }
-    private NamingServerService getNamingServerService() {
-        return SpringContext.getBean(NamingServerService.class);
-    }
 }
+

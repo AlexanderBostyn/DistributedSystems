@@ -1,0 +1,4 @@
+One node is in the network: it owns file1.
+A new node joins the network, the node does not become the owner of file1.
+Because every file should be at least on 2 locations, file1 should be sent as a replica. (TODO)
+Warning, this will result in random copies of files. the Sync agent should clear this up.

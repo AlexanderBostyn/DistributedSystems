@@ -1,7 +1,9 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.Multicast.MulticastSender;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
@@ -18,18 +20,6 @@ import java.util.logging.Logger;
  */
 public class Detection extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private ReplicationService replicationService;
-
-    public Detection() {
-        this.replicationService = getReplicationService();
-    }
-    private ReplicationService getReplicationService() {
-        return SpringContext.getBean(ReplicationService.class);
-    }
-
-    private Node getNode() {
-        return SpringContext.getBean(Node.class);
-    }
 
     public void lookForFiles() throws IOException, InterruptedException {
         Path directory = Paths.get("src/main/resources/local");
@@ -49,8 +39,8 @@ public class Detection extends Thread {
                     if (!newFile.equals(latestFile)) {
                         logger.info("File created: " + fileName);
 
-                        Inet4Address ip = replicationService.findIp(newFile.getName(), ReplicationState.DETECTION); //using newFile because it ensures only the last part is used.
-                        UnicastSender.sendFile(newFile, ip);
+                        Inet4Address ip = ReplicationService.findIp(newFile.getName(), ReplicationState.DETECTION); //using newFile because it ensures only the last part is used.
+                        UnicastSender.sendFile(newFile, ip, false);
 
                         latestFile = newFile;
                     }
@@ -59,9 +49,9 @@ public class Detection extends Thread {
                 else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                     //delete all files --> multicast
                     File newFile = new File("src/main/resources/local/" + fileName);
-                    new MulticastSender("deletion;" + newFile + "; ").start();
-                    NodePropreties nodePropreties = SpringContext.getBean(NodePropreties.class);
-                    nodePropreties.dellLog(newFile);
+                    new MulticastSender("deletion;" + newFile.getName() + "; ").start();
+                    Log log = NodeApplication.getLog();
+                    log.delete(newFile.getName());
                 }
             }
             boolean valid = watchKey.reset();
