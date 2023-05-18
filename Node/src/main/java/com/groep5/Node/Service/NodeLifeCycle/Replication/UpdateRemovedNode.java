@@ -44,6 +44,10 @@ public class UpdateRemovedNode {
         //voor alle files moeten we vermelden dat we die niet meer bezitten.
         for (File file: replicatedFiles) {
             Inet4Address ownerIp = namingServerService.getFileOwner(namingServerService.calculateHash(file.getName()));
+            if (ownerIp.equals(nodePropreties.getNodeAddress())) {
+                //if we are the owner we should notify our previous becomes the new owner.
+                ownerIp = namingServerService.getIp(nodePropreties.previousHash);
+            }
             try {
                 UnicastSender.sendMessage("shutdown;file;" + file.getName(), ownerIp);
             } catch (IOException e) {

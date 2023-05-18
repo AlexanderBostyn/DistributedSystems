@@ -39,6 +39,7 @@ public class FileTransferTest {
 
 
             Assertions.assertTrue(file.delete());
+            receivedFile.delete();
 //            Assertions.assertTrue(receivedFile.delete());
 
         } catch (FileNotFoundException e) {
