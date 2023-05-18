@@ -52,8 +52,7 @@ public class Log implements Cloneable, Serializable {
             logger.fine("Tried to add file: " + fileName + " to the entry set, but the entry already existed, no action was taken instead.");
             return false;
         }
-        LogEntry entry = new LogEntry();
-        entry.setFileName(fileName);
+        LogEntry entry = new LogEntry(fileName);
         entrySet.add(entry);
         return true;
     }
@@ -67,8 +66,7 @@ public class Log implements Cloneable, Serializable {
     public boolean add(String fileName, Inet4Address address) {
         LogEntry entry = get(fileName);
         if (entry == null) {
-            entry = new LogEntry();
-            entry.setFileName(fileName);
+            entry = new LogEntry(fileName);
             entry.add(address);
             put(entry);
             return false;
@@ -146,12 +144,16 @@ public class Log implements Cloneable, Serializable {
          * The key of the entry, it's the last part of the filePath.
          * e.g: "src/main/replicated/file1.txt" -> "file1.txt"
          */
-        private String fileName;
+        private final String fileName;
 
         /**
          * The values of an entry, contains all the Inet4Addresses
          */
         private Set<Inet4Address> addresses = new HashSet<>();
+
+        public LogEntry(String fileName) {
+            this.fileName = fileName;
+        }
 
         /**
          * Checks if an entry contains a certain address.
@@ -200,14 +202,9 @@ public class Log implements Cloneable, Serializable {
 
         @Override
         public LogEntry clone() {
-            try {
-                LogEntry clone = (LogEntry) super.clone();
-                clone.setAddresses(new HashSet<>(addresses));
-                clone.setFileName(fileName);
-                return clone;
-            } catch (CloneNotSupportedException e) {
-                throw new AssertionError();
-            }
+            LogEntry clone = new LogEntry(fileName);
+            clone.setAddresses(new HashSet<>(addresses));
+            return clone;
         }
 
         @Override
@@ -216,8 +213,13 @@ public class Log implements Cloneable, Serializable {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            return super.equals(obj);
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            LogEntry entry = (LogEntry) o;
+
+            return fileName.equals(entry.fileName);
         }
     }
 }

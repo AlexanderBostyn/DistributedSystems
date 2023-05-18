@@ -86,18 +86,14 @@ public class LogTest {
         Assertions.assertTrue(log.get("file0.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.8")));
         Assertions.assertEquals(1, log.get("file0.txt").getAddresses().size());
 
-        Log.LogEntry entry = new Log.LogEntry();
+        Log.LogEntry entry = new Log.LogEntry("file1.txt");
         entry.add((Inet4Address) Inet4Address.getByName("8.8.8.0"));
-        entry.setFileName("file1.txt");
         Assertions.assertEquals(entry, log.get("file1.txt"));
-        Assertions.assertFalse(log.add(entry));
-        entry.setFileName("file2.txt");
         Assertions.assertFalse(log.add(entry));
         entry.add((Inet4Address) Inet4Address.getByName("8.8.8.8"));
         Assertions.assertTrue(log.add(entry));
-        Assertions.assertTrue(log.get("file2.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.8")));
-        Assertions.assertTrue(log.get("file2.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.0")));
-        Assertions.assertTrue(log.get("file2.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.1")));
+        Assertions.assertTrue(log.get("file1.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.8")));
+        Assertions.assertTrue(log.get("file1.txt").contains((Inet4Address) Inet4Address.getByName("8.8.8.0")));
 
     }
 
@@ -148,8 +144,7 @@ public class LogTest {
         Log log = new Log();
         Log.LogEntry entry = null;
         for (int i = 0; i < 5; i++) {
-            entry = new Log.LogEntry();
-            entry.setFileName("file" + (i + 1) + ".txt");
+            entry = new Log.LogEntry("file" + (i + 1) + ".txt");
             for (int j = 0; j < i + 1; j++) {
                 entry.add((Inet4Address) Inet4Address.getByName("8.8.8." + j));
             }
