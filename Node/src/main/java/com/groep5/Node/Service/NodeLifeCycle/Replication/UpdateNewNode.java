@@ -65,18 +65,18 @@ public class UpdateNewNode {
             }
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
-//                Log.LogEntry entry = log.get(file.getName());
+                Log.LogEntry entry = log.get(file.getName());
                 FileSender fileSender = UnicastSender.sendFile(file, ip, true);
-//                if (entry != null) {
-//                    Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
-//
-//                    //only if we do not contain the file locally we do not add our own ip.
-//                    if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(file.getName()))) {
-//                        clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
-//                    }
-//                    sentLog.put(clonedEntry); //add the entry to the sentLog
-//
-//                }
+                if (entry != null) {
+                    Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
+
+                    //only if we do not contain the file locally we do not add our own ip.
+                    if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(file.getName()))) {
+                        clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
+                    }
+                    sentLog.put(clonedEntry); //add the entry to the sentLog
+
+                }
                 try {
                     fileSender.join();
                 } catch (InterruptedException e) {
