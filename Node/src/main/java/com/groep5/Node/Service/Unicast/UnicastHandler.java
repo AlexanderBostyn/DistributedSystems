@@ -147,6 +147,13 @@ public class UnicastHandler extends Thread {
                 if (!isDeleted) {
                     logger.severe("Received shutdown message from node to update our fileLog, but our log didn't contain that entry");
                 }
+                ArrayList<File> files = ReplicationService.listDirectory("src/main/resources/local");
+                files.addAll(ReplicationService.listDirectory("src/main/resources/replicated"));
+                if(files.stream().anyMatch(file -> file.getName().equals(message[2]))) {
+                    //if we have the file in our directory we will add it to our log.
+                    log.add(message[2], nodePropreties.getNodeAddress());
+                };
+
             }
             default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
         }
