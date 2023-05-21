@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public class SyncAgent {
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
     public static void premain(String agentArgs, Instrumentation inst) {
+        logger.info("Agent is starting");
         logger.info("create log");
         createLog();
         logger.info("start looking at next node for updates");
