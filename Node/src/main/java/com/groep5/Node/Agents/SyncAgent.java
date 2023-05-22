@@ -2,7 +2,10 @@ package com.groep5.Node.Agents;
 
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,18 +19,18 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Service
+@Data
 public class SyncAgent{
     private HashMap<String, Boolean> agentList;
     private NodePropreties nodePropreties;
     private static NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
     private HashMap<String, Boolean> agentList = new HashMap<>();
+    @Autowired
     public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService) {
         logger.info("Agent is starting");
-        this.nodePropreties = nodePropreties;
-        this.namingServerService = namingServerService;
-        createLog();
-        logger.info("this is our log: " + agentList);
+        this.agentList.putAll(createLog());
+        logger.info("this is our log: " + fileArrayList);
         logger.info("Start looking at next node for updates");
         new UpdateLog().start();
     }
@@ -36,14 +39,13 @@ public class SyncAgent{
         return fileArrayList;
     }
 
-    private void createLog() {
+    public HashMap<String, Boolean> createLog() {
         logger.info("Creating agentList");
-        fileArrayList = listDirectory("src/main/resources/Files");
-        fileArrayList.addAll(listDirectory("src/main/resources/Files"));
-        synchronized (this) {
-            fileArrayList.stream().distinct().forEach(file -> //TODO);
-        }
-
+        fileArrayList = listDirectory("src/main/resources/replicated");
+        fileArrayList.addAll(listDirectory("src/main/resources/local"));
+        HashMap<String, Boolean> result = new HashMap<>();
+        fileArrayList.stream().distinct().forEach(file -> result.put(file.getName(), false));
+        return result;
     }
 
     public static ArrayList<File> listDirectory(String pathToDirectory) {
@@ -72,14 +74,14 @@ public class SyncAgent{
                 logger.info("Look at next node");
                 Thread.sleep(5000L);
                 int nextHash = this.nodePropreties.nextHash;
-                Node node = namingServerService.getNode(nextHash);
-                ArrayList<File> files = node.sAgent.getFileArrayList();
+//                Node node = namingServerService.getNode(nextHash);
+//                ArrayList<File> files = node.sAgent.getFileArrayList();
                 //Compare files
-                for(File f : files) {
-                    if(!fileArrayList.contains(f)) {
-                        fileArrayList.add(f);
-                    }
-                }
+//                for(File f : files) {
+//                    if(!fileArrayList.contains(f)) {
+//                        fileArrayList.add(f);
+//                    }
+//                }
             }
         }
 
