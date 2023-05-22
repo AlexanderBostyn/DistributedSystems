@@ -34,7 +34,6 @@ public class SyncAgent{
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
         new UpdateLog().start();
-        new FileLocking().start();
     }
 
 
