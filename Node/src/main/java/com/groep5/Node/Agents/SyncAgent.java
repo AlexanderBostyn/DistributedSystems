@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 @Service
 public class SyncAgent{
-    private static ArrayList<File> fileArrayList;
+    private HashMap<String, Boolean> agentList;
     private NodePropreties nodePropreties;
     private static NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
@@ -27,12 +27,12 @@ public class SyncAgent{
         this.nodePropreties = nodePropreties;
         this.namingServerService = namingServerService;
         createLog();
-        logger.info("this is our log: " + fileArrayList);
+        logger.info("this is our log: " + agentList);
         logger.info("Start looking at next node for updates");
         new UpdateLog().start();
     }
 
-    public ArrayList<File> getFileArrayList() {
+    public HashMap<String, Boolean> getFileArrayList() {
         return fileArrayList;
     }
 
@@ -93,16 +93,17 @@ public class SyncAgent{
         }
     }
 
-    public void lockFile(File file) {
-        //TODO: to lock a file so it can be downloaded safely
-        try {
-            logger.info("lock file " + file);
-            RandomAccessFile newFile = new RandomAccessFile(file, "rw");
-            FileChannel fileChannel = newFile.getChannel();
-            FileLock lock = fileChannel.lock();
-            //lock.release();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void lockFile(String fileName) {
+        logger.info("lock file " + fileName);
+        if(agentList.containsKey(fileName)) {
+            agentList.replace(fileName, true);
+        }
+    }
+
+    public void unlockFile(String fileName) {
+        logger.info("unlock file " + fileName);
+        if(agentList.containsKey(fileName)) {
+            agentList.replace(fileName, false);
         }
     }
 }
