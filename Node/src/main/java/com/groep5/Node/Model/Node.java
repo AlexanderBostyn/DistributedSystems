@@ -27,7 +27,6 @@ public class Node {
     private final BootstrapService bootstrapService;
     private final ReplicationService replicationService;
     private final NodePropreties nodePropreties;
-    public final SyncAgent sAgent;
     @Autowired
     public Node(DiscoveryService discoveryService, NamingServerService namingServerService, BootstrapService bootstrapService, ReplicationService replicationService, NodePropreties nodePropreties) {
         this.nodePropreties = nodePropreties;
@@ -35,7 +34,6 @@ public class Node {
         this.discoveryService = discoveryService;
         this.namingServerService = namingServerService;
 
-        this.sAgent = new SyncAgent(nodePropreties, namingServerService);
 
         this.bootstrapService = bootstrapService;
         this.replicationService = replicationService;
