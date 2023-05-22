@@ -1,5 +1,6 @@
 package com.groep5.Naming.server.Controller;
 
+import com.groep5.Naming.server.Model.Node;
 import com.groep5.Naming.server.Service.SHAHasher;
 import com.groep5.Naming.server.Service.Hasher;
 import org.apache.juli.logging.Log;

@@ -1,5 +1,7 @@
 package com.groep5.Naming.server.Service;
 
+import com.groep5.Naming.server.Model.Node;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 

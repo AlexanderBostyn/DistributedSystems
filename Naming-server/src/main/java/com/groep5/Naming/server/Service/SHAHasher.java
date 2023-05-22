@@ -1,6 +1,7 @@
 package com.groep5.Naming.server.Service;
 
 import com.google.common.hash.Hashing;
+import com.groep5.Naming.server.Model.Node;
 import com.groep5.Naming.server.Persistence;
 import com.groep5.Naming.server.Service.Hasher;
 import org.springframework.context.ApplicationContext;
@@ -65,6 +66,7 @@ public class SHAHasher implements Hasher {
         }
         return ids.get(index + 1);
     }
+
     @Override
     public InetAddress locateNodeById(int id) {
         return nodeMap.get(id);

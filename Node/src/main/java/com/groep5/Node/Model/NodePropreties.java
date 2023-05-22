@@ -1,5 +1,6 @@
 package com.groep5.Node.Model;
 
+import com.groep5.Node.Agents.SyncAgent;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import lombok.Data;
 import org.springframework.stereotype.Component;

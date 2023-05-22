@@ -166,6 +166,7 @@ public class NamingServerService {
         throw new RuntimeException("Tried to contact namingServer but ip was not yet resolved");
     }
 
+
     public synchronized void setNamingServerAddress(Inet4Address namingServerAddress) {
         this.namingServerAddress = namingServerAddress;
     }
