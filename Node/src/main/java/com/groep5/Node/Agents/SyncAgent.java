@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 @Service
 @Data
 public class SyncAgent{
-    private HashMap<String, Boolean> agentList;
     private NodePropreties nodePropreties;
     private NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
@@ -38,7 +37,6 @@ public class SyncAgent{
         new FileLocking().start();
     }
 
-    public HashMap<String, Boolean> getFileArrayList() {
 
     public HashMap<String, Boolean> createLog() {
         logger.info("Creating agentList");
