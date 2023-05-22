@@ -5,11 +5,17 @@ import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import lombok.Data;
+import net.officefloor.plugin.variable.In;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -58,37 +64,66 @@ public class SyncAgent{
         return new ArrayList<File>();
     }
 
+    public void putInAgentList(String filename, Boolean isLocked)
+    {
+        agentList.put(filename,isLocked);
+    }
+    public void replaceInAgentList(String filename, Boolean isLocked)
+    {
+        agentList.replace(filename,isLocked);
+    }
+
     public static class UpdateLog extends Thread {
         private NodePropreties nodePropreties;
         private NamingServerService namingServerService;
-        private void updateLog(NodePropreties nodePropreties, NamingServerService namingServerService) throws InterruptedException, UnknownHostException {
-            this.nodePropreties = nodePropreties;
-            this.namingServerService = namingServerService;
+        private SyncAgent syncAgent;
+
+        public UpdateLog() {
+            this.nodePropreties = NodeApplication.getNodePropreties();
+            this.namingServerService = NodeApplication.getNamingServerService();
+            this.syncAgent = NodeApplication.getSyncAgent();
+        }
+
+        private void updateLog() throws Exception {
             /**
              * Every 5 seconds the agent will contact the next node
              * It will look at the log of the agent
              * Any files that aren't in his log yet will be added
+             * status of files is synced
             */
             while(true) {
-                logger.info("Look at next node");
-                Thread.sleep(5000L);
-                int nextHash = this.nodePropreties.nextHash;
-//                Node node = namingServerService.getNode(nextHash);
-//                ArrayList<File> files = node.sAgent.getFileArrayList();
-                //Compare files
-//                for(File f : files) {
-//                    if(!fileArrayList.contains(f)) {
-//                        fileArrayList.add(f);
-//                    }
-//                }
+                HashMap<String,Boolean> nextNodeList=getAgentListFromNextNode();
+                for (Map.Entry<String, Boolean> entry : nextNodeList.entrySet()) {
+                    String fileName = entry.getKey();
+                    Boolean isLocked = entry.getValue();
+                    if (!syncAgent.getAgentList().containsKey(fileName)){//this file is not present on our node
+                        syncAgent.putInAgentList(fileName,isLocked);
+                    }else{//sync status of files
+                        syncAgent.replaceInAgentList(fileName,isLocked);
+                    }
+                }
+            }
+        }
+        public HashMap<String,Boolean> getAgentListFromNextNode() throws Exception {
+            logger.info("Look at next node");
+            Thread.sleep(5000L);
+            int nextHash = this.nodePropreties.nextHash;
+            //call controller on next node
+            InetAddress ip= namingServerService.getIp(nextHash);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<HashMap> response = restTemplate.getForEntity(ip+":54321"+"/agentlist", HashMap.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody();
+            } else {
+                throw new Exception("Request failed with status: " + response.getStatusCode());
             }
         }
 
         @Override
         public void run() {
             try {
-                updateLog(nodePropreties, namingServerService);
-            } catch (InterruptedException | UnknownHostException e) {
+                updateLog();
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
