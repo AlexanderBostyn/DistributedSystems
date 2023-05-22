@@ -4,6 +4,7 @@ import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Service
+@Data
 public class SyncAgent{
     private static ArrayList<File> fileArrayList;
     private NodePropreties nodePropreties;
