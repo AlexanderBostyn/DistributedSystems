@@ -94,31 +94,43 @@ public class SyncAgent{
         }
     }
 
+    public void FileWatching() throws InterruptedException {
+        for(String f : agentList.keySet()) {
+            new FileLocking(f).start();
+        }
+    }
+
     public class FileLocking extends Thread {
-        private static long lastModifiedTime = 0L;
-        public void isFileBeingEdited(String filename) throws InterruptedException {
-            File file = new File("src/main/resources/local/" + filename);
-            long currentModifiedTime = file.lastModified();
-            while(currentModifiedTime != lastModifiedTime) {
-                lockFile(filename);
-                lastModifiedTime = currentModifiedTime;
-                Thread.sleep(1000L);
-            }
-            unlockFile(filename);
+        private String fileName;
+        private long lastModifiedTime;
+        private File file;
+        public FileLocking(String fileName) {
+            this.fileName = fileName;
+            this.file = new File("src/main/resources/local/" + fileName);
+            lastModifiedTime = this.file.lastModified();
         }
 
-        public void FileWatching() throws InterruptedException {
-            while(true) {
-                for(Map.Entry<String, Boolean> f : agentList.entrySet()) {
-                    isFileBeingEdited(String.valueOf(f));
-                }
+        public boolean isFileBeingEdited() throws InterruptedException {
+            long currentModifiedTime = file.lastModified();
+            if(currentModifiedTime != lastModifiedTime) {
+                lastModifiedTime = currentModifiedTime;
+                return true;
             }
+            return false;
         }
 
         @Override
         public void run() {
             try {
-                FileWatching();
+                while (true) {
+                    if(isFileBeingEdited()) {
+                        lockFile(fileName);
+                    }
+                    else {
+                        unlockFile(fileName);
+                    }
+                    Thread.sleep(5000);
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
