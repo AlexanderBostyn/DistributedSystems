@@ -39,8 +39,8 @@ public class SyncAgent{
 
     public HashMap<String, Boolean> createLog() {
         logger.info("Creating agentList");
-        fileArrayList = listDirectory("src/main/resources/Files");
-        fileArrayList.addAll(listDirectory("src/main/resources/Files"));
+        fileArrayList = listDirectory("src/main/resources/replicated");
+        fileArrayList.addAll(listDirectory("src/main/resources/local"));
         HashMap<String, Boolean> result = new HashMap<>();
         fileArrayList.stream().distinct().forEach(file -> result.put(file.getName(), false));
         return result;
@@ -72,14 +72,14 @@ public class SyncAgent{
                 logger.info("Look at next node");
                 Thread.sleep(5000L);
                 int nextHash = this.nodePropreties.nextHash;
-                Node node = namingServerService.getNode(nextHash);
-                ArrayList<File> files = node.sAgent.getFileArrayList();
+//                Node node = namingServerService.getNode(nextHash);
+//                ArrayList<File> files = node.sAgent.getFileArrayList();
                 //Compare files
-                for(File f : files) {
-                    if(!fileArrayList.contains(f)) {
-                        fileArrayList.add(f);
-                    }
-                }
+//                for(File f : files) {
+//                    if(!fileArrayList.contains(f)) {
+//                        fileArrayList.add(f);
+//                    }
+//                }
             }
         }
 
