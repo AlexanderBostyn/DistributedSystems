@@ -16,6 +16,7 @@ import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Service
@@ -33,6 +34,7 @@ public class SyncAgent{
         logger.info("this is our log: " + fileArrayList);
         logger.info("Start looking at next node for updates");
         new UpdateLog().start();
+        new FileLocking().start();
     }
 
     public HashMap<String, Boolean> getFileArrayList() {
@@ -93,6 +95,38 @@ public class SyncAgent{
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public class FileLocking extends Thread {
+        private static long lastModifiedTime = 0L;
+        public void isFileBeingEdited(String filename) throws InterruptedException {
+            File file = new File("src/main/resources/local/" + filename);
+            long currentModifiedTime = file.lastModified();
+            while(currentModifiedTime != lastModifiedTime) {
+                lockFile(filename);
+                lastModifiedTime = currentModifiedTime;
+                Thread.sleep(1000L);
+            }
+            unlockFile(filename);
+        }
+
+        public void FileWatching() throws InterruptedException {
+            while(true) {
+                for(Map.Entry<String, Boolean> f : agentList.entrySet()) {
+                    isFileBeingEdited(String.valueOf(f));
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            try {
+                FileWatching();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     public void lockFile(String fileName) {
