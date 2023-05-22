@@ -3,6 +3,7 @@ package com.groep5.Node.Agents;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NamingServerService;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -10,14 +11,17 @@ import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class SyncAgent {
+@Service
+public class SyncAgent{
     private static ArrayList<File> fileArrayList;
     private NodePropreties nodePropreties;
     private static NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
+    private HashMap<String, Boolean> agentList = new HashMap<>();
     public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService) {
         logger.info("Agent is starting");
         this.nodePropreties = nodePropreties;
@@ -33,8 +37,13 @@ public class SyncAgent {
     }
 
     private void createLog() {
-        logger.info("Create log");
+        logger.info("Creating agentList");
         fileArrayList = listDirectory("src/main/resources/Files");
+        fileArrayList.addAll(listDirectory("src/main/resources/Files"));
+        synchronized (this) {
+            fileArrayList.stream().distinct().forEach(file -> //TODO);
+        }
+
     }
 
     public static ArrayList<File> listDirectory(String pathToDirectory) {
