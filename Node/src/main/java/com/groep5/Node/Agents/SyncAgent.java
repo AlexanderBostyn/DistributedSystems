@@ -24,26 +24,25 @@ import java.util.logging.Logger;
 public class SyncAgent{
     private HashMap<String, Boolean> agentList;
     private NodePropreties nodePropreties;
-    private static NamingServerService namingServerService;
+    private NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
     private HashMap<String, Boolean> agentList = new HashMap<>();
     @Autowired
     public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService) {
+        this.nodePropreties = nodePropreties;
+        this.namingServerService = namingServerService;
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
-        logger.info("this is our log: " + fileArrayList);
         logger.info("Start looking at next node for updates");
         new UpdateLog().start();
         new FileLocking().start();
     }
 
     public HashMap<String, Boolean> getFileArrayList() {
-        return fileArrayList;
-    }
 
     public HashMap<String, Boolean> createLog() {
         logger.info("Creating agentList");
-        fileArrayList = listDirectory("src/main/resources/replicated");
+        ArrayList<File> fileArrayList = listDirectory("src/main/resources/replicated");
         fileArrayList.addAll(listDirectory("src/main/resources/local"));
         HashMap<String, Boolean> result = new HashMap<>();
         fileArrayList.stream().distinct().forEach(file -> result.put(file.getName(), false));
