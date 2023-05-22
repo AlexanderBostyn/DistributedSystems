@@ -35,6 +35,11 @@ public class SyncAgent{
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
 //        new UpdateLog().start();
+        try {
+            fileWatching();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -84,7 +89,7 @@ public class SyncAgent{
         }
     }
 
-    public void FileWatching() throws InterruptedException {
+    public void fileWatching() throws InterruptedException {
         for(String f : agentList.keySet()) {
             new FileLocking(f).start();
         }
