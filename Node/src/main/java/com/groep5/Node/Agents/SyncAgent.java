@@ -4,6 +4,7 @@ import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,29 +34,19 @@ public class SyncAgent{
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
-        new UpdateLog().start();
+//        new UpdateLog().start();
     }
 
 
     public HashMap<String, Boolean> createLog() {
         logger.info("Creating agentList");
-        ArrayList<File> fileArrayList = listDirectory("src/main/resources/replicated");
-        fileArrayList.addAll(listDirectory("src/main/resources/local"));
+        ArrayList<File> fileArrayList = ReplicationService.listDirectory("src/main/resources/replicated");
+        fileArrayList.addAll(ReplicationService.listDirectory("src/main/resources/local"));
         HashMap<String, Boolean> result = new HashMap<>();
         fileArrayList.stream().distinct().forEach(file -> result.put(file.getName(), false));
         return result;
     }
 
-    public static ArrayList<File> listDirectory(String pathToDirectory) {
-        File directory = new File(pathToDirectory);
-        File[] fileArray = directory.listFiles();
-        if (fileArray != null) {
-            ArrayList<File> files = new ArrayList<>(List.of(fileArray));
-            Logger.getGlobal().fine("Files scanned at " + pathToDirectory + ":" + files);
-            return files;
-        }
-        return new ArrayList<File>();
-    }
 
     public static class UpdateLog extends Thread {
         private NodePropreties nodePropreties;
