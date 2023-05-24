@@ -4,6 +4,7 @@ import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import lombok.Data;
 import net.officefloor.plugin.variable.In;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,30 +40,24 @@ public class SyncAgent{
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
-        new UpdateLog().start();
-        new FileLocking().start();
+//        new UpdateLog().start();
+        try {
+            fileWatching();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     public HashMap<String, Boolean> createLog() {
         logger.info("Creating agentList");
-        ArrayList<File> fileArrayList = listDirectory("src/main/resources/replicated");
-        fileArrayList.addAll(listDirectory("src/main/resources/local"));
+        ArrayList<File> fileArrayList = ReplicationService.listDirectory("src/main/resources/replicated");
+        fileArrayList.addAll(ReplicationService.listDirectory("src/main/resources/local"));
         HashMap<String, Boolean> result = new HashMap<>();
         fileArrayList.stream().distinct().forEach(file -> result.put(file.getName(), false));
         return result;
     }
 
-    public static ArrayList<File> listDirectory(String pathToDirectory) {
-        File directory = new File(pathToDirectory);
-        File[] fileArray = directory.listFiles();
-        if (fileArray != null) {
-            ArrayList<File> files = new ArrayList<>(List.of(fileArray));
-            Logger.getGlobal().fine("Files scanned at " + pathToDirectory + ":" + files);
-            return files;
-        }
-        return new ArrayList<File>();
-    }
 
     public void putInAgentList(String filename, Boolean isLocked)
     {
@@ -129,31 +124,43 @@ public class SyncAgent{
         }
     }
 
+    public void fileWatching() throws InterruptedException {
+        for(String f : agentList.keySet()) {
+            new FileLocking(f).start();
+        }
+    }
+
     public class FileLocking extends Thread {
-        private static long lastModifiedTime = 0L;
-        public void isFileBeingEdited(String filename) throws InterruptedException {
-            File file = new File("src/main/resources/local/" + filename);
-            long currentModifiedTime = file.lastModified();
-            while(currentModifiedTime != lastModifiedTime) {
-                lockFile(filename);
-                lastModifiedTime = currentModifiedTime;
-                Thread.sleep(1000L);
-            }
-            unlockFile(filename);
+        private String fileName;
+        private long lastModifiedTime;
+        private File file;
+        public FileLocking(String fileName) {
+            this.fileName = fileName;
+            this.file = new File("src/main/resources/local/" + fileName);
+            lastModifiedTime = this.file.lastModified();
         }
 
-        public void FileWatching() throws InterruptedException {
-            while(true) {
-                for(Map.Entry<String, Boolean> f : agentList.entrySet()) {
-                    isFileBeingEdited(String.valueOf(f));
-                }
+        public boolean isFileBeingEdited() throws InterruptedException {
+            long currentModifiedTime = file.lastModified();
+            if(currentModifiedTime != lastModifiedTime) {
+                lastModifiedTime = currentModifiedTime;
+                return true;
             }
+            return false;
         }
 
         @Override
         public void run() {
             try {
-                FileWatching();
+                while (true) {
+                    if(isFileBeingEdited()) {
+                        lockFile(fileName);
+                    }
+                    else {
+                        unlockFile(fileName);
+                    }
+                    Thread.sleep(5000);
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
