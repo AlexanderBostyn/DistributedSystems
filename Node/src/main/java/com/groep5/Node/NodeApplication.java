@@ -1,5 +1,6 @@
 package com.groep5.Node;
 
+import com.groep5.Node.Agents.FailureAgent;
 import com.groep5.Node.Agents.SyncAgent;
 import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
@@ -42,6 +43,10 @@ public class NodeApplication {
 
 	public static NamingServerService getNamingServer() {
 		return SpringContext.getBean(NamingServerService.class);
+	}
+
+	public static FailureAgent getFailureAgent() {
+		return SpringContext.getBean(FailureAgent.class);
 	}
 
 	public static SyncAgent getSyncAgent() {

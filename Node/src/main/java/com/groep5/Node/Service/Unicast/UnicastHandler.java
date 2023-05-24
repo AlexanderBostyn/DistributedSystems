@@ -129,7 +129,6 @@ public class UnicastHandler extends Thread {
         }
     }
 
-
     private synchronized void shutdownHandler(String[] message) {
         //node.getFailure().stop();
         nodePropreties.stopFailure();
