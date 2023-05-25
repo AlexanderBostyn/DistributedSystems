@@ -44,6 +44,7 @@ public class SyncAgent{
         try {
             fileWatching();
         } catch (InterruptedException e) {
+            NodeApplication.getFailureAgent().startFailureAgent();
             throw new RuntimeException(e);
         }
     }
@@ -119,6 +120,7 @@ public class SyncAgent{
             try {
                 updateLog();
             } catch (Exception e) {
+                NodeApplication.getFailureAgent().startFailureAgent();
                 throw new RuntimeException(e);
             }
         }

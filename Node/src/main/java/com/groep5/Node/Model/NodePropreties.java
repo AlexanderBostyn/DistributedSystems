@@ -1,6 +1,7 @@
 package com.groep5.Node.Model;
 
 import com.groep5.Node.Agents.SyncAgent;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import lombok.Data;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ public class NodePropreties {
         try {
             nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
         } catch (UnknownHostException e) {
+            NodeApplication.getFailureAgent().startFailureAgent();
             logger.severe("Couldn't fetch own IP");
             throw new RuntimeException(e);
         }

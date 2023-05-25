@@ -7,6 +7,7 @@ import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
+import com.groep5.Node.Service.Unicast.UnicastSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -67,5 +68,9 @@ public class NodeApplication {
 	}
 	public static ReplicationService getReplicationService(){
 		return SpringContext.getBean(ReplicationService.class);
+	}
+
+	public static UnicastSender getUnicastSender(){
+		return SpringContext.getBean(UnicastSender.class);
 	}
 }

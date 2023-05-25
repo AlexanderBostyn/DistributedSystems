@@ -42,6 +42,7 @@ public class MulticastReceiver extends Thread {
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
+            NodeApplication.getFailureAgent().startFailureAgent();
             throw new RuntimeException(e);
         }
     }
@@ -148,6 +149,7 @@ public class MulticastReceiver extends Thread {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
             } catch (IOException e) {
+                NodeApplication.getFailureAgent().startFailureAgent();
                 logger.severe("couldn't open unicast socket");
                 throw new RuntimeException(e);
             } catch (InterruptedException e) {
