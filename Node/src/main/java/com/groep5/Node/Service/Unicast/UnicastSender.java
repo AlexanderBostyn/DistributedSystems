@@ -1,6 +1,7 @@
 package com.groep5.Node.Service.Unicast;
 
 import com.groep5.Node.Agents.FailureAgent;
+import com.groep5.Node.Agents.FailureAgentGetDTO;
 import com.groep5.Node.Model.Log;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
@@ -44,9 +45,9 @@ public class UnicastSender {
      * @param deleteFile if true, deletes the file and also the entry from log
      * @return A reference to the fileSender thread.
      */
-    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile) {
-        Logger logger = Logger.getLogger("ReplicationService.sendFile");
-        FileSender fileSender = new FileSender(file, destination, deleteFile);
+    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile,String protocol) {
+        Logger logger = Logger.getLogger(protocol+".sendFile");
+        FileSender fileSender = new FileSender(file, destination, deleteFile,protocol);
         fileSender.start();
         try {
             fileSender.join();
@@ -63,12 +64,12 @@ public class UnicastSender {
         return fileSender;
     }
 
-    public static void sendFailureAgent(InetAddress ip, FailureAgent failureAgent){
+    public static void sendFailureAgent(InetAddress ip, FailureAgentGetDTO failureAgent){
         //after running on this node, send agent to prev node
         RestTemplate restTemplate = new RestTemplate();
         String url = ip + ":8080/failureAgent";
-        HttpEntity<FailureAgent> entity = new HttpEntity<>(failureAgent);
-        ResponseEntity<FailureAgent> response = restTemplate.exchange(url, HttpMethod.POST, entity, FailureAgent.class);
+        HttpEntity<FailureAgentGetDTO> entity = new HttpEntity<>(failureAgent);
+        ResponseEntity<FailureAgentGetDTO> response = restTemplate.exchange(url, HttpMethod.POST, entity, FailureAgentGetDTO.class);
     }
 
     ;

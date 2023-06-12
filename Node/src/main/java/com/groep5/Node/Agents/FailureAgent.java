@@ -24,35 +24,47 @@ private NamingServerService namingServerService;
 private NodePropreties nodePropreties;
 private UnicastSender unicastSender;
 private int failingNodeHash;
-    public FailureAgent(int failingNodeHash) {
-        this.failingNodeHash=failingNodeHash;
+private boolean isNewAgent=false;
 
+    public FailureAgent(int failingNodeHash, boolean isNewAgent) {//called when creating an agent from the controller
+        this.failingNodeHash = failingNodeHash;
+        this.isNewAgent = isNewAgent;
+        initFailureAgent();
+    }
+    public FailureAgent() {
+        initFailureAgent();
+    }
+
+    public void initFailureAgent(){//get beans
         this.log = NodeApplication.getLog();
         this.namingServerService = NodeApplication.getNamingServerService();
         this.nodePropreties= NodeApplication.getNodePropreties();
         this.unicastSender=NodeApplication.getUnicastSender();
     }
 
-    //ToDo trigger this method in important exception catchers
-    public void startFailureAgent(){//when our node fails, send files + log to prev node
-
+    public void startFailureAgent(){
+        failingNodeHash=nodePropreties.getNodeHash();
+        isNewAgent=true;
+        run();
     }
-
     public void sendFilesToOwner(){
         ArrayList<File> files= ReplicationService.listDirectory("src/main/resources/replicated");
-        for (Log.LogEntry entrySet: log.getEntrySet()) {//iterate over files
+        for (Log.LogEntry entry: log.getEntrySet()) {//iterate over logEntries (filenames)
             try {
                 //check if we are owner of file
-                if (nodePropreties.getNodeAddress().equals(namingServerService.getFileOwner(namingServerService.calculateHash(entrySet.getFileName()))))
+                if (nodePropreties.getNodeAddress().equals(namingServerService.getFileOwner(namingServerService.calculateHash(entry.getFileName()))))
                 {
                     //send files to new owner (prev node)
                     for (File file: files) {
-                        if (file.getName().equals(entrySet.getFileName())){//find file corresponding to fileName
-                            unicastSender.sendFile(file,namingServerService.getIp(nodePropreties.previousHash),false);
+                        if (file.getName().equals(entry.getFileName())){//find file corresponding to fileName
+                            unicastSender.sendFile(file,namingServerService.getIp(nodePropreties.previousHash),false,"failureAgent");
                         }
                     }
                     //send log
-
+                    Log newLog=new Log();
+                    Log.LogEntry clonedEntry = entry.clone();
+                    newLog.put(clonedEntry);
+                    unicastSender.sendLog(newLog,namingServerService.getIp(nodePropreties.previousHash),"failureAgent");
 
 
                 }
@@ -60,20 +72,33 @@ private int failingNodeHash;
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 
+    public FailureAgentGetDTO createDTO()
+    {
+        FailureAgentGetDTO dto=new FailureAgentGetDTO(failingNodeHash,isNewAgent);
+        return dto;
+    }
+
     @Override
-    public void run() {
-        //read current files and send files that this node owns to prev
-        sendFilesToOwner();
-        //after running on this node, send agent to prev node
-        try {
-            InetAddress ip = namingServerService.getIp(nodePropreties.previousHash);
-            unicastSender.sendFailureAgent(ip,this);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+    public void run() {//called when an agent is received through the controller
+        if( isNewAgent)//first instance of the failureAgent
+        {
+            //read current files and send files that this node owns to prev node in ring
+            sendFilesToOwner();
+        }
+        if (isNewAgent || !(failingNodeHash==nodePropreties.getNodeHash()))//check if we're not back at the start, then proceed
+        {
+            //after running on this node, send agent to prev node
+            isNewAgent = false;
+            try {
+                FailureAgentGetDTO dto= createDTO();
+                InetAddress ip = namingServerService.getIp(nodePropreties.previousHash);
+                unicastSender.sendFailureAgent(ip,dto);
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            }
         }
 
 

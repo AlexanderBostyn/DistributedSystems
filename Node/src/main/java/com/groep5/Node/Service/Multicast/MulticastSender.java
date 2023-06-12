@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.Multicast;
 
+import com.groep5.Node.Agents.FailureAgent;
 import com.groep5.Node.NodeApplication;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class MulticastSender extends Thread{
             sendUDPMessage(message, "255.255.255.255", 4321);
             logger.info("Send multicast message: " + message);
         } catch (IOException e) {
-            NodeApplication.getFailureAgent().startFailureAgent();
+            new FailureAgent().startFailureAgent();
             throw new RuntimeException(e);
         }
     }

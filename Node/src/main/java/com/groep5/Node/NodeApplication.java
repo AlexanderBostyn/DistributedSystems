@@ -46,10 +46,6 @@ public class NodeApplication {
 		return SpringContext.getBean(NamingServerService.class);
 	}
 
-	public static FailureAgent getFailureAgent() {
-		return SpringContext.getBean(FailureAgent.class);
-	}
-
 	public static SyncAgent getSyncAgent() {
 		return SpringContext.getBean(SyncAgent.class);
 	}

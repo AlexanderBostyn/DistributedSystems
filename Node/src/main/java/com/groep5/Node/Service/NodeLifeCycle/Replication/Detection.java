@@ -43,7 +43,7 @@ public class Detection extends Thread {
                     if (!newFile.equals(latestFile) && !extension.equals("swp")) {
                         logger.info("File created: " + fileName);
                         Inet4Address ip = ReplicationService.findIp(newFile.getName(), ReplicationState.DETECTION); //using newFile because it ensures only the last part is used.
-                        UnicastSender.sendFile(newFile, ip, false);
+                        UnicastSender.sendFile(newFile, ip, false,"replication");
 
                         latestFile = newFile;
                     }

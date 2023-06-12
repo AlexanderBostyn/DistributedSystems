@@ -1,6 +1,7 @@
 package com.groep5.Node.Controller;
 
 import com.groep5.Node.Agents.FailureAgent;
+import com.groep5.Node.Agents.FailureAgentGetDTO;
 import com.groep5.Node.Agents.SyncAgent;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
@@ -39,8 +40,9 @@ public class Controller {
     }
 
     @PutMapping("/failureAgent")//receive agent from next node
-    public void startFailureAgent(HttpEntity<FailureAgent> request) throws IOException {
-        FailureAgent failureAgent = request.getBody();
+    public void startFailureAgent(HttpEntity<FailureAgentGetDTO> request) throws IOException {
+        FailureAgentGetDTO dto = request.getBody();
+        FailureAgent failureAgent = new FailureAgent(dto.getFailingNodeHash(),dto.isNewAgent());
         failureAgent.run();
     }
 

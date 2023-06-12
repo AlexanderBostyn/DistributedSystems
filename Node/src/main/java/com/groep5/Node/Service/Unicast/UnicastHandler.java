@@ -53,6 +53,7 @@ public class UnicastHandler extends Thread {
                 case "shutdown" -> shutdownHandler(message);
                 case "replication" -> replicationHandler(message);
                 case "log" -> logHandler(message);
+                case "failureAgent"->
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
@@ -64,7 +65,7 @@ public class UnicastHandler extends Thread {
         }
     }
 
-    private synchronized void failureHandler(String[] message) {
+    private synchronized void failureHandler(String[] message) {//message[2] contains the new value for prev/next node
         nodePropreties.stopFailure();
        //node.getFailure().stop();
         switch (message[1]) {
