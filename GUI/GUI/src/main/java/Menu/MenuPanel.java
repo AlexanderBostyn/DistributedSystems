@@ -1,39 +1,43 @@
 package Menu;
 
+import Home.HomeMain;
+import Home.Nodes.NodesMain;
+import MainPanel.MainFrame;
+import MainPanel.MainPanel;
+import Nodes.NodeMain;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MenuPanel extends JPanel implements ActionListener {
-    //TODO: adds a panel with all the options
+public class MenuPanel extends JPanel {
+    public MainPanel mainPanel;
 
-    Button Home;
-    Button Nodes;
-    Button Files;
-
-    public MenuPanel() {
+    public MenuPanel(MainPanel mp) {
+        mainPanel = mp;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds(0, 0, 200, screenSize.height);
-        this.setBackground(new Color(0, 20, 75, 175));
+        setBounds(0, 75, 200, screenSize.height-75);
+        setBackground(new Color(0, 15, 30));
 
-        this.Home = new Button("Home");
-        this.Home.setPreferredSize(new Dimension(100, 50));
-        this.Home.addActionListener(this);
-        this.Nodes = new Button("Nodes");
-        this.Nodes.setPreferredSize(new Dimension(100, 50));
-        this.Nodes.addActionListener(this);
-        this.Files = new Button("Files");
-        this.Files.setPreferredSize(new Dimension(100, 50));
-        this.Files.addActionListener(this);
+        JButton home = new JButton("Home");
+        home.setPreferredSize(new Dimension(100, 50));
+        home.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainPanel.showPanel(0);
+            }
+        });
+        JButton nodes = new JButton("Nodes");
+        nodes.setPreferredSize(new Dimension(100, 50));
+        nodes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainPanel.showPanel(1);
+            }
+        });
 
-        this.add(Home);
-        this.add(Nodes);
-        this.add(Files);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
+        add(home);
+        add(nodes);
     }
 }

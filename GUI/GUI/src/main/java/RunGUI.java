@@ -1,7 +1,9 @@
 import MainPanel.*;
 
-public class RunGUI {
+import javax.swing.*;
+
+public class RunGUI{
     public static void main(String[] arg){
-        new MainFrame();
+        new MainFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 }

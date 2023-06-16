@@ -2,25 +2,40 @@ package MainPanel;
 
 import javax.swing.*;
 import java.awt.*;
+
+import Home.Files.FilesMain;
+import Home.HomeMain;
+import Home.NameServer.NameServerMain;
+import Home.Nodes.NodesMain;
 import Menu.*;
+import Nodes.NodeMain;
 
 public class MainFrame extends JFrame{
+    public MainPanel mainPanel;
     public MainFrame() {
-        this.setTitle("Project Distributed Systems");
-        this.setIconImage(new ImageIcon("src/Images/UA.png").getImage());
-
-        this.getContentPane().setBackground(new Color(255, 255, 255, 255));
-        this.setLayout(null);
-
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//make sure the progam closes when you press x
+        setSize(Toolkit.getDefaultToolkit().getScreenSize());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setResizable(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Project Distributed Systems");
+        setIconImage(new ImageIcon("src/Images/UA.png").getImage());
+        getContentPane().setBackground(new Color(0, 20, 75));
 
-        this.setResizable(true);//you cannot manually resize the program
-        this.setSize(500, 397);//panels nemen blijkbaar 37 extra pixels in in beide dimensies dan ingevuld?
-        this.setLayout(null);
+        setLayout(null);
 
-        this.add(new TitleLabel());
-        this.add(new MenuPanel());
+        mainPanel = new MainPanel();
+        MenuPanel menuPanel = new MenuPanel(mainPanel);
+
+
+        add(new TitleLabel());
+        add(new ImageLabel());
+        add(menuPanel);
+        add(mainPanel);
+
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+
         //TODO: add more panels/labels with all the functionality
         //TODO: Adding nodes
         //TODO: Removing nodes
@@ -28,7 +43,5 @@ public class MainFrame extends JFrame{
         //TODO: Showing the list of all files on the selected node (local && replicated in two groups)
         //TODO: Showing the configuration data of the selected node (i.e., previous and next ID)
         //TODO: All the other things you may want to add are bonus!
-
-        this.setVisible(true);
     }
 }
