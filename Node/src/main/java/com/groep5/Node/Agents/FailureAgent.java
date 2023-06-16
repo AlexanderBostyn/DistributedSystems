@@ -64,7 +64,7 @@ private boolean isNewAgent=false;
                     Log newLog=new Log();
                     Log.LogEntry clonedEntry = entry.clone();
                     newLog.put(clonedEntry);
-                    unicastSender.sendLog(newLog,namingServerService.getIp(nodePropreties.previousHash),"failureAgent");
+                    unicastSender.sendLog(newLog,namingServerService.getIp(nodePropreties.previousHash));
 
 
                 }

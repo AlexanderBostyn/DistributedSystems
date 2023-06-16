@@ -53,7 +53,7 @@ public class UnicastHandler extends Thread {
                 case "shutdown" -> shutdownHandler(message);
                 case "replication" -> replicationHandler(message);
                 case "log" -> logHandler(message);
-                case "failureAgent"->
+                case "failureAgent"->failureAgentHandler(message);
                 default -> logger.info("Message could not be parsed: " + Arrays.toString(message));
             }
             socket.close();
@@ -176,6 +176,17 @@ public class UnicastHandler extends Thread {
                 //But if the place where the file came from is deleting the file immediately after we shouldnt log the receiving ip
                 log.add(file.getName(),ip);
             }
+        }
+    }
+
+    private void failureAgentHandler(String[] message){
+        Inet4Address ip = (Inet4Address) socket.getInetAddress();
+        File file = new FileReceiver(message, socket).receive();
+
+        log.add(file.getName(),nodePropreties.getNodeAddress());
+        if (message[3].equals("false")) {//always
+            //But if the place where the file came from is deleting the file immediately after we shouldnt log the receiving ip
+            log.add(file.getName(),ip);
         }
     }
 

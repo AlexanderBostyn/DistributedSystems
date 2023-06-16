@@ -46,6 +46,18 @@ public class Controller {
         failureAgent.run();
     }
 
+    @GetMapping("/getNodeInfo")
+    public String getNodeInfo()//nodeName,nodeHash,nodeAddress,prevNode,nextNode
+    {
+        String info="";
+        info+=nodePropreties.getNodeName()+";";
+        info+= nodePropreties.getNodeHash()+";";
+        info+= nodePropreties.getNodeAddress()+";";
+        info+= nodePropreties.getPreviousHash()+";";
+        info+= nodePropreties.getNextHash();
+        return info;
+    }
+
 
     @GetMapping("/agentlist")
     public ResponseEntity<Map<String, Boolean>> getAgentList()
