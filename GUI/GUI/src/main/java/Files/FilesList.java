@@ -21,7 +21,6 @@ public class FilesList extends JPanel {
 
         while(numRows < 13) {
             if (numRows == 12) {
-                System.out.println(numRows);
                 add(fcf.createBtnCell(fcp));
                 break;
             }
@@ -32,7 +31,6 @@ public class FilesList extends JPanel {
                 numRows++;
                 startPositie++;
                 filesLeft--;
-                System.out.println(numRows);
             }
             else if(filesLeft == 0) {
                 break;

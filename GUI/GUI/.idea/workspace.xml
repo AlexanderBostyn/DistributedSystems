@@ -6,27 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="95572c4b-a25e-4dcc-ae0c-d6a128aec4b5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Data/DataContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Data/DataContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Data/FileData.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Data/NodeData.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesCardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesCardPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Files/FilesCardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Files/FilesCardPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Files/FilesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Files/FilesList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/NodeMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/NodeMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Data/DataContainer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Data/DataContainer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Data/FileData.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Data/NodeData.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCardPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Home/Files/FilesCardPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Home/Files/FilesList.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerList.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodesList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Home/Nodes/NodesList.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeList$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeList$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeList.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/NodeMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Nodes/NodeMain.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Files/FilesList.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
