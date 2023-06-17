@@ -1,5 +1,6 @@
 package Nodes;
 
+import Data.DataContainer;
 import Home.Nodes.NodesList;
 import Home.Nodes.NodesTitle;
 import MainPanel.MainPanel;
@@ -9,6 +10,7 @@ import Nodes.Node.NodeTitle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class NodeMain extends JPanel{
     public MainPanel mainPanel;
@@ -19,12 +21,16 @@ public class NodeMain extends JPanel{
             setBackground(new Color(0, 20, 75));
             setOpaque(true);
             setLayout(null);
+
+            DataContainer dataContainer = new DataContainer();
+            ArrayList<String> nodes = dataContainer.getNodes();
+
             for(int i = 1;i<5;i++) {
-                add(createNode(i));
+                add(createNode(i, nodes.get(i-1)));
             }
         }
 
-        private JPanel createNode(int i) {
+        private JPanel createNode(int i, String s) {
             JPanel nodePanel = new JPanel();
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             int width = screenSize.width - 200;
@@ -33,7 +39,7 @@ public class NodeMain extends JPanel{
             nodePanel.setLayout(null);
             nodePanel.add(new NodeTitle("node" + i + ".6dist"));
             nodePanel.add(new NodeButtons(mainPanel));
-            nodePanel.add(new NodeList());
+            nodePanel.add(new NodeList(s));
 
             return nodePanel;
         }

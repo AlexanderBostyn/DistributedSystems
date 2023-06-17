@@ -1,5 +1,7 @@
 package Home.Nodes;
 
+import Data.DataContainer;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,11 +14,11 @@ public class NodesList extends JPanel {
         setLayout(new GridLayout(5,1, 0,5));
 
         NodeCellFactory ncf = new NodeCellFactory();
-
         add(ncf.createFirstCell());
-        add(ncf.createCell("Name1", "15", "172.0.0.13", "Online"));
-        add(ncf.createCell("Name2", "179", "172.0.0.138", "Offline"));
-        add(ncf.createCell("Name3", "45165", "172.0.5.13", "Online"));
-        add(ncf.createCell("Name4", "1465", "172.45.0.13", "Online"));
+        DataContainer dataContainer = new DataContainer();
+        for(String s : dataContainer.getNodes()) {
+            String[] strings = s.split(";");
+            add(ncf.createCell(strings[0], strings[1], strings[2], strings[3]));
+        }
     }
 }

@@ -1,11 +1,13 @@
 package Home.Files;
 
+import Data.DataContainer;
 import Files.FilesMain;
 import Home.HomeMain;
 import Nodes.NodeMain;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class FilesCardPanel extends JPanel {
     private CardLayout cardLayout;
@@ -19,16 +21,25 @@ public class FilesCardPanel extends JPanel {
         cardContainer.setBackground(new Color(0, 12, 28));
         cardContainer.setOpaque(true);
 
-        createFilePanel();
-        createFilePanel();
-        createFilePanel();
+        DataContainer dataContainer = new DataContainer();
+        ArrayList<String> fileList = dataContainer.getFiles();
+        double length = fileList.size();
+        int amountOfPanels = (int) Math.ceil(length/8);
+        int filesLeft = (int) length;
+
+        int startPositie = 0;
+        for(int i = 0;i<amountOfPanels;i++) {
+            createFilePanel(startPositie, fileList, filesLeft);
+            startPositie += 8;
+            filesLeft -= 8;
+        }
 
         setLayout(new BorderLayout());
         add(cardContainer, BorderLayout.CENTER);
     }
-    int i = 0;
-    public void createFilePanel() {
-        FilesList filesList = new FilesList(this, i++);
+
+    public void createFilePanel(int startPositie, ArrayList<String> fileList, int filesLeft) {
+        FilesList filesList = new FilesList(this, startPositie, fileList, filesLeft);
         cardContainer.add(filesList);
     }
 

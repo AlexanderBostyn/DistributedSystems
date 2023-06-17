@@ -1,5 +1,7 @@
 package Home.NameServer;
 
+import Data.DataContainer;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,11 +15,14 @@ public class NameServerList extends JPanel {
 
         NameServerCellFactory nscf = new NameServerCellFactory();
 
-        add(nscf.createCell("Status", "Online"));
-        add(nscf.createCell("Nodes", "5"));
-        add(nscf.createCell("Discovery", "Online"));
-        add(nscf.createCell("Replication", "Online"));
-        add(nscf.createCell("Sync Agent", "Offline"));
-        add(nscf.createCell("Failure Agent", "Offline"));
+        DataContainer dataContainer = new DataContainer();
+        String[] strings = dataContainer.getNameServer().split(";");
+
+        add(nscf.createCell("Status", strings[0]));
+        add(nscf.createCell("Nodes", strings[1]));
+        add(nscf.createCell("Discovery", strings[2]));
+        add(nscf.createCell("Replication", strings[3]));
+        add(nscf.createCell("Sync Agent", strings[4]));
+        add(nscf.createCell("Failure Agent", strings[5]));
     }
 }
