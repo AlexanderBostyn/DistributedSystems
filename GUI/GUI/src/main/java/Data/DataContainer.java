@@ -13,9 +13,7 @@ public class DataContainer {
             String defaultNode = "node" + i + ".6dist;" + i + ";172.0.0."+ i + ";Offline";
             nodes.add(defaultNode);
         }
-        files = new ArrayList<>();
-        //String defaultFile = "1;Portfolio_dist6;node1.6dist;node2.6dist;Unlocked";
-        //files.add(defaultFile);
+        files = new ArrayList<>();;
         nameServer = "Offline;0;Offline;Offline;Offline;Offline";
     }
 
