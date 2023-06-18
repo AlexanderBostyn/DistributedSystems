@@ -27,16 +27,15 @@ public class Node {
     private final BootstrapService bootstrapService;
     private final ReplicationService replicationService;
     private final NodePropreties nodePropreties;
+    private final SyncAgent syncAgent;
     @Autowired
-    public Node(DiscoveryService discoveryService, NamingServerService namingServerService, BootstrapService bootstrapService, ReplicationService replicationService, NodePropreties nodePropreties) {
+    public Node(DiscoveryService discoveryService, NamingServerService namingServerService, BootstrapService bootstrapService, ReplicationService replicationService, NodePropreties nodePropreties, SyncAgent syncAgent) {
         this.nodePropreties = nodePropreties;
-
         this.discoveryService = discoveryService;
         this.namingServerService = namingServerService;
-
-
         this.bootstrapService = bootstrapService;
         this.replicationService = replicationService;
+        this.syncAgent=syncAgent;
     }
 
     public void startNode(String nodeName) throws UnknownHostException {
@@ -46,9 +45,9 @@ public class Node {
             bootstrapService.startBootstrap();
             namingServerService.registerDevice();
             nodePropreties.startNewFailure();
-
             listenToMulticasts();
             replicationService.startReplication();
+            syncAgent.startSyncAgent();
         }
     }
 

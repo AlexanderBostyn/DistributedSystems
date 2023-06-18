@@ -68,7 +68,7 @@ public class NodeController {
             nodePropreties.setActive(true);
             syncAgent.setActive(true);
             discoveryService.setActive(true);
-            syncAgent.startSyncAgent();
+            //syncAgent.startSyncAgent();
             return new  ResponseEntity<String>("activated "+nodeName, HttpStatus.OK);
         }else{
             return new  ResponseEntity<String>(nodeName+" is already active", HttpStatus.BAD_REQUEST);
