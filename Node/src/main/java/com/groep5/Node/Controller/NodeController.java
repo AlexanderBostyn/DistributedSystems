@@ -7,41 +7,67 @@ import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
+import com.groep5.Node.Service.NodeLifeCycle.DiscoveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
-public class Controller {
+public class NodeController {
     @Autowired
     private  Node node;
     @Autowired
     private NodePropreties nodePropreties;
     @Autowired
     NamingServerService namingServerService;
-
     @Autowired
     private SyncAgent syncAgent;
+    @Autowired
+    private DiscoveryService discoveryService;
+    private String nodeName;
+    private  final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public void setNodeName(String name){
+        nodeName=name;
+    }
 
     @PutMapping("/shutdown")//shutdown
-    public void shutdownNode() throws IOException {
-        node.shutdownNode();
+    public ResponseEntity<String> shutdownNode() throws IOException {
+        if (nodePropreties.isActive()){
+            logger.info("shutting down node: "+nodeName);
+            syncAgent.setActive(false);
+            discoveryService.setActive(false);
+            nodePropreties.setActive(false);
+            node.shutdownNode();
+
+
+            return new  ResponseEntity<String>("shutting down "+nodeName, HttpStatus.OK);
+        }else{
+            return new  ResponseEntity<String>(nodeName+ " is not active", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/activate")
-    public void activateNode(){
+    public ResponseEntity<String> activateNode() throws UnknownHostException {
         //start Node object here
+        if (!nodePropreties.isActive()){
+            logger.info("Starting node: "+nodeName);
+            nodePropreties.setActive(true);
+            syncAgent.setActive(true);
+            discoveryService.setActive(true);
+            syncAgent.startSyncAgent();
+            return new  ResponseEntity<String>("activated "+nodeName, HttpStatus.OK);
+        }else{
+            return new  ResponseEntity<String>(nodeName+" is already active", HttpStatus.BAD_REQUEST);
+        }
     }
     @GetMapping("/status")
     public String getStatus(){

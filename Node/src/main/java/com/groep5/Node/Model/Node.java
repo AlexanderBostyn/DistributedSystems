@@ -42,12 +42,14 @@ public class Node {
     public void startNode(String nodeName) throws UnknownHostException {
         nodePropreties.setNodeName( nodeName);
         discoveryService.startDiscovery();
-        bootstrapService.startBootstrap();
-        namingServerService.registerDevice();
-        nodePropreties.startNewFailure();
+        if (nodePropreties.isActive()){
+            bootstrapService.startBootstrap();
+            namingServerService.registerDevice();
+            nodePropreties.startNewFailure();
 
-        listenToMulticasts();
-        replicationService.startReplication();
+            listenToMulticasts();
+            replicationService.startReplication();
+        }
     }
 
 

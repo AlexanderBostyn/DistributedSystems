@@ -33,5 +33,10 @@ public class UnicastReceiver extends Thread {
                 }
             }
         }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

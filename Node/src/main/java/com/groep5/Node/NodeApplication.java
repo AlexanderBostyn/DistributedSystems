@@ -2,6 +2,7 @@ package com.groep5.Node;
 
 import com.groep5.Node.Agents.FailureAgent;
 import com.groep5.Node.Agents.SyncAgent;
+import com.groep5.Node.Controller.NodeController;
 import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
@@ -22,16 +23,34 @@ import java.util.logging.Logger;
 public class NodeApplication {
 	//private Node thisNode;
 	private static Node node;
+	private static NodeController controller;
+	private static final Logger logger = Logger.getLogger("NodeApplication");
 	@Autowired
-	public NodeApplication(Node thisNode){
+	public NodeApplication(Node thisNode, NodeController thisController){
 		node =  thisNode;
+		controller= thisController	;
 	}
 
 
 	public static void main(String[] args) throws UnknownHostException {
 		SpringApplication.run(NodeApplication.class, args);
 		Logger.getAnonymousLogger().info(Arrays.toString(args));
-		node.startNode(args[0]);
+		controller.setNodeName(args[0]);
+		logger.info("waiting for REST request to activate...");
+		boolean running = false;
+		while(true){
+			if (!running && getNodePropreties().isActive()){
+				running=true;
+				startNode(args[0]);
+			}
+			if (!getNodePropreties().isActive()){
+				running = false;
+			}
+		}
+
+	}
+	public static void startNode(String name) throws UnknownHostException {
+		node.startNode(name);
 	}
 
 	@PreDestroy

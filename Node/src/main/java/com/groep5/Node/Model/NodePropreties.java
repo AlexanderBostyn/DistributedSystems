@@ -26,6 +26,7 @@ public class NodePropreties {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
+    private boolean isActive=false;
     //public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
 
     public NodePropreties(){

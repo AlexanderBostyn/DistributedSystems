@@ -33,10 +33,19 @@ public class SyncAgent{
     private NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
     private HashMap<String, Boolean> agentList = new HashMap<>();
+    private boolean isActive=false;
+
+    public void setActive(boolean active){
+        isActive=active;
+    }
     @Autowired
     public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService) {
         this.nodePropreties = nodePropreties;
         this.namingServerService = namingServerService;
+
+    }
+    public void startSyncAgent()
+    {
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
@@ -154,7 +163,7 @@ public class SyncAgent{
         @Override
         public void run() {
             try {
-                while (true) {
+                while (isActive) {
                     if(isFileBeingEdited()) {
                         lockFile(fileName);
                     }
