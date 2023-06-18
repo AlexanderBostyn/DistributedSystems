@@ -18,11 +18,13 @@ public class NameServerList extends JPanel {
         DataContainer dataContainer = new DataContainer();
         String[] strings = dataContainer.getNameServer().split(";");
 
-        add(nscf.createCell("Status", strings[0]));
-        add(nscf.createCell("Nodes", strings[1]));
-        add(nscf.createCell("Discovery", strings[2]));
-        add(nscf.createCell("Replication", strings[3]));
-        add(nscf.createCell("Sync Agent", strings[4]));
-        add(nscf.createCell("Failure Agent", strings[5]));
+        if(strings != null) {
+            add(nscf.createCell("Status", strings[0]));
+            add(nscf.createCell("Nodes", strings[1]));
+            add(nscf.createCell("Discovery", strings[2]));
+            add(nscf.createCell("Replication", strings[3]));
+            add(nscf.createCell("Sync Agent", strings[4]));
+            add(nscf.createCell("Failure Agent", strings[5]));
+        }
     }
 }

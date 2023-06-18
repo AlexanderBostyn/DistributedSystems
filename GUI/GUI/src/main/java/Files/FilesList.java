@@ -10,17 +10,16 @@ public class FilesList extends JPanel {
     public FilesList(FilesCardPanel fcp, int startPositie, ArrayList<String> fileList, int filesLeft) {
         filesCardPanel = fcp;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(0,50,screenSize.width, screenSize.height);
-        setBackground(new Color(0, 12, 28));
+        setBounds(0,50,screenSize.width, screenSize.height/2);
         setOpaque(false);
 
-        setLayout(new GridLayout(17,1, 0,5));
+        setLayout(new GridLayout(13,1, 0,5));
 
         FilesCellFactory fcf = new FilesCellFactory();
         add(fcf.createFirstCell());
 
-        while(numRows < 13) {
-            if (numRows == 12) {
+        while(numRows < 12) {
+            if (numRows == 11) {
                 add(fcf.createBtnCell(fcp));
                 break;
             }

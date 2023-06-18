@@ -6,6 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class FilesCellFactory {
+    int x1 = 10;
+    int x2 = 75+65;
+    int x3 = 275+65+200;
+    int x4 = 425+65+200+150;
+    int x5 = 555+65+200+150+130;
     public FilesCellFactory() {}
 
     public JLabel createFirstCell() {
@@ -13,30 +18,30 @@ public class FilesCellFactory {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                int y = 35;
+                int y = 25;
                 g.setFont(new Font("Comfort", Font.BOLD,15));
                 g.setColor(new Color(255, 255, 255, 255));
-                g.drawString("Hash", 10, y);
-                g.drawString("Name", 75+65, y);
-                g.drawString("Origin", 275+65+200, y);
-                g.drawString("Owner", 425+65+200+150, y);
-                g.drawString("Status", 555+65+200+150+130, y);
+                g.drawString("Hash", x1, y);
+                g.drawString("Name", x2, y);
+                g.drawString("Origin", x3, y);
+                g.drawString("Owner", x4, y);
+                g.drawString("Status", x5, y);
 
                 int lineY = y+3;
-                int lineX11 = 10;
-                int lineX12 = 10 + g.getFontMetrics().stringWidth("Hash");
+                int lineX11 = x1;
+                int lineX12 = x1 + g.getFontMetrics().stringWidth("Hash");
 
-                int lineX21 = 75+65;
-                int lineX22 = 75+65 + g.getFontMetrics().stringWidth("Name");
+                int lineX21 = x2;
+                int lineX22 = x2 + g.getFontMetrics().stringWidth("Name");
 
-                int lineX31 = 275+65+200;
-                int lineX32 = 275+65+200 + g.getFontMetrics().stringWidth("Origin");
+                int lineX31 = x3;
+                int lineX32 = x3 + g.getFontMetrics().stringWidth("Origin");
 
-                int lineX41 = 425+65+200+150;
-                int lineX42 = 425+65+200+150 + g.getFontMetrics().stringWidth("Owner");
+                int lineX41 = x4;
+                int lineX42 = x4 + g.getFontMetrics().stringWidth("Owner");
 
-                int lineX51 = 555+65+200+150+130;
-                int lineX52 = 555+65+200+150+130 + g.getFontMetrics().stringWidth("Status");
+                int lineX51 = x5;
+                int lineX52 = x5 + g.getFontMetrics().stringWidth("Status");
 
                 g.drawLine(lineX11, lineY, lineX12, lineY);
                 g.drawLine(lineX21, lineY, lineX22, lineY);
@@ -55,15 +60,15 @@ public class FilesCellFactory {
         JLabel label = new JLabel() {
             @Override
             protected void paintComponent(Graphics g) {
-                int y = 35;
+                int y = 30;
                 super.paintComponent(g);
                 g.setFont(new Font("Comfort", Font.BOLD,15));
                 g.setColor(new Color(255, 255, 255, 255));
-                g.drawString(hash, 10, y);
-                g.drawString(name, 75+65, y);
-                g.drawString(origin, 275+65+200, y);
-                g.drawString(owner, 425+65+200+150, y);
-                g.drawString(status, 555+65+200+150+130, y);
+                g.drawString(hash, x1, y);
+                g.drawString(name, x2, y);
+                g.drawString(origin, x3, y);
+                g.drawString(owner, x4, y);
+                g.drawString(status, x5, y);
             }
         };
         label.setBackground(new Color(5, 30, 120, 180));
@@ -80,7 +85,7 @@ public class FilesCellFactory {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         JButton next = new JButton("Next");
-        next.setBounds((screenSize.width - 450)/2 + 25,0,(screenSize.width - 450)/2 + 25,40);
+        next.setBounds((screenSize.width - 300)/2,0,(screenSize.width - 300)/2,50);
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,7 +93,7 @@ public class FilesCellFactory {
             }
         });
         JButton previous = new JButton("Previous");
-        previous.setBounds(0,0,(screenSize.width - 450)/2 + 25,40);
+        previous.setBounds(0,0,(screenSize.width - 300)/2,50);
         previous.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

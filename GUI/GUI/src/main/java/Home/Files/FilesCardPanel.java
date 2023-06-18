@@ -1,7 +1,6 @@
 package Home.Files;
 
 import Data.DataContainer;
-import Files.FilesMain;
 import Home.HomeMain;
 import Nodes.NodeMain;
 
@@ -25,6 +24,9 @@ public class FilesCardPanel extends JPanel {
         ArrayList<String> fileList = dataContainer.getFiles();
         double length = fileList.size();
         int amountOfPanels = (int) Math.ceil(length/8);
+        if (amountOfPanels == 0) {
+            amountOfPanels = 1;
+        }
         int filesLeft = (int) length;
 
         int startPositie = 0;

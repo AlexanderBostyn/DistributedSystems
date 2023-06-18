@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class NodeMain extends JPanel{
     public MainPanel mainPanel;
-        public NodeMain(MainPanel mp) {
+        public NodeMain(MainPanel mp, ArrayList<Boolean> status) {
             mainPanel = mp;
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             setBounds(0, 0, screenSize.width, screenSize.height);
@@ -26,11 +26,11 @@ public class NodeMain extends JPanel{
             ArrayList<String> nodes = dataContainer.getNodes();
 
             for(int i = 1;i<5;i++) {
-                add(createNode(i, nodes.get(i-1)));
+                add(createNode(i, nodes.get(i-1), status));
             }
         }
 
-        private JPanel createNode(int i, String s) {
+        private JPanel createNode(int i, String s, ArrayList<Boolean> status) {
             JPanel nodePanel = new JPanel();
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             int width = screenSize.width - 200;
@@ -38,7 +38,7 @@ public class NodeMain extends JPanel{
             nodePanel.setBackground(new Color(0, 15, 30));
             nodePanel.setLayout(null);
             nodePanel.add(new NodeTitle("node" + i + ".6dist"));
-            nodePanel.add(new NodeButtons(mainPanel));
+            nodePanel.add(new NodeButtons(mainPanel, i, status));
             nodePanel.add(new NodeList(s));
 
             return nodePanel;

@@ -36,8 +36,18 @@ public class MenuPanel extends JPanel {
                 mainPanel.showPanel(1);
             }
         });
+        JButton refresh = new JButton("Refresh");
+        refresh.setPreferredSize(new Dimension(100, 50));
+        refresh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainPanel.refresh(mainPanel.status);
+                mainPanel.showPanel(0);
+            }
+        });
 
         add(home);
         add(nodes);
+        add(refresh);
     }
 }

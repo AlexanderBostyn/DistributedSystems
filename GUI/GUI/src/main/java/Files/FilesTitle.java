@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class FilesTitle extends JLabel {
-    public FilesTitle() {
+    public FilesTitle(int i) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(0,0,screenSize.width,50);
+        setBounds(50,50,screenSize.width-300,50);
 
-        String title = "    Files of ...";
+        String title = "    Files of node" + i + ".6dist";
         setText(title);
         setHorizontalTextPosition(JLabel.LEFT);
         setVerticalTextPosition(JLabel.TOP);
