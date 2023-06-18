@@ -28,7 +28,7 @@ public class FileTransferTest {
             FileReceiverTest fileReceiver = new FileReceiverTest();
             fileReceiver.start();
 
-            new FileSender(file, (Inet4Address) Inet4Address.getLocalHost(), false).start();
+            new FileSender(file, (Inet4Address) Inet4Address.getLocalHost(), false,"replication").start();
             fileReceiver.join();
             File receivedFile = fileReceiver.receivedFile;
 

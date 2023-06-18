@@ -39,6 +39,16 @@ public class Controller {
         node.shutdownNode();
     }
 
+    @PutMapping("/activate")
+    public void activateNode(){
+        //start Node object here
+    }
+    @GetMapping("/status")
+    public String getStatus(){
+        return "ok";//return ok or fail
+    }
+
+
     @PutMapping("/failureAgent")//receive agent from next node
     public void startFailureAgent(HttpEntity<FailureAgentGetDTO> request) throws IOException {
         FailureAgentGetDTO dto = request.getBody();
