@@ -38,6 +38,11 @@ public class NodeController {
     public void setNodeName(String name){
         nodeName=name;
     }
+    @RequestMapping({"/","/home"})
+    @ResponseBody
+    public String showHomepage(){
+        return "Hello World, "+nodeName+ " here";
+    }
 
     @PutMapping("/shutdown")//shutdown
     public ResponseEntity<String> shutdownNode() throws IOException {

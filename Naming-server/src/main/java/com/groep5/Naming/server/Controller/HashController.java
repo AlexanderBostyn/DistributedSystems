@@ -26,7 +26,7 @@ public class HashController {
     @RequestMapping({"/","/home"})
     @ResponseBody
     public String showHomepage(){
-        return "Hello World";
+        return "Hello World, naming server here";
     }
 
     @GetMapping("/file/{id}")//locate the node a file is located at
