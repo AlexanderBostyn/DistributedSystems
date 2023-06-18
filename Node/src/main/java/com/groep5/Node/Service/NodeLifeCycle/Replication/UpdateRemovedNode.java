@@ -35,7 +35,7 @@ public class UpdateRemovedNode {
         // al onze replicated files sturen we door naar onze vorige node.
         for (File file : replicatedFiles) {
             Inet4Address ip = ReplicationService.findIp(file.getName(), ReplicationState.SHUTDOWN);
-            UnicastSender.sendFile(file, ip, true);
+            UnicastSender.sendFile(file, ip, true,"replication");
             logger.info("send file " + file.getName() + " to " + ip.getHostAddress());
         }
 

@@ -18,11 +18,13 @@ public class FileSender extends Thread {
     private final Inet4Address destination;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final boolean deleteFile;
+    private final String protocol;
 
-    public FileSender(File file, Inet4Address destination, boolean deleteFile) {
+    public FileSender(File file, Inet4Address destination, boolean deleteFile,String protocol) {
         this.file = file;
         this.destination = destination;
         this.deleteFile = deleteFile;
+        this.protocol=protocol;
     }
 
 
@@ -34,7 +36,8 @@ public class FileSender extends Thread {
                 if (file.isFile()) {
                     logger.info("Sending file: " + file.getName() + ", to: " + destination);
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                    printWriter.println("replication;" + file.getName() + ";" + file.length() + ";" + deleteFile);
+                    printWriter.println(protocol+";" + file.getName() + ";" + file.length() + ";" + deleteFile);
+                    //printWriter.println("replication;" + file.getName() + ";" + file.length() + ";" + deleteFile);
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                     FileInputStream fileInputStream = new FileInputStream(file);
                     byte[] buf = new byte[4 * 1024];

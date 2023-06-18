@@ -27,8 +27,8 @@ public class Failure extends Thread {
         try {
             logger.info("Running failure check");
             while (!isInterrupted()) {
-                Inet4Address nextNodeIp = (Inet4Address) getIp(nodePropreties.nextHash);
-                Inet4Address previousNodeIp = (Inet4Address) getIp(nodePropreties.previousHash);
+                Inet4Address nextNodeIp = getIp(nodePropreties.nextHash);
+                Inet4Address previousNodeIp = getIp(nodePropreties.previousHash);
                 if (nodePropreties.nextHash != nodePropreties.nodeHash) {
                     checkNodes(nextNodeIp, previousNodeIp);
                 } else {
