@@ -49,7 +49,7 @@ public class SyncAgent{
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
-//        new UpdateLog().start();
+        //new UpdateLog().start();
         try {
             fileWatching();
         } catch (InterruptedException e) {
@@ -187,9 +187,12 @@ public class SyncAgent{
     }
 
     public void unlockFile(String fileName) {
-        logger.info("unlock file " + fileName);
-        if(agentList.containsKey(fileName)) {
-            agentList.replace(fileName, false);
+        if (agentList.get(fileName)){//true means locked
+            logger.info("unlock file " + fileName);
+            if(agentList.containsKey(fileName)) {
+                agentList.replace(fileName, false);
+            }
         }
+
     }
 }
