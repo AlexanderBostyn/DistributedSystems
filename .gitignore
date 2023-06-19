@@ -4,3 +4,9 @@ Node/.idea/
 Node/target/
 
 *.iml
+
+GUI/GUI/.idea/
+
+*.class
+
+GUI/GUI/target/

@@ -70,7 +70,9 @@ public class UnicastSender {
         //after running on this node, send agent to prev node
         WebClient client = WebClient.create("http://" + host + ":8080");
         String response=client.post()
-                .uri("failureAgentTest" )
+                .uri("failureAgent" )
+                //change to run failureAgentTest 2
+                // .uri("failureAgentTest" )
                 .body(Mono.just(dto),FailureAgentGetDTO.class)
                 .retrieve()
                 .bodyToMono(String.class)

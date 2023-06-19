@@ -43,6 +43,12 @@ public class HashController {
         return new ResponseEntity<String>("printRequests set to "+bool, HttpStatus.OK);
     }
 
+    @GetMapping("/status")
+    public String returnStatus() {
+        logger.info("incoming GET /status");
+        return "Online";
+    }
+
     @GetMapping("/file/{id}")//locate the node a file is located at
     public String locateFileById(@PathVariable int id) throws UnknownHostException {
         if (printRequests){
