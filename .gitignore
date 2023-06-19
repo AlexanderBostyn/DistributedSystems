@@ -8,3 +8,5 @@ Node/target/
 GUI/GUI/.idea/
 
 *.class
+
+GUI/GUI/target/
