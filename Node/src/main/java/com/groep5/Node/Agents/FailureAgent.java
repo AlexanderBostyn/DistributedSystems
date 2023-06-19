@@ -65,8 +65,6 @@ private boolean isNewAgent=false;
                     Log.LogEntry clonedEntry = entry.clone();
                     newLog.put(clonedEntry);
                     unicastSender.sendLog(newLog,namingServerService.getIp(nodePropreties.previousHash));
-
-
                 }
 
             } catch (UnknownHostException e) {
@@ -95,13 +93,11 @@ private boolean isNewAgent=false;
             try {
                 FailureAgentGetDTO dto= createDTO();
                 InetAddress ip = namingServerService.getIp(nodePropreties.previousHash);
-                unicastSender.sendFailureAgent(ip,dto);
+                unicastSender.sendFailureAgent(ip.getHostAddress(),dto);
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
         }
-
-
     }
     //TODO: transfer the ownership of the files owned by the failing node to the new owner
 

@@ -69,7 +69,6 @@ public class NodeController {
             nodePropreties.setActive(true);
             syncAgent.setActive(true);
             discoveryService.setActive(true);
-            //syncAgent.startSyncAgent();
             return new  ResponseEntity<String>("activated "+nodeName, HttpStatus.OK);
         }else{
             return new  ResponseEntity<String>(nodeName+" is already active", HttpStatus.BAD_REQUEST);
@@ -82,12 +81,21 @@ public class NodeController {
     }
 
 
-    @PutMapping("/failureAgent")//receive agent from next node
-    public void startFailureAgent(HttpEntity<FailureAgentGetDTO> request) throws IOException {
+    @PostMapping("/failureAgent")//receive agent from next node
+    public String startFailureAgent(@RequestBody FailureAgentGetDTO dto) throws IOException {
         logger.info("incoming PUT /failureAgent");
-        FailureAgentGetDTO dto = request.getBody();
+        System.out.println(dto.getFailingNodeHash()+";"+dto.isNewAgent());
         FailureAgent failureAgent = new FailureAgent(dto.getFailingNodeHash(),dto.isNewAgent());
         failureAgent.run();
+        return dto.getFailingNodeHash()+";"+dto.isNewAgent();
+    }
+    @PostMapping("/failureAgentTest")//receive agent from next node
+    public String startFailureAgentTest(@RequestBody FailureAgentGetDTO dto) throws IOException {
+        logger.info("incoming PUT /failureAgent");
+        System.out.println(dto.getFailingNodeHash()+";"+dto.isNewAgent());
+        //FailureAgent failureAgent = new FailureAgent(dto.getFailingNodeHash(),dto.isNewAgent());
+        //failureAgent.run();
+        return dto.getFailingNodeHash()+";"+dto.isNewAgent();
     }
 
     @GetMapping("/getNodeInfo")

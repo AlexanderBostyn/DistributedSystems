@@ -12,6 +12,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,15 +66,26 @@ public class UnicastSender {
         return fileSender;
     }
 
-    public static void sendFailureAgent(InetAddress ip, FailureAgentGetDTO failureAgent){
+    public static void sendFailureAgent(String host, FailureAgentGetDTO dto){
         //after running on this node, send agent to prev node
-        RestTemplate restTemplate = new RestTemplate();
+        WebClient client = WebClient.create("http://" + host + ":8080");
+        String response=client.post()
+                .uri("failureAgentTest" )
+                .body(Mono.just(dto),FailureAgentGetDTO.class)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        System.out.println(response);
+
+        /*RestTemplate restTemplate = new RestTemplate();
         String url = ip + ":8080/failureAgent";
         HttpEntity<FailureAgentGetDTO> entity = new HttpEntity<>(failureAgent);
         ResponseEntity<FailureAgentGetDTO> response = restTemplate.exchange(url, HttpMethod.POST, entity, FailureAgentGetDTO.class);
+    */
     }
 
-    ;
+
+
 
     /**
      * Sends a log to the destination in a thread using {@link com.groep5.Node.Service.Unicast.Senders.LogSender}

@@ -145,7 +145,6 @@ public class MulticastReceiver extends Thread {
                     new UpdateNewNode( receivedNodeHash);
                 }
 
-
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
