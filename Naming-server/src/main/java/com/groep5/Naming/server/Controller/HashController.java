@@ -31,6 +31,7 @@ public class HashController {
 
     @GetMapping("/status")
     public String returnStatus() {
+        logger.info("incoming GET /status");
         return "Online";
     }
 
