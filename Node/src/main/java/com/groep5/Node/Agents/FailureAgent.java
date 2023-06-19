@@ -47,7 +47,7 @@ private boolean isNewAgent=false;
         isNewAgent=true;
         run();
     }
-    public void sendFilesToOwner(){
+    public void sendFailingNodeFilesToOwner(){
         ArrayList<File> files= ReplicationService.listDirectory("src/main/resources/replicated");
         for (Log.LogEntry entry: log.getEntrySet()) {//iterate over logEntries (filenames)
             try {
@@ -66,7 +66,24 @@ private boolean isNewAgent=false;
                     newLog.put(clonedEntry);
                     unicastSender.sendLog(newLog,namingServerService.getIp(nodePropreties.previousHash));
                 }
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    public void sendLocalFilesToNewOwner(){
+        ArrayList<File> files= ReplicationService.listDirectory("src/main/resources/local");
+        for (File file: files) {
+            try {
+                //check if the failing node is the owner of files
+                if (namingServerService.getIp(failingNodeHash).equals(namingServerService.getFileOwner(namingServerService.calculateHash(file.getName())))) {
 
+                    unicastSender.sendFile(file,namingServerService.getIp(namingServerService.getPreviousHash(failingNodeHash)) , false, "failureAgent");
+                    //send log
+                    Log newLog = new Log();
+                    newLog.add(file.getName(),nodePropreties.getNodeAddress());
+                    unicastSender.sendLog(newLog, namingServerService.getIp(namingServerService.getPreviousHash(failingNodeHash)));
+                }
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
@@ -84,10 +101,14 @@ private boolean isNewAgent=false;
         if( isNewAgent)//first instance of the failureAgent
         {
             //read current files and send files that this node owns to prev node in ring
-            sendFilesToOwner();
+            sendFailingNodeFilesToOwner();
         }
         if (isNewAgent || !(failingNodeHash==nodePropreties.getNodeHash()))//check if we're not back at the start, then proceed
         {
+            if (!isNewAgent){
+                //scan all local files, if the owner is the failing node, send to new owner
+                sendLocalFilesToNewOwner();
+            }
             //after running on this node, send agent to prev node
             isNewAgent = false;
             try {
