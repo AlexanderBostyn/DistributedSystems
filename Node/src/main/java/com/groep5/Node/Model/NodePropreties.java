@@ -1,6 +1,8 @@
 package com.groep5.Node.Model;
 
+import com.groep5.Node.Agents.FailureAgent;
 import com.groep5.Node.Agents.SyncAgent;
+import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NodeLifeCycle.Failure;
 import lombok.Data;
 import org.springframework.stereotype.Component;
@@ -24,12 +26,14 @@ public class NodePropreties {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
+    private boolean isActive=false;
     //public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
 
     public NodePropreties(){
         try {
             nodeAddress = (Inet4Address) Inet4Address.getLocalHost();
         } catch (UnknownHostException e) {
+            new FailureAgent().startFailureAgent();
             logger.severe("Couldn't fetch own IP");
             throw new RuntimeException(e);
         }

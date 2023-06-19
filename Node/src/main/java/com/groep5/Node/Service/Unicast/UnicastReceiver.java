@@ -15,6 +15,7 @@ public class UnicastReceiver extends Thread {
             logger.info("Created serverSocket:" + socket.toString());
         } catch (IOException e) {
             logger.severe("Error creating serverSocket");
+
             throw new RuntimeException(e);
         }
     }
@@ -31,6 +32,11 @@ public class UnicastReceiver extends Thread {
                     throw new RuntimeException(e);
                 }
             }
+        }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

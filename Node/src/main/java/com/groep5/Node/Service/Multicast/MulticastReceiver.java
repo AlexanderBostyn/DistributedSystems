@@ -1,5 +1,6 @@
 package com.groep5.Node.Service.Multicast;
 
+import com.groep5.Node.Agents.FailureAgent;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.NodeApplication;
@@ -42,6 +43,7 @@ public class MulticastReceiver extends Thread {
             }
         } catch (IOException e) {
             logger.severe("Error creating multicastReceiver socket");
+            new FailureAgent().startFailureAgent();
             throw new RuntimeException(e);
         }
     }
@@ -143,11 +145,11 @@ public class MulticastReceiver extends Thread {
                     new UpdateNewNode( receivedNodeHash);
                 }
 
-
             } catch (UnknownHostException e) {
                 logger.severe("InetAddress not found");
                 throw new RuntimeException(e);
             } catch (IOException e) {
+                new FailureAgent().startFailureAgent();
                 logger.severe("couldn't open unicast socket");
                 throw new RuntimeException(e);
             } catch (InterruptedException e) {

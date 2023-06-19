@@ -1,22 +1,31 @@
 package com.groep5.Node.Service.Unicast;
 
+import com.groep5.Node.Agents.FailureAgent;
+import com.groep5.Node.Agents.FailureAgentGetDTO;
 import com.groep5.Node.Model.Log;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.Senders.LogSender;
 import com.groep5.Node.Service.Unicast.Senders.MessageSender;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 /**
  * Class that covers all our Unicast (TCP) sending needs.
  * Port 4321 is always used.
  */
+@Service
 public class UnicastSender {
 
     /**
@@ -38,9 +47,9 @@ public class UnicastSender {
      * @param deleteFile if true, deletes the file and also the entry from log
      * @return A reference to the fileSender thread.
      */
-    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile) {
-        Logger logger = Logger.getLogger("ReplicationService.sendFile");
-        FileSender fileSender = new FileSender(file, destination, deleteFile);
+    public static FileSender sendFile(File file, Inet4Address destination, boolean deleteFile,String protocol) {
+        Logger logger = Logger.getLogger(protocol+".sendFile");
+        FileSender fileSender = new FileSender(file, destination, deleteFile,protocol);
         fileSender.start();
         try {
             fileSender.join();
@@ -57,7 +66,26 @@ public class UnicastSender {
         return fileSender;
     }
 
-    ;
+    public static void sendFailureAgent(String host, FailureAgentGetDTO dto){
+        //after running on this node, send agent to prev node
+        WebClient client = WebClient.create("http://" + host + ":8080");
+        String response=client.post()
+                .uri("failureAgentTest" )
+                .body(Mono.just(dto),FailureAgentGetDTO.class)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        System.out.println(response);
+
+        /*RestTemplate restTemplate = new RestTemplate();
+        String url = ip + ":8080/failureAgent";
+        HttpEntity<FailureAgentGetDTO> entity = new HttpEntity<>(failureAgent);
+        ResponseEntity<FailureAgentGetDTO> response = restTemplate.exchange(url, HttpMethod.POST, entity, FailureAgentGetDTO.class);
+    */
+    }
+
+
+
 
     /**
      * Sends a log to the destination in a thread using {@link com.groep5.Node.Service.Unicast.Senders.LogSender}

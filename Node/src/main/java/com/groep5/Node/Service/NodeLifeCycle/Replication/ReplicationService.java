@@ -69,7 +69,7 @@ public class ReplicationService {
         //sending File
         for (File file : files) {
             Inet4Address ip = findIp(file.getName(), ReplicationState.STARTUP);
-            UnicastSender.sendFile(file, ip, false);
+            UnicastSender.sendFile(file, ip, false,"replication");
         }
     }
 

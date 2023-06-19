@@ -66,7 +66,7 @@ public class UpdateNewNode {
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
                 Log.LogEntry entry = log.get(file.getName());
-                FileSender fileSender = UnicastSender.sendFile(file, ip, true);
+                FileSender fileSender = UnicastSender.sendFile(file, ip, true,"replication");
                 if (entry != null) {
                     Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
 
@@ -85,7 +85,7 @@ public class UpdateNewNode {
             }
             if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()) != null &&log.get(file.getName()).size() < 2) {
                 //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
-                UnicastSender.sendFile(file, ip, false);
+                UnicastSender.sendFile(file, ip, false,"replication");
                 log.add(file.getName(), ip);
             }
         }

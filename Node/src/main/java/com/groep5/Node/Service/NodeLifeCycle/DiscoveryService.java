@@ -16,13 +16,22 @@ public class DiscoveryService {
     @Autowired
     private NodePropreties nodePropreties;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private boolean isActive=false;
+
+    public void setActive(boolean active){
+        isActive=active;
+    }
 
     public void startDiscovery()
     {
         logger.info("started discovery");
         sendMulticast();
         listenToResponses();
-        logger.info("Finished discovery");
+        if (nodePropreties.isActive())
+        {
+            logger.info("Finished discovery");
+        }
+
     }
 
     public  void sendMulticast() {
@@ -33,7 +42,7 @@ public class DiscoveryService {
     public void listenToResponses(){
         UnicastReceiver unicastReceiver = new UnicastReceiver();
         unicastReceiver.start();
-        while (nodePropreties.getNumberOfNodes() < 0 || (nodePropreties.getConnectionsFinished() < 3 && nodePropreties.getNumberOfNodes() > 0)) {
+        while ((nodePropreties.getNumberOfNodes() < 0 || (nodePropreties.getConnectionsFinished() < 3 && nodePropreties.getNumberOfNodes() > 0)) && isActive) {
             logger.info("Number of nodes: " + nodePropreties.getNumberOfNodes());
             logger.info("Finished connections: " + nodePropreties.getConnectionsFinished());
             try {
