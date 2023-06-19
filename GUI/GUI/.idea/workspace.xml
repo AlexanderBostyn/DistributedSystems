@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95572c4b-a25e-4dcc-ae0c-d6a128aec4b5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/RunGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RunGUI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +46,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/UAProgrammas/IntellijProjects/DIST/DistributedSystems/GUI/GUI&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/UAProgrammas/IntellijProjects/DIST/DistributedSystems&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
