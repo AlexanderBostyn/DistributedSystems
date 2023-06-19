@@ -69,21 +69,14 @@ public class UnicastSender {
     public static void sendFailureAgent(String host, FailureAgentGetDTO dto){
         //after running on this node, send agent to prev node
         WebClient client = WebClient.create("http://" + host + ":8080");
-        String response=client.post()
+        client.post()
                 .uri("failureAgent" )
                 //change to run failureAgentTest 2
-                // .uri("failureAgentTest" )
+                 //.uri("failureAgentTest" )
                 .body(Mono.just(dto),FailureAgentGetDTO.class)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        System.out.println(response);
-
-        /*RestTemplate restTemplate = new RestTemplate();
-        String url = ip + ":8080/failureAgent";
-        HttpEntity<FailureAgentGetDTO> entity = new HttpEntity<>(failureAgent);
-        ResponseEntity<FailureAgentGetDTO> response = restTemplate.exchange(url, HttpMethod.POST, entity, FailureAgentGetDTO.class);
-    */
     }
 
 
@@ -99,6 +92,6 @@ public class UnicastSender {
         new LogSender(log, destination).start();
     }
 
-    ;
+
 
 }

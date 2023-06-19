@@ -50,19 +50,5 @@ public class MulticastHandler implements Runnable{
         }
 
 
-
-
-        /*
-        String firstWordOfMsg = message.split(" ")[0];
-
-        switch (firstWordOfMsg){
-            case "test":
-                logger.info("test");
-
-            case "notTest":
-                logger.info("not a test");
-        }
-
-         */
     }
 }

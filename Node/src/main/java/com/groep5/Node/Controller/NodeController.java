@@ -82,16 +82,16 @@ public class NodeController {
 
 
     @PostMapping("/failureAgent")//receive agent from next node
-    public String startFailureAgent(@RequestBody FailureAgentGetDTO dto) throws IOException {
-        logger.info("incoming PUT /failureAgent");
+    public void startFailureAgent(@RequestBody FailureAgentGetDTO dto) throws IOException {
+        logger.info("incoming POST /failureAgent");
         System.out.println(dto.getFailingNodeHash()+";"+dto.isNewAgent());
         FailureAgent failureAgent = new FailureAgent(dto.getFailingNodeHash(),dto.isNewAgent());
         failureAgent.run();
-        return dto.getFailingNodeHash()+";"+dto.isNewAgent();
     }
+
     @PostMapping("/failureAgentTest")//receive agent from next node
     public String startFailureAgentTest(@RequestBody FailureAgentGetDTO dto) throws IOException {
-        logger.info("incoming PUT /failureAgent");
+        logger.info("incoming POST /failureAgent");
         System.out.println(dto.getFailingNodeHash()+";"+dto.isNewAgent());
         //FailureAgent failureAgent = new FailureAgent(dto.getFailingNodeHash(),dto.isNewAgent());
         //failureAgent.run();
