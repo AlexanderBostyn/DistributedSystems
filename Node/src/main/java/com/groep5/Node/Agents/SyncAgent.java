@@ -8,14 +8,17 @@ import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import lombok.Data;
 import net.officefloor.plugin.variable.In;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
@@ -115,13 +118,21 @@ public class SyncAgent{
             int nextHash = this.nodePropreties.nextHash;
             //call controller on next node
             InetAddress ip= namingServerService.getIp(nextHash);
-            RestTemplate restTemplate = new RestTemplate();
+            WebClient client=WebClient.create("http://" + ip.getHostAddress() + ":8080");
+            Mono<HashMap<String, Boolean>> responseMono =client.get()
+                    .uri("/agentlist")
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<HashMap<String, Boolean>>() {});
+            return responseMono.block();
+
+            /*RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<HashMap> response = restTemplate.getForEntity(ip+":54321"+"/agentlist", HashMap.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 return response.getBody();
             } else {
                 throw new Exception("Request failed with status: " + response.getStatusCode());
             }
+             */
         }
 
         @Override
