@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class MenuPanel extends JPanel {
     public MainPanel mainPanel;
@@ -41,7 +42,11 @@ public class MenuPanel extends JPanel {
         refresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainPanel.refresh(mainPanel.status);
+                try {
+                    mainPanel.refresh(mainPanel.status);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 mainPanel.showPanel(0);
             }
         });

@@ -6,21 +6,69 @@
   <component name="ChangeListManager">
     <list default="true" id="95572c4b-a25e-4dcc-ae0c-d6a128aec4b5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Data/DataContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Data/DataContainer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesCardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesCardPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesCellFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesCellFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Files/FilesTitle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Files/FilesTitle.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Home/Files/FilesCardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Files/FilesCardPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Files/FilesMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Files/FilesMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Home/HomeMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/HomeMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/NameServer/NameServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/MainPanel/MainFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/MainPanel/MainFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/MainPanel/MainPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/MainPanel/MainPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Menu/MenuPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Menu/MenuPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeButtons.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeButtons.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/NodeMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/NodeMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/RunGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RunGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../Naming-server/src/main/java/com/groep5/Naming/server/Controller/HashController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Naming-server/src/main/java/com/groep5/Naming/server/Controller/HashController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Data/DataContainer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesCardPanel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesCellFactory$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesCellFactory$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesCellFactory$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesCellFactory$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesCellFactory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesList.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Files/FilesTitle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCardPanel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCellFactory$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCellFactory$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCellFactory$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCellFactory$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesCellFactory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesList.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Files/FilesTitle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/HomeMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerCellFactory$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerCellFactory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerList.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/NameServer/NameServerTitle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodeCellFactory$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodeCellFactory$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodeCellFactory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodesList.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodesMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Home/Nodes/NodesTitle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/MainPanel/ImageLabel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/MainPanel/MainFrame.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/MainPanel/MainPanel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/MainPanel/TitleLabel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Menu/MenuPanel$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Menu/MenuPanel$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Menu/MenuPanel$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Menu/MenuPanel.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeButtons$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeButtons$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeButtons.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeList$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeList.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/Node/NodeTitle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Nodes/NodeMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/RunGUI.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,19 +119,6 @@
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="RunGUI" />
       <module name="GUI" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="GUI" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="GUI" />
-      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>

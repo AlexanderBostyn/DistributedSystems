@@ -2,6 +2,7 @@ package MainPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 import Home.Files.FilesMain;
 import Home.HomeMain;
@@ -12,7 +13,7 @@ import Nodes.NodeMain;
 
 public class MainFrame extends JFrame{
     public MainPanel mainPanel;
-    public MainFrame() {
+    public MainFrame() throws IOException {
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(true);

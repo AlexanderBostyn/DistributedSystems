@@ -6,13 +6,14 @@ import Nodes.NodeMain;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainPanel extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardContainer;
     public ArrayList<Boolean> status;
-    public MainPanel() {
+    public MainPanel() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(200, 75, screenSize.width-200, screenSize.height-75);
         setOpaque(false);
@@ -60,7 +61,7 @@ public class MainPanel extends JPanel {
         }
     }
 
-    public void refresh(ArrayList<Boolean> status) {
+    public void refresh(ArrayList<Boolean> status) throws IOException {
         this.status = status;
         for (int i=0; i<5;i++) {
             cardContainer.remove(0);

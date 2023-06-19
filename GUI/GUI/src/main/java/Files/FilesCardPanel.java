@@ -4,12 +4,13 @@ import Data.DataContainer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FilesCardPanel extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardContainer;
-    public FilesCardPanel(int j) {
+    public FilesCardPanel(int j) throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(50,100,screenSize.width-300, screenSize.height-300);
 

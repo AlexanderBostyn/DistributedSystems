@@ -1,5 +1,7 @@
 package Data;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,47 +9,45 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class DataContainer {
+    private ServerSocket socket;
     public ArrayList<String> nodes;
     public ArrayList<String> files;
     public String nameServer;
 
-    public DataContainer() {
+    public DataContainer() throws IOException {
         nodes = new ArrayList<String>();
         for(int i = 1;i<5;i++) {
             String defaultNode = "node" + i + ".6dist;" + i + ";172.0.0."+ i + ";Offline";
             nodes.add(defaultNode);
         }
         files = new ArrayList<>();;
-        nameServer = "Offline;0;Offline;Offline;Offline;Offline";
     }
 
-    public ArrayList<String> getNodes() {
-        return nodes;
-    }
+    public ArrayList<String> getNodes() throws IOException {
+        return new ArrayList<>();
 
-    public void setNodes(ArrayList<String> nodes) {
-        this.nodes = nodes;
+        /*this.socket = new ServerSocket(8080);
+        String address = String.valueOf(socket.getInetAddress());
+        return WebClient.create("http://" + address + ":8080")
+                .get()
+                .uri("/status")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();*/
     }
 
     public ArrayList<String> getFiles() {
         return files;
     }
 
-    public void setFiles(ArrayList<String> files) {
-        this.files = files;
-    }
-
-    public String getNameServer() {
-        /*return WebClient.create("http://" + /*namingServerAddress.getHostAddress()*/ /*"172.0.0.1" + ":54321")
+    public String getNameServer() throws IOException {
+        this.socket = new ServerSocket(54321);
+        String address = String.valueOf(socket.getInetAddress());
+        return WebClient.create("http://" + address + ":54321")
                 .get()
                 .uri("/status")
                 .retrieve()
                 .bodyToMono(String.class)
-                .block();*/
-        return nameServer;
-    }
-
-    public void setNameServer(String namingServer) {
-        this.nameServer = namingServer;
+                .block();
     }
 }

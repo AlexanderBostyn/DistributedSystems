@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class NodeButtons extends JPanel {
@@ -37,7 +38,11 @@ public class NodeButtons extends JPanel {
                     JOptionPane.showMessageDialog(null,"Node Startup","Node Startup",JOptionPane.INFORMATION_MESSAGE);
                     status.set(i-1,true);
                 }
-                mainPanel.refresh(status);
+                try {
+                    mainPanel.refresh(status);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 mainPanel.showPanel(1);
             }
         });

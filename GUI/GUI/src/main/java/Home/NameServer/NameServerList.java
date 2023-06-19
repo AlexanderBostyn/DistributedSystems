@@ -4,9 +4,10 @@ import Data.DataContainer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class NameServerList extends JPanel {
-    public NameServerList() {
+    public NameServerList() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(0,50,screenSize.width, screenSize.height/4 - 50);
         setOpaque(false);
@@ -16,15 +17,23 @@ public class NameServerList extends JPanel {
         NameServerCellFactory nscf = new NameServerCellFactory();
 
         DataContainer dataContainer = new DataContainer();
-        String[] strings = dataContainer.getNameServer().split(";");
+        String s = dataContainer.getNameServer();
 
-        if(strings != null) {
-            add(nscf.createCell("Status", strings[0]));
-            add(nscf.createCell("Nodes", strings[1]));
-            add(nscf.createCell("Discovery", strings[2]));
-            add(nscf.createCell("Replication", strings[3]));
-            add(nscf.createCell("Sync Agent", strings[4]));
-            add(nscf.createCell("Failure Agent", strings[5]));
+        if(s != null) {
+            add(nscf.createCell("Status", s));
+            add(nscf.createCell("Nodes", "0"));
+            add(nscf.createCell("Discovery", s));
+            add(nscf.createCell("Replication", s));
+            add(nscf.createCell("Sync Agent", s));
+            add(nscf.createCell("Failure Agent", s));
+        }
+        else {
+            add(nscf.createCell("Status", "Offline"));
+            add(nscf.createCell("Nodes", "0"));
+            add(nscf.createCell("Discovery", "Offline"));
+            add(nscf.createCell("Replication", "Offline"));
+            add(nscf.createCell("Sync Agent", "Offline"));
+            add(nscf.createCell("Failure Agent", "Offline"));
         }
     }
 }

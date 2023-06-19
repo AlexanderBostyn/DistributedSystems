@@ -10,11 +10,12 @@ import Nodes.Node.NodeTitle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class NodeMain extends JPanel{
     public MainPanel mainPanel;
-        public NodeMain(MainPanel mp, ArrayList<Boolean> status) {
+        public NodeMain(MainPanel mp, ArrayList<Boolean> status) throws IOException {
             mainPanel = mp;
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             setBounds(0, 0, screenSize.width, screenSize.height);

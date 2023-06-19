@@ -4,9 +4,10 @@ import Data.DataContainer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class NodesList extends JPanel {
-    public NodesList() {
+    public NodesList() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(0,50,screenSize.width, screenSize.height/2 - 50);
         setOpaque(false);

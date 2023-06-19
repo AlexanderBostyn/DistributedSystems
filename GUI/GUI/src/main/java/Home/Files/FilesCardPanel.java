@@ -6,12 +6,13 @@ import Nodes.NodeMain;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FilesCardPanel extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardContainer;
-    public FilesCardPanel() {
+    public FilesCardPanel() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(0,50,screenSize.width, screenSize.height/2 - 50);
 
