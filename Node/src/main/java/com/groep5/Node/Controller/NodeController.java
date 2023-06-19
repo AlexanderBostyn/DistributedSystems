@@ -41,19 +41,19 @@ public class NodeController {
     @RequestMapping({"/","/home"})
     @ResponseBody
     public String showHomepage(){
+        logger.info("incoming request /home");
         return "Hello World, "+nodeName+ " here";
     }
 
     @PutMapping("/shutdown")//shutdown
     public ResponseEntity<String> shutdownNode() throws IOException {
+        logger.info("incoming PUT /shutdown");
         if (nodePropreties.isActive()){
             logger.info("shutting down node: "+nodeName);
             syncAgent.setActive(false);
             discoveryService.setActive(false);
             nodePropreties.setActive(false);
             node.shutdownNode();
-
-
             return new  ResponseEntity<String>("shutting down "+nodeName, HttpStatus.OK);
         }else{
             return new  ResponseEntity<String>(nodeName+ " is not active", HttpStatus.BAD_REQUEST);
@@ -62,6 +62,7 @@ public class NodeController {
 
     @PutMapping("/activate")
     public ResponseEntity<String> activateNode() throws UnknownHostException {
+        logger.info("incoming PUT /activate");
         //start Node object here
         if (!nodePropreties.isActive()){
             logger.info("Starting node: "+nodeName);
@@ -76,12 +77,14 @@ public class NodeController {
     }
     @GetMapping("/status")
     public String getStatus(){
+        logger.info("incoming GET /status");
         return "ok";//return ok or fail
     }
 
 
     @PutMapping("/failureAgent")//receive agent from next node
     public void startFailureAgent(HttpEntity<FailureAgentGetDTO> request) throws IOException {
+        logger.info("incoming PUT /failureAgent");
         FailureAgentGetDTO dto = request.getBody();
         FailureAgent failureAgent = new FailureAgent(dto.getFailingNodeHash(),dto.isNewAgent());
         failureAgent.run();
@@ -90,6 +93,7 @@ public class NodeController {
     @GetMapping("/getNodeInfo")
     public String getNodeInfo()//nodeName,nodeHash,nodeAddress,prevNode,nextNode
     {
+        logger.info("incoming GET /getNodeInfo");
         String info="";
         info+=nodePropreties.getNodeName()+";";
         info+= nodePropreties.getNodeHash()+";";
@@ -103,15 +107,15 @@ public class NodeController {
     @GetMapping("/agentlist")
     public ResponseEntity<Map<String, Boolean>> getAgentList()
     {
+        logger.info("incoming GET /agentlist");
         HashMap<String,Boolean> agentlist=syncAgent.getAgentList();
         return new  ResponseEntity<Map<String,Boolean>>(agentlist, HttpStatus.OK);
-
     }
-
 
 
     @GetMapping("/log")//returns log in serialized form
     public String getLog(){
+        logger.info("incoming GET /log");
         return NodeApplication.getLog().toString();
     }
 }
