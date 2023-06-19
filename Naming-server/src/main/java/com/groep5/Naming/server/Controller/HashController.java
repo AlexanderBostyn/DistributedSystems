@@ -29,6 +29,11 @@ public class HashController {
         return "Hello World";
     }
 
+    @GetMapping("/status")
+    public String returnStatus() {
+        return "Online";
+    }
+
     @GetMapping("/file/{id}")//locate the node a file is located at
     public String locateFileById(@PathVariable int id) throws UnknownHostException {
         return hasher.locateFileById(id).getHostAddress();

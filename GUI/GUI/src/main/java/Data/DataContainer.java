@@ -2,6 +2,10 @@ package Data;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
 public class DataContainer {
     public ArrayList<String> nodes;
     public ArrayList<String> files;
@@ -34,6 +38,12 @@ public class DataContainer {
     }
 
     public String getNameServer() {
+        /*return WebClient.create("http://" + /*namingServerAddress.getHostAddress()*/ /*"172.0.0.1" + ":54321")
+                .get()
+                .uri("/status")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();*/
         return nameServer;
     }
 
