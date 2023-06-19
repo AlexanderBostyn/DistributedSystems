@@ -33,10 +33,14 @@ public class HashController {
         return "Hello World, naming server here";
     }
 
-    @PutMapping("/setPrintRequests")
-    public ResponseEntity<String> setPrintRequests(@RequestBody boolean bool){
-        printRequests=bool;
-        return new ResponseEntity<String>("printRequests set to"+bool, HttpStatus.OK);
+    @PutMapping("/setPrintRequests/{bool}")
+    public ResponseEntity<String> setPrintRequests(@PathVariable int bool){
+        if (bool==0){
+            printRequests=false;
+        } else if (bool==1) {
+            printRequests=true;
+        }
+        return new ResponseEntity<String>("printRequests set to "+bool, HttpStatus.OK);
     }
 
     @GetMapping("/file/{id}")//locate the node a file is located at
