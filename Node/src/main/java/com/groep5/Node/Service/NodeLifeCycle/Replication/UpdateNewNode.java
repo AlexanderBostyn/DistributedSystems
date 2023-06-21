@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class UpdateNewNode {
     public NodePropreties nodePropreties;
-    public ArrayList<File> files;
+    public ArrayList<File> replicatedFiles;
     public ArrayList<File> localFiles;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -35,11 +35,14 @@ public class UpdateNewNode {
         this.namingServerService = NodeApplication.getNamingServerService();
         this.nodePropreties = NodeApplication.getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
-        //this.files = ReplicationService.listDirectory("src/main/resources/replicated");
-        //this.localFiles = ReplicationService.listDirectory("src/main/resources/local");
+        this.replicatedFiles = ReplicationService.listDirectory("src/main/resources/replicated");
+        this.localFiles = ReplicationService.listDirectory("src/main/resources/local");
         try {
-            resendFiles("replicated");
-            resendFiles("local");
+            resendLocalFiles();
+            if (nodePropreties.nextHash== recievedNodeHash){//might be new owner of our "owned" files
+                resendFiles();
+            }
+
         } catch (UnknownHostException e) {
             logger.severe("Error in retrieving ip from: " + recievedNodeHash);
             throw new RuntimeException(e);
@@ -49,12 +52,17 @@ public class UpdateNewNode {
     private int calcHash(File file) {
         return namingServerService.calculateHash(file.getName());
     }
+    public void resendLocalFiles() throws UnknownHostException {
+        for (File file : localFiles) {
+            Inet4Address ip = ReplicationService.findIp(file.getName(), ReplicationState.STARTUP);
+            UnicastSender.sendFile(file, ip, false,"replication");
+        }
+    }
 
-    private void resendFiles(String directory) throws UnknownHostException {
+    private void resendFiles() throws UnknownHostException {
         Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
-        files = ReplicationService.listDirectory("src/main/resources/"+directory);
-        for (File file : files) {
+        for (File file : replicatedFiles) {
             int fileHash = calcHash(file);
             int newNextNodeHash = receivedNodeHash;
             // The new next NodeHash is smaller than our hash, this means we are at the end of our ring.
@@ -70,13 +78,7 @@ public class UpdateNewNode {
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is sent to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
                 Log.LogEntry entry = log.get(file.getName());
-                boolean delete=false;
-                if(directory.equals("replicated")){
-                    delete=true;
-                }else{
-                    delete=false;
-                }
-                FileSender fileSender = UnicastSender.sendFile(file, ip, delete,"replication");
+                FileSender fileSender = UnicastSender.sendFile(file, ip, true,"replication");
                 if (entry != null) {
                     Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
 
@@ -85,7 +87,6 @@ public class UpdateNewNode {
                         clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     }
                     sentLog.put(clonedEntry); //add the entry to the sentLog
-
                 }
                 try {
                     fileSender.join();
@@ -95,6 +96,7 @@ public class UpdateNewNode {
             }
             if (ReplicationService.isOwner(file.getName(), nodePropreties.nodeHash) && log.get(file.getName()) != null &&log.get(file.getName()).size() < 2) {
                 //if we are the owner of the file and the file is stored on only one location, we will send it to our new next.
+                logger.info(file.getName()+" is only stored on 1 location, send to new node");
                 UnicastSender.sendFile(file, ip, false,"replication");
                 log.add(file.getName(), ip);
             }

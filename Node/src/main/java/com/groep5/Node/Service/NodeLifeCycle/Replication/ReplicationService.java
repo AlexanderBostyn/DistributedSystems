@@ -99,9 +99,9 @@ public class ReplicationService {
             }
             return namingServerService.getIp(previousHash);
         } else {
-            if (!isOwner(fileName, currentHash)) {
+            if (!isOwner(fileName, currentHash)) {//if we are not the owner, send to owner
                 return namingServerService.getFileOwner(fileHash);
-            }
+            }//if we are the owner, send to previous node
             Log log = SpringContext.getBean(Log.class);
             log.add(fileName, namingServerService.getIp(previousHash));
             log.get(fileName).add(SpringContext.getBean(Node.class).getNodePropreties().getNodeAddress());
