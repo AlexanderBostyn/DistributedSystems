@@ -1,11 +1,11 @@
 package com.groep5.Node.Service.NodeLifeCycle.Replication;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
-import org.apache.juli.logging.Log;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -102,6 +102,9 @@ public class ReplicationService {
             if (!isOwner(fileName, currentHash)) {
                 return namingServerService.getFileOwner(fileHash);
             }
+            Log log = SpringContext.getBean(Log.class);
+            log.add(fileName, namingServerService.getIp(previousHash));
+            log.get(fileName).add(SpringContext.getBean(Node.class).getNodePropreties().getNodeAddress());
             return namingServerService.getIp(previousHash);
 //            while(namingServerService.getNextHash(currentHash) < fileHash) {
 //                if (namingServerService.getNextHash(currentHash) < currentHash) {
