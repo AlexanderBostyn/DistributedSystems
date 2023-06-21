@@ -45,7 +45,7 @@ private boolean isNewAgent=false;
     public void startFailureAgent(){
         failingNodeHash=nodePropreties.getNodeHash();
         isNewAgent=true;
-        //run();
+        run();
     }
     public void sendFailingNodeFilesToOwner(){
         ArrayList<File> files= ReplicationService.listDirectory("src/main/resources/replicated");
