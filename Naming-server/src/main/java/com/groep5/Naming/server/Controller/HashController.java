@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class HashController {
     private Logger logger = Logger.getLogger(this.getClass().getName());
     private Hasher hasher;
-    private boolean printRequests=false;
+    private boolean printRequests=true;
     HashController(ApplicationContext context) {
         this.hasher = new SHAHasher(context);
     }
@@ -124,10 +124,13 @@ public class HashController {
     @GetMapping("/hash/{name}")
     public int calcHashValue(@PathVariable String name)
     {
+        int hashId=hasher.calcHashId(name);
         if (printRequests){
-            logger.info("incoming GET /node/"+name);
+            logger.info("incoming GET /hash/"+name);
+            logger.info(("hash for "+name+" is: "+hashId));
         }
-        return hasher.calcHashId(name);
+
+        return hashId;
     }
 
     @GetMapping("/nodes")
