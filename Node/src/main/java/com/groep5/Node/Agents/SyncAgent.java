@@ -125,14 +125,6 @@ public class SyncAgent{
                     .bodyToMono(new ParameterizedTypeReference<HashMap<String, Boolean>>() {});
             return responseMono.block();
 
-            /*RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<HashMap> response = restTemplate.getForEntity(ip+":54321"+"/agentlist", HashMap.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody();
-            } else {
-                throw new Exception("Request failed with status: " + response.getStatusCode());
-            }
-             */
         }
 
         @Override
