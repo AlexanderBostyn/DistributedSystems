@@ -14,6 +14,9 @@ public interface Hasher {
     public int calcHashId(String name);
 
     public int returnAmountOfNodes();
+
+    String getAllNodes();
+
     public void  deleteNodeByAddress(InetAddress nodeAddress);
 
     public int previousId(int id);

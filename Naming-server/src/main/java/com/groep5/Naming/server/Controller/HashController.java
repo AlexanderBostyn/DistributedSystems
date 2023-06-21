@@ -1,6 +1,7 @@
 package com.groep5.Naming.server.Controller;
 
 import com.groep5.Naming.server.Model.Node;
+import com.groep5.Naming.server.Persistence;
 import com.groep5.Naming.server.Service.SHAHasher;
 import com.groep5.Naming.server.Service.Hasher;
 import org.apache.juli.logging.Log;
@@ -127,6 +128,12 @@ public class HashController {
             logger.info("incoming GET /node/"+name);
         }
         return hasher.calcHashId(name);
+    }
+
+    @GetMapping("/nodes")
+    public String getAllNodes()
+    {
+        return hasher.getAllNodes();
     }
 
 

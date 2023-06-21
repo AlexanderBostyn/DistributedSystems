@@ -1,11 +1,8 @@
 package com.groep5.Naming.server.Service;
 
 import com.google.common.hash.Hashing;
-import com.groep5.Naming.server.Model.Node;
 import com.groep5.Naming.server.Persistence;
-import com.groep5.Naming.server.Service.Hasher;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.Inet4Address;
@@ -13,7 +10,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.TreeMap;
 
 
@@ -39,6 +36,13 @@ public class SHAHasher implements Hasher {
     public int returnAmountOfNodes() {
 
         return nodeMap.size();
+    }
+    @Override
+    public String getAllNodes(){
+        String nodes="";
+        for (Map.Entry<Integer,InetAddress> node :nodeMap.entrySet()) {
+            nodes += node.getKey()+"; "+node.getValue()+"\n"   ;     }
+        return nodes;
     }
 
     @Override
