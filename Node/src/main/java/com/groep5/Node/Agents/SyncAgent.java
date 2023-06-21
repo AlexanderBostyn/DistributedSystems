@@ -101,6 +101,7 @@ public class SyncAgent {
              */
             while (true) {
                 HashMap<String, Boolean> nextNodeList = getAgentListFromNextNode();
+                checkOwnLog();
                 for (Map.Entry<String, Boolean> entry : nextNodeList.entrySet()) {
                     String fileName = entry.getKey();
                     Boolean isLocked = entry.getValue();
@@ -112,7 +113,19 @@ public class SyncAgent {
                 }
             }
         }
-
+        private void checkOwnLog() {
+            Set<Log.LogEntry> entries = log.getEntrySet();
+            for (Log.LogEntry entry : entries) {
+                if (entry.size() == 1) {
+                    try {
+                        UnicastSender.sendFile(new File("src/main/resources/replicated/" + entry.getFileName()), namingServerService.getIp(nodePropreties.previousHash), false, "replication");
+                        log.add(entry.getFileName(), namingServerService.getIp(nodePropreties.previousHash));
+                    } catch (UnknownHostException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
         public HashMap<String, Boolean> getAgentListFromNextNode() throws Exception {
             logger.info("Look at next node");
             Thread.sleep(5000L);
