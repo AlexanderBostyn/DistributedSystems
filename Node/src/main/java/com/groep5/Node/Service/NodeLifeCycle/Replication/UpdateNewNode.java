@@ -35,6 +35,7 @@ public class UpdateNewNode {
         this.nodePropreties = NodeApplication.getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
         this.files = ReplicationService.listDirectory("src/main/resources/replicated");
+        this.files.addAll(ReplicationService.listDirectory("src/main/resources/local"));
         try {
             resendFiles();
         } catch (UnknownHostException e) {
