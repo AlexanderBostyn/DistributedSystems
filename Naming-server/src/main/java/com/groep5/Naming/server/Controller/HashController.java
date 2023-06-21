@@ -52,10 +52,12 @@ public class HashController {
 
     @GetMapping("/file/{id}")//locate the node a file is located at
     public String locateFileById(@PathVariable int id) throws UnknownHostException {
+        String location=hasher.locateFileById(id).getHostAddress();
         if (printRequests){
             logger.info("incoming GET /file/"+id);
+            logger.info("file "+id+" owner is: "+location);
         }
-        return hasher.locateFileById(id).getHostAddress();
+        return location;
     }
     @GetMapping("/file")//locate the node a file is located at
     public String  locateFileByName(@RequestBody String name) throws UnknownHostException {
