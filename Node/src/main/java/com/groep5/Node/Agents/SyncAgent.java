@@ -1,10 +1,12 @@
 package com.groep5.Node.Agents;
 
+import com.groep5.Node.Model.Log;
 import com.groep5.Node.Model.Node;
 import com.groep5.Node.Model.NodePropreties;
 import com.groep5.Node.NodeApplication;
 import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
+import com.groep5.Node.Service.Unicast.UnicastSender;
 import lombok.Data;
 import net.officefloor.plugin.variable.In;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,32 +25,30 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service
 @Data
-public class SyncAgent{
+public class SyncAgent {
     private NodePropreties nodePropreties;
     private NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
     private HashMap<String, Boolean> agentList = new HashMap<>();
-    private boolean isActive=false;
+    private boolean isActive = false;
 
-    public void setActive(boolean active){
-        isActive=active;
+    public void setActive(boolean active) {
+        isActive = active;
     }
+
     @Autowired
-    public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService) {
+    public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService, Log log) {
         this.nodePropreties = nodePropreties;
         this.namingServerService = namingServerService;
 
     }
-    public void startSyncAgent()
-    {
+
+    public void startSyncAgent() {
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
@@ -72,24 +72,25 @@ public class SyncAgent{
     }
 
 
-    public void putInAgentList(String filename, Boolean isLocked)
-    {
-        agentList.put(filename,isLocked);
+    public void putInAgentList(String filename, Boolean isLocked) {
+        agentList.put(filename, isLocked);
     }
-    public void replaceInAgentList(String filename, Boolean isLocked)
-    {
-        agentList.replace(filename,isLocked);
+
+    public void replaceInAgentList(String filename, Boolean isLocked) {
+        agentList.replace(filename, isLocked);
     }
 
     public static class UpdateLog extends Thread {
         private NodePropreties nodePropreties;
         private NamingServerService namingServerService;
         private SyncAgent syncAgent;
+        private Log log;
 
         public UpdateLog() {
             this.nodePropreties = NodeApplication.getNodePropreties();
             this.namingServerService = NodeApplication.getNamingServerService();
             this.syncAgent = NodeApplication.getSyncAgent();
+            this.log = NodeApplication.getLog();
         }
 
         private void updateLog() throws Exception {
@@ -98,33 +99,50 @@ public class SyncAgent{
              * It will look at the log of the agent
              * Any files that aren't in his log yet will be added
              * status of files is synced
-            */
-            while(true) {
-                HashMap<String,Boolean> nextNodeList=getAgentListFromNextNode();
+             * Also check if any entries in our log are not replicated to a second location.
+             */
+            while (true) {
+                HashMap<String, Boolean> nextNodeList = getAgentListFromNextNode();
+                checkOwnLog();
                 for (Map.Entry<String, Boolean> entry : nextNodeList.entrySet()) {
                     String fileName = entry.getKey();
                     Boolean isLocked = entry.getValue();
-                    if (!syncAgent.getAgentList().containsKey(fileName)){//this file is not present on our node
-                        syncAgent.putInAgentList(fileName,isLocked);
-                    }else{//sync status of files
-                        syncAgent.replaceInAgentList(fileName,isLocked);
+                    if (!syncAgent.getAgentList().containsKey(fileName)) {//this file is not present on our node
+                        syncAgent.putInAgentList(fileName, isLocked);
+                    } else {//sync status of files
+                        syncAgent.replaceInAgentList(fileName, isLocked);
                     }
                 }
             }
         }
-        public HashMap<String,Boolean> getAgentListFromNextNode() throws Exception {
+
+        public HashMap<String, Boolean> getAgentListFromNextNode() throws Exception {
             logger.info("Look at next node");
             Thread.sleep(5000L);
             int nextHash = this.nodePropreties.nextHash;
             //call controller on next node
-            InetAddress ip= namingServerService.getIp(nextHash);
-            WebClient client=WebClient.create("http://" + ip.getHostAddress() + ":8080");
-            Mono<HashMap<String, Boolean>> responseMono =client.get()
+            InetAddress ip = namingServerService.getIp(nextHash);
+            WebClient client = WebClient.create("http://" + ip.getHostAddress() + ":8080");
+            Mono<HashMap<String, Boolean>> responseMono = client.get()
                     .uri("/agentlist")
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<HashMap<String, Boolean>>() {});
+                    .bodyToMono(new ParameterizedTypeReference<HashMap<String, Boolean>>() {
+                    });
             return responseMono.block();
 
+        }
+
+        private void checkOwnLog() {
+            Set<Log.LogEntry> entries = log.getEntrySet();
+            for (Log.LogEntry entry : entries) {
+                if (entry.size() == 1) {
+                    try {
+                        UnicastSender.sendFile(new File("src/main/resources/replicated/" + entry.getFileName()), namingServerService.getIp(nodePropreties.previousHash), false, "replication");
+                    } catch (UnknownHostException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
         }
 
         @Override
@@ -139,7 +157,7 @@ public class SyncAgent{
     }
 
     public void fileWatching() throws InterruptedException {
-        for(String f : agentList.keySet()) {
+        for (String f : agentList.keySet()) {
             new FileLocking(f).start();
         }
     }
@@ -148,6 +166,7 @@ public class SyncAgent{
         private String fileName;
         private long lastModifiedTime;
         private File file;
+
         public FileLocking(String fileName) {
             this.fileName = fileName;
             this.file = new File("src/main/resources/local/" + fileName);
@@ -156,7 +175,7 @@ public class SyncAgent{
 
         public boolean isFileBeingEdited() throws InterruptedException {
             long currentModifiedTime = file.lastModified();
-            if(currentModifiedTime != lastModifiedTime) {
+            if (currentModifiedTime != lastModifiedTime) {
                 lastModifiedTime = currentModifiedTime;
                 return true;
             }
@@ -167,10 +186,9 @@ public class SyncAgent{
         public void run() {
             try {
                 while (isActive) {
-                    if(isFileBeingEdited()) {
+                    if (isFileBeingEdited()) {
                         lockFile(fileName);
-                    }
-                    else {
+                    } else {
                         unlockFile(fileName);
                     }
                     Thread.sleep(5000);
@@ -184,18 +202,19 @@ public class SyncAgent{
 
     public void lockFile(String fileName) {
         logger.info("lock file " + fileName);
-        if(agentList.containsKey(fileName)) {
+        if (agentList.containsKey(fileName)) {
             agentList.replace(fileName, true);
         }
     }
 
     public void unlockFile(String fileName) {
-        if (agentList.get(fileName)){//true means locked
+        if (agentList.get(fileName)) {//true means locked
             logger.info("unlock file " + fileName);
-            if(agentList.containsKey(fileName)) {
+            if (agentList.containsKey(fileName)) {
                 agentList.replace(fileName, false);
             }
         }
 
     }
+
 }
