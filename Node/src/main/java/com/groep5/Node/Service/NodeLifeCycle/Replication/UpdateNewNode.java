@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 public class UpdateNewNode {
     public NodePropreties nodePropreties;
     public ArrayList<File> files;
+    public ArrayList<File> localFiles;
     public int receivedNodeHash;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private final Log log = NodeApplication.getLog();
@@ -34,9 +35,11 @@ public class UpdateNewNode {
         this.namingServerService = NodeApplication.getNamingServerService();
         this.nodePropreties = NodeApplication.getNodePropreties();
         this.receivedNodeHash = recievedNodeHash;
-        this.files = ReplicationService.listDirectory("src/main/resources/replicated");
+        //this.files = ReplicationService.listDirectory("src/main/resources/replicated");
+        //this.localFiles = ReplicationService.listDirectory("src/main/resources/local");
         try {
-            resendFiles();
+            resendFiles("replicated");
+            resendFiles("local");
         } catch (UnknownHostException e) {
             logger.severe("Error in retrieving ip from: " + recievedNodeHash);
             throw new RuntimeException(e);
@@ -47,9 +50,10 @@ public class UpdateNewNode {
         return namingServerService.calculateHash(file.getName());
     }
 
-    private void resendFiles() throws UnknownHostException {
+    private void resendFiles(String directory) throws UnknownHostException {
         Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
+        files = ReplicationService.listDirectory("src/main/resources/"+directory);
         for (File file : files) {
             int fileHash = calcHash(file);
             int newNextNodeHash = receivedNodeHash;
@@ -64,9 +68,15 @@ public class UpdateNewNode {
                 }
             }
             if (fileHash > newNextNodeHash) {
-                logger.info("file (" + file.getName() + ") is send to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
+                logger.info("file (" + file.getName() + ") is sent to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
                 Log.LogEntry entry = log.get(file.getName());
-                FileSender fileSender = UnicastSender.sendFile(file, ip, true,"replication");
+                boolean delete=false;
+                if(directory.equals("replicated")){
+                    delete=true;
+                }else{
+                    delete=false;
+                }
+                FileSender fileSender = UnicastSender.sendFile(file, ip, delete,"replication");
                 if (entry != null) {
                     Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
 
