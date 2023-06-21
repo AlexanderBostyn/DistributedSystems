@@ -42,12 +42,10 @@ public class SyncAgent {
     }
 
     @Autowired
-    public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService, Log log) {
+    public SyncAgent(NodePropreties nodePropreties, NamingServerService namingServerService) {
         this.nodePropreties = nodePropreties;
         this.namingServerService = namingServerService;
-
     }
-
     public void startSyncAgent() {
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
@@ -103,7 +101,6 @@ public class SyncAgent {
              */
             while (true) {
                 HashMap<String, Boolean> nextNodeList = getAgentListFromNextNode();
-                checkOwnLog();
                 for (Map.Entry<String, Boolean> entry : nextNodeList.entrySet()) {
                     String fileName = entry.getKey();
                     Boolean isLocked = entry.getValue();
@@ -131,20 +128,6 @@ public class SyncAgent {
             return responseMono.block();
 
         }
-
-        private void checkOwnLog() {
-            Set<Log.LogEntry> entries = log.getEntrySet();
-            for (Log.LogEntry entry : entries) {
-                if (entry.size() == 1) {
-                    try {
-                        UnicastSender.sendFile(new File("src/main/resources/replicated/" + entry.getFileName()), namingServerService.getIp(nodePropreties.previousHash), false, "replication");
-                    } catch (UnknownHostException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-
         @Override
         public void run() {
             try {
