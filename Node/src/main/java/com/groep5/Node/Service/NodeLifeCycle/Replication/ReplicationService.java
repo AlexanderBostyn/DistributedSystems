@@ -9,8 +9,11 @@ import com.groep5.Node.SpringContext;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -105,6 +108,11 @@ public class ReplicationService {
             Log log = SpringContext.getBean(Log.class);
             log.add(fileName, namingServerService.getIp(previousHash));
             log.get(fileName).add(SpringContext.getBean(Node.class).getNodePropreties().getNodeAddress());
+            try {
+                Files.copy(Path.of("src/main/resources/local", fileName), Path.of("src/main/resources/replicated", fileName));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return namingServerService.getIp(previousHash);
 //            while(namingServerService.getNextHash(currentHash) < fileHash) {
 //                if (namingServerService.getNextHash(currentHash) < currentHash) {
