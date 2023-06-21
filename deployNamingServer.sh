@@ -1,7 +1,7 @@
 #Script to pull latest code and to deploy the naming server
 cd Naming-server/
-git reset --hard origin/test
-git pull origin test
+git reset --hard origin/test2
+git pull origin test2
 chmod +x ../deployNamingServer.sh
 mvn clean install
 rm src/main/resources/data.json

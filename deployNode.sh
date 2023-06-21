@@ -3,8 +3,8 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 cd Node/
-git reset --hard origin/test
-git pull origin test
+git reset --hard origin/test2
+git pull origin test2
 chmod +x ../deployNode.sh
 rm -r src/main/resources/local/*
 rm -r src/main/resources/replicated/*
