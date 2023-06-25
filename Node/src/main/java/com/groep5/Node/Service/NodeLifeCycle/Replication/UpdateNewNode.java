@@ -102,6 +102,7 @@ public class UpdateNewNode {
 
                     //only if we do not contain the file locally we do not add our own ip.
                     if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(file.getName()))) {
+                        logger.info("delete own address from log before sending "+ file.getName()+ "to "+ip.getHostAddress());
                         clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     }
                     sentLog.put(clonedEntry); //add the entry to the sentLog
