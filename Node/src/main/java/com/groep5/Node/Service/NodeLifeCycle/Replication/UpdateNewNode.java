@@ -40,9 +40,10 @@ public class UpdateNewNode {
         this.localFiles = ReplicationService.listDirectory("src/main/resources/local");
         try {
             resendLocalFiles();
-            if (nodePropreties.nextHash== recievedNodeHash){//might be new owner of our "owned" files
-                resendFiles();
-            }
+            resendFiles();
+//            if (nodePropreties.nextHash== recievedNodeHash){//might be new owner of our "owned" files
+//                resendFiles();
+//            }
 
         } catch (UnknownHostException e) {
             logger.severe("Error in retrieving ip from: " + recievedNodeHash);
@@ -104,7 +105,7 @@ public class UpdateNewNode {
                         clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     }
                     sentLog.put(clonedEntry); //add the entry to the sentLog
-                    log.delete(clonedEntry.getFileName());
+                    log.delete(file.getName());
                 }
                 try {
                     fileSender.join();
