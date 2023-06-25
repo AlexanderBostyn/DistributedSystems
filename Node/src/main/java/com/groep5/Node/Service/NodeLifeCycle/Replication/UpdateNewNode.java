@@ -104,6 +104,7 @@ public class UpdateNewNode {
                         clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     }
                     sentLog.put(clonedEntry); //add the entry to the sentLog
+                    log.delete(clonedEntry.getFileName());
                 }
                 try {
                     fileSender.join();
