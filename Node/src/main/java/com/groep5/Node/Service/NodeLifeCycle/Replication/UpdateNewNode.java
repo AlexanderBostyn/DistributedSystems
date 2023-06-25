@@ -55,6 +55,7 @@ public class UpdateNewNode {
         return namingServerService.calculateHash(file.getName());
     }
     public void resendLocalFiles() throws UnknownHostException {
+        logger.info("resendLocalFiles");
         Log sentLog = new Log();
         Inet4Address newIp = namingServerService.getIp(receivedNodeHash);
         for (File file : localFiles) {
@@ -78,6 +79,7 @@ public class UpdateNewNode {
     }
 
     private void resendFiles() throws UnknownHostException {
+        logger.info("resendFiles");
         Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
         for (File file : replicatedFiles) {
