@@ -89,7 +89,7 @@ public class UpdateNewNode {
             // This creates problems for linearity that can be fixed if we just add 32768 to all the hashes that are at the beginning of the ring
             if (newNextNodeHash < nodePropreties.nodeHash) {
                 newNextNodeHash += 32768;
-                logger.info("new next node at start of ring, add 32768: "+ newNextNodeHash);
+                logger.info("file: "+file.getName()+ " new next node at start of ring, add 32768: "+ newNextNodeHash);
 
                 // The file is also located at the beginning of the ring, adding 32768 will make the ring linear again.
                 if (fileHash < nodePropreties.nodeHash) {
