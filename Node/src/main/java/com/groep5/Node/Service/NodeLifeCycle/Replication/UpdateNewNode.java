@@ -74,7 +74,21 @@ public class UpdateNewNode {
                 throw new RuntimeException(e);
             }
         }
-        if (sentLog.size() > 0) {
+        if (sentLog.size() > 0) {for (Log.LogEntry entry :sentLog.getEntrySet()) {
+            for (File localFile:localFiles) {
+                if (localFile.getName().equals(entry.getFileName())){
+                    logger.info("log contains local file: "+entry.getFileName());
+                    for (Inet4Address address: entry.getAddresses()) {
+                        if (address!=nodePropreties.getNodeAddress() && address!=newIp)
+                        {
+                            logger.info("delete non local, non destination address: "+address);
+                            sentLog.delete(entry.getFileName(),address);
+                        }
+                    }
+                }
+            }
+        }
+            logger.info("send log");
             UnicastSender.sendLog(sentLog, newIp);
         }
     }
@@ -140,7 +154,7 @@ public class UpdateNewNode {
                         for (Inet4Address address: entry.getAddresses()) {
                             if (address!=nodePropreties.getNodeAddress() && address!=ip)
                             {
-                                logger.info("delete non local, non owner address: "+address);
+                                logger.info("delete non local, non destination address: "+address);
                                 sentLog.delete(entry.getFileName(),address);
                             }
                         }
