@@ -15,6 +15,7 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Logger;
 
 
@@ -132,6 +133,20 @@ public class UpdateNewNode {
             }
         }
         if (sentLog.size() > 0) {
+            for (Log.LogEntry entry :sentLog.getEntrySet()) {
+                if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(entry.getFileName())))
+                {
+                    logger.info("log contains local file: "+entry.getFileName());
+                    for (Inet4Address address: entry.getAddresses()) {
+                        if (address!=nodePropreties.getNodeAddress() && address!=ip)
+                        {
+                            logger.info("delete non local, non owner address: "+address);
+                            sentLog.delete(entry.getFileName(),address);
+                        }
+
+                    }
+                }
+            }
             UnicastSender.sendLog(sentLog, ip);
         }
     }
