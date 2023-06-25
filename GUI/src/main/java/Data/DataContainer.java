@@ -23,7 +23,7 @@ public class DataContainer {
         try {
             nodeInfo = WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + socket)
                     .get()
-                    .uri("/getGUIInfo")
+                    .uri("/getNodeInfo")
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();

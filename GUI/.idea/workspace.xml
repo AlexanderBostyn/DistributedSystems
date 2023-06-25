@@ -4,24 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95572c4b-a25e-4dcc-ae0c-d6a128aec4b5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUI/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/GUI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Data/DataContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Data/DataContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Home/Nodes/NodesList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeButtons.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeButtons.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/Node/NodeList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/NodeMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Nodes/NodeMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Node/src/main/java/com/groep5/Node/Controller/NodeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Node/src/main/java/com/groep5/Node/Controller/NodeController.java" afterDir="false" />
-    </list>
+    <list default="true" id="95572c4b-a25e-4dcc-ae0c-d6a128aec4b5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,19 +38,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/UAProgrammas/IntellijProjects/DIST/DistributedSystems/GUI",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/UAProgrammas/IntellijProjects/DIST/DistributedSystems/GUI&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="RunGUI" />
