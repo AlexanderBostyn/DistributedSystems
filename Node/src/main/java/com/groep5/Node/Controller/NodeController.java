@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -103,6 +104,18 @@ public class NodeController {
         return info;
     }
 
+    @GetMapping("/getGUIInfo")
+    public String getGUIInfo()//nodeName,nodeHash,nodeAddress,prevNode,nextNode
+    {
+        logger.info("incoming GET /getGUIInfo");
+        String info="";
+        info+=nodePropreties.getNodeName()+";";
+        info+= nodePropreties.getNodeHash()+";";
+        info+= nodePropreties.getNodeAddress()+";";
+        info+= "Online";
+        return info;
+    }
+
 
     @GetMapping("/agentlist")
     public ResponseEntity<Map<String, Boolean>> getAgentList()
@@ -112,6 +125,23 @@ public class NodeController {
         return new  ResponseEntity<Map<String,Boolean>>(agentlist, HttpStatus.OK);
     }
 
+    @GetMapping("/testagentlist")
+    public String testgetAgentList()
+    {
+        logger.info("incoming test GET /agentlist");
+        HashMap<String,Boolean> agentlist=syncAgent.getAgentList();
+        System.out.println(agentlist);
+        agentlist.put("1;testfile1;node1.6dist;node2.6dist", true);
+        agentlist.put("20;testfile2;node3.6dist;node4.6dist", false);
+        String files = "";
+        for(String s : agentlist.keySet()) {
+            String file = s + ";" + agentlist.get(s);
+            files = files + file + ":";
+        }
+        files = files.substring(0, files.length() - 1);
+        System.out.println(files);
+        return files;
+    }
 
     @GetMapping("/log")//returns log in serialized form
     public String getLog(){

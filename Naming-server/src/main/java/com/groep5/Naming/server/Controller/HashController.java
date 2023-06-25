@@ -30,6 +30,11 @@ public class HashController {
         return "Hello World, naming server here";
     }
 
+    @GetMapping("/status")//locate the node a file is located at
+    public String locateFileById() {
+        return "Online";
+    }
+
     @GetMapping("/file/{id}")//locate the node a file is located at
     public String locateFileById(@PathVariable int id) throws UnknownHostException {
         logger.info("incoming GET /file/"+id);

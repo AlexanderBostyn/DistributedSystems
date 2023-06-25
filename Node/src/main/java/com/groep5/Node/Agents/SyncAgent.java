@@ -32,7 +32,7 @@ public class SyncAgent{
     private NodePropreties nodePropreties;
     private NamingServerService namingServerService;
     private static final Logger logger = Logger.getLogger(String.valueOf(SyncAgent.class));
-    private HashMap<String, Boolean> agentList = new HashMap<>();
+    public HashMap<String, Boolean> agentList = new HashMap<>();
     private boolean isActive=false;
 
     public void setActive(boolean active){
