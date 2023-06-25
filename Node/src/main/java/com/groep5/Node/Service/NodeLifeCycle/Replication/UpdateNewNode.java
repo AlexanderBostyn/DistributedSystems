@@ -99,7 +99,7 @@ public class UpdateNewNode {
                 FileSender fileSender = UnicastSender.sendFile(file, ip, true,"replication");
                 if (entry != null) {
                     Log.LogEntry clonedEntry = entry.clone(); //copy our entry of that file
-
+                    logger.info("log entry for "+file.getName() +": "+entry);
                     //only if we do not contain the file locally we do not add our own ip.
                     if (ReplicationService.listDirectory("src/main/resources/local").stream().noneMatch(localFile -> localFile.getName().equals(file.getName()))) {
                         logger.info("delete own address from log before sending "+ file.getName()+ "to "+ip.getHostAddress());
