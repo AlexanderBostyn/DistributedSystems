@@ -84,6 +84,7 @@ public class Node {
         //get address of node from namingserver
         logger.info("Shutting Down Node");
         nodePropreties.stopFailure();
+        nodePropreties.stopUpdateLogTask();
         if (nodePropreties.nextHash != nodePropreties.nodeHash) {
             Inet4Address prevIp = namingServerService.getIp(nodePropreties.previousHash);
             UnicastSender.sendMessage("shutdown;next;" + nodePropreties.nextHash, prevIp);

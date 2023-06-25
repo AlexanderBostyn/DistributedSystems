@@ -26,6 +26,7 @@ public class NodePropreties {
     private int connectionsFinished = 0;
     public int numberOfNodes = -1;
     private Failure failure;
+    private SyncAgent.UpdateLog updateLogTask;
     private boolean isActive=false;
     //public HashMap<File, ArrayList<Inet4Address>> log = new HashMap<>();
 
@@ -46,6 +47,15 @@ public class NodePropreties {
     public void stopFailure()
     {
         failure.stop();
+    }
+
+    public void startNewUpdateLogTask() {
+        updateLogTask = new SyncAgent.UpdateLog();
+        updateLogTask.start();
+    }
+
+    public void stopUpdateLogTask() {
+
     }
     public void finishConnection(){
         connectionsFinished++;

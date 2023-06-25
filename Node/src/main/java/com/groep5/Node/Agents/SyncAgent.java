@@ -52,7 +52,7 @@ public class SyncAgent{
         logger.info("Agent is starting");
         this.agentList.putAll(createLog());
         logger.info("Start looking at next node for updates");
-        new UpdateLog().start();
+        nodePropreties.startNewUpdateLogTask();
         try {
             fileWatching();
         } catch (InterruptedException e) {

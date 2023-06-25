@@ -67,7 +67,7 @@ public class UnicastHandler extends Thread {
 
     private synchronized void failureHandler(String[] message) {//message[2] contains the new value for prev/next node
         nodePropreties.stopFailure();
-       //node.getFailure().stop();
+        nodePropreties.stopUpdateLogTask();
         switch (message[1]) {
             case "previous" -> {
                 logger.severe("previous Node failed");
@@ -97,11 +97,23 @@ public class UnicastHandler extends Thread {
         logger.info("previousHash: " + nodePropreties.previousHash);
         logger.info("nodeHash: " + nodePropreties.nodeHash);
         logger.info("nextHash: " + nodePropreties.nextHash);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        nodePropreties.startNewUpdateLogTask();
+        nodePropreties.startNewFailure();
     }
 
     private synchronized void discoveryHandler(String[] message) {
         Failure failure = nodePropreties.getFailure();
-        if (failure!= null && failure.isAlive()) nodePropreties.stopFailure();;
+        if (failure!= null && failure.isAlive()) {
+            nodePropreties.stopFailure();
+            nodePropreties.stopUpdateLogTask();
+        }
+        ;
         switch (message[1]) {
             case "namingServer" -> {
                 logger.info("location of namingServer: " + socket.getInetAddress());
@@ -127,12 +139,13 @@ public class UnicastHandler extends Thread {
                 throw new RuntimeException(e);
             }
             nodePropreties.startNewFailure();
+            nodePropreties.startNewUpdateLogTask();
         }
     }
 
     private synchronized void shutdownHandler(String[] message) {
-        //node.getFailure().stop();
         nodePropreties.stopFailure();
+        nodePropreties.stopUpdateLogTask();
         switch (message[1]) {
             case "previous" -> {
                 nodePropreties.previousHash = Integer.parseInt(message[2]);
@@ -162,6 +175,7 @@ public class UnicastHandler extends Thread {
         logger.info("nodeHash: " + nodePropreties.nodeHash);
         logger.info("nextHash: " + nodePropreties.nextHash);
         nodePropreties.startNewFailure();
+        nodePropreties.startNewUpdateLogTask();
     }
 
     private void replicationHandler(String[] message) throws UnknownHostException {

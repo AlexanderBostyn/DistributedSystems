@@ -63,8 +63,9 @@ public class MulticastReceiver extends Thread {
         @Override
         public void run() {
             try {
-                logger.info("Stopping Failure task");
+                logger.info("Stopping Failure and Sync task");
                 nodePropreties.stopFailure();
+                nodePropreties.stopUpdateLogTask();
                 String[] splitMessage = msg.split(";");
                 if (splitMessage[0].equals("deletion")) {
                     NodeApplication.getLog().delete(splitMessage[1]);
@@ -136,8 +137,9 @@ public class MulticastReceiver extends Thread {
                 logger.info("nodeHash: " + nodePropreties.nodeHash);
                 logger.info("nextHash: " + nodePropreties.nextHash);
                 Thread.sleep(5000);
-                logger.info("restarting Failure thread");
+                logger.info("restarting Failure and sync thread");
                 nodePropreties.startNewFailure();
+                nodePropreties.startNewUpdateLogTask();
 
                 new UpdateNewNode( receivedNodeHash);
                 //Our nextNode was updated
