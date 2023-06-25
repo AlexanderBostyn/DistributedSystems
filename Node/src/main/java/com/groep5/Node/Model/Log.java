@@ -103,7 +103,9 @@ public class Log implements Cloneable, Serializable {
         }
         logger.info("hashCodes: " + entrySet.stream().map(LogEntry::hashCode).collect(Collectors.toCollection(ArrayList::new)));
         logger.info("contains: " + entrySet.contains(get(fileName)));
-        return entrySet.remove(get(fileName));
+        boolean bool=entrySet.remove(get(fileName));
+        System.out.println("deleted log? "+bool);
+        return bool;
     }
 
     /**

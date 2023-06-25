@@ -107,6 +107,12 @@ public class UpdateNewNode {
                         logger.info("delete own address from log before sending "+ file.getName()+ "to "+ip.getHostAddress());
                         clonedEntry.delete(nodePropreties.getNodeAddress()); //delete our address from the entry because we will be removing it
                     }
+                    for (Inet4Address address: entry.getAddresses()) {
+                        if (!(address==nodePropreties.getNodeAddress()) && !(address== ip)){
+                            logger.info("delete "+address+" from log before sending");
+                            clonedEntry.delete(address);
+                        }
+                    }
                     sentLog.put(clonedEntry); //add the entry to the sentLog
                     log.delete(file.getName());
                 }
