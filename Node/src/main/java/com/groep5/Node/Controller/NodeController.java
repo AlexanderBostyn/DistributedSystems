@@ -125,7 +125,7 @@ public class NodeController {
         return new  ResponseEntity<Map<String,Boolean>>(agentlist, HttpStatus.OK);
     }
 
-    @GetMapping("/testagentlist")
+    @GetMapping("/getFiles")
     public String testgetAgentList()
     {
         logger.info("incoming test GET /agentlist");

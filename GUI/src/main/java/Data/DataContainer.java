@@ -39,7 +39,7 @@ public class DataContainer {
             try {
                 files = WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + nodeSocket++)
                         .get()
-                        .uri("/testagentlist")
+                        .uri("/getFiles")
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
