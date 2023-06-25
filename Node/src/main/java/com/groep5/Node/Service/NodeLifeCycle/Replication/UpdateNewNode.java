@@ -8,6 +8,7 @@ import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.Service.Unicast.UnicastSender;
 import com.groep5.Node.SpringContext;
+import net.officefloor.plugin.variable.In;
 
 import java.io.File;
 import java.net.Inet4Address;
@@ -53,9 +54,25 @@ public class UpdateNewNode {
         return namingServerService.calculateHash(file.getName());
     }
     public void resendLocalFiles() throws UnknownHostException {
+        Log sentLog = new Log();
+        Inet4Address newIp = namingServerService.getIp(receivedNodeHash);
         for (File file : localFiles) {
             Inet4Address ip = ReplicationService.findIp(file.getName(), ReplicationState.STARTUP);
-            UnicastSender.sendFile(file, ip, false,"replication");
+            FileSender sender_thread = UnicastSender.sendFile(file, ip, false,"replication");
+            Log.LogEntry entry = log.get(file.getName());
+            if (entry != null) {
+                Log.LogEntry clonedEntry = entry.clone();
+                sentLog.put(clonedEntry);
+                log.delete(file.getName());
+            }
+            try {
+                sender_thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (sentLog.size() > 0) {
+            UnicastSender.sendLog(sentLog, newIp);
         }
     }
 
