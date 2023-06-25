@@ -113,7 +113,7 @@ public class SyncAgent{
             }
         }
         public HashMap<String,Boolean> getAgentListFromNextNode() throws Exception {
-            logger.info("Look at next node");
+            //logger.info("Look at next node");
             Thread.sleep(5000L);
             int nextHash = this.nodePropreties.nextHash;
             //call controller on next node

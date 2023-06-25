@@ -47,7 +47,7 @@ public class Node {
             nodePropreties.startNewFailure();
             listenToMulticasts();
             replicationService.startReplication();
-            //syncAgent.startSyncAgent();
+            syncAgent.startSyncAgent();
         }
     }
 

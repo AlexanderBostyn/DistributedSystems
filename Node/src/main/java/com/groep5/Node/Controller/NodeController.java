@@ -115,7 +115,7 @@ public class NodeController {
     @GetMapping("/agentlist")
     public ResponseEntity<Map<String, Boolean>> getAgentList()
     {
-        logger.info("incoming GET /agentlist");
+        //logger.info("incoming GET /agentlist");
         HashMap<String,Boolean> agentlist=syncAgent.getAgentList();
         return new  ResponseEntity<Map<String,Boolean>>(agentlist, HttpStatus.OK);
     }
