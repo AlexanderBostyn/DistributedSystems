@@ -10,6 +10,7 @@ import com.groep5.Node.Service.NamingServerService;
 import com.groep5.Node.Service.NodeLifeCycle.Replication.ReplicationService;
 import com.groep5.Node.Service.Unicast.Receivers.FileReceiver;
 import com.groep5.Node.Service.Unicast.Receivers.LogReceiver;
+import com.groep5.Node.Service.Unicast.Senders.FileSender;
 import com.groep5.Node.SpringContext;
 
 import java.io.*;
@@ -155,17 +156,29 @@ public class UnicastHandler extends Thread {
             }
             case "file" -> {
                 //The sending node has been shutdown, meaning their location should be deleted from the log.
-                Log.LogEntry entry = log.get(message[2]);
+                String fileName = message[2];
+                Log.LogEntry entry = log.get(fileName);
                 boolean isDeleted = entry.delete((Inet4Address) socket.getInetAddress());
                 if (!isDeleted) {
                     logger.severe("Received shutdown message from node to update our fileLog, but our log didn't contain that entry");
                 }
                 ArrayList<File> files = ReplicationService.listDirectory("src/main/resources/local");
                 files.addAll(ReplicationService.listDirectory("src/main/resources/replicated"));
-                if(files.stream().anyMatch(file -> file.getName().equals(message[2]))) {
+                if(files.stream().anyMatch(file -> file.getName().equals(fileName))) {
                     //if we have the file in our directory we will add it to our log.
                     log.add(message[2], nodePropreties.getNodeAddress());
                 };
+                if (entry.size() <= 1) {
+                    Inet4Address previousIp = null;
+                    try {
+                        File file = files.stream().filter(file1 -> file1.getName().equals(fileName)).findFirst().orElse(null);
+                        previousIp = namingServerService.getIp(nodePropreties.getPreviousHash());
+                        new FileSender(file, previousIp, false, "replication");
+                        log.add(file.getName(), previousIp);
+                    } catch (UnknownHostException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 
             }
             default -> logger.warning("Message could not be parsed: " + Arrays.toString(message));
@@ -189,6 +202,19 @@ public class UnicastHandler extends Thread {
             if (message[3].equals("false")) {
                 //But if the place where the file came from is deleting the file immediately after we shouldnt log the receiving ip
                 log.add(file.getName(),ip);
+            }
+
+            //If ownership was transferred this will also imply that a log from the previous owner is often sent over.
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            //If after the log is received the log entry size for this file is still 1 or less we sent the file to our previous node the ensure replication.
+            if (log.get(file.getName()).size() <= 1 && nodePropreties.previousHash != nodePropreties.nodeHash) {
+                Inet4Address previousIp = namingServerService.getIp(nodePropreties.getPreviousHash());
+                new FileSender(file, previousIp, false, "replication");
+                log.add(file.getName(), previousIp);
             }
         }
     }
