@@ -30,8 +30,8 @@ public class HashController {
         return "Hello World, naming server here";
     }
 
-    @GetMapping("/status")//locate the node a file is located at
-    public String locateFileById() {
+    @GetMapping("/status")
+    public String status() {
         return "Online";
     }
 
