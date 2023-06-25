@@ -39,11 +39,11 @@ public class UpdateNewNode {
         this.replicatedFiles = ReplicationService.listDirectory("src/main/resources/replicated");
         this.localFiles = ReplicationService.listDirectory("src/main/resources/local");
         try {
-            resendLocalFiles();
-            resendFiles();
-//            if (nodePropreties.nextHash== recievedNodeHash){//might be new owner of our "owned" files
-//                resendFiles();
-//            }
+
+           if (nodePropreties.nextHash== recievedNodeHash){//might be new owner of our "owned" files
+               resendLocalFiles();
+               resendFiles();
+           }
 
         } catch (UnknownHostException e) {
             logger.severe("Error in retrieving ip from: " + recievedNodeHash);
