@@ -19,7 +19,7 @@ public class DataContainer {
 
     public String getNode(String socket) throws IOException {
         int i = Integer.parseInt(socket) - 8079;
-        String nodeInfo = "node" + i + ".6dist;/;/;Offline";
+        String nodeInfo = "node" + i + ".6dist;/;/;/;/;Offline";
         try {
             nodeInfo = WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + socket)
                     .get()

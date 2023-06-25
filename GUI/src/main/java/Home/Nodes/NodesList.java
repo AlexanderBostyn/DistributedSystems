@@ -21,7 +21,7 @@ public class NodesList extends JPanel {
         for (int i = 0; i<4; i++) {
             String s = dataContainer.getNode(String.valueOf(socket));
             String[] strings = s.split(";");
-            add(ncf.createCell(strings[0], strings[1], strings[2], strings[3]));
+            add(ncf.createCell(strings[0], strings[1], strings[2], strings[5]));
             socket++;
         }
     }

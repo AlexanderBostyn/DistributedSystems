@@ -22,7 +22,7 @@ public class NodeButtons extends JPanel {
         this.status = status;
         mainPanel = mp;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(10, 2*screenSize.height/9 + 50, (screenSize.width - 450)/4 - 20, screenSize.height/9 - 60);
+        setBounds(10, 2*screenSize.height/9 + 200, (screenSize.width - 450)/4 - 20, screenSize.height/9 - 60);
         setBackground(new Color(0, 15, 30));
         setLayout(new GridLayout(1,2));
 

@@ -36,7 +36,7 @@ public class NodeMain extends JPanel{
             JPanel nodePanel = new JPanel();
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             int width = screenSize.width - 200;
-            nodePanel.setBounds(50 + ((i-1) * ((width - 250)/4 + 50)), 250, (width - 250)/4, screenSize.height/3);
+            nodePanel.setBounds(50 + ((i-1) * ((width - 250)/4 + 50)), 150, (width - 250)/4, screenSize.height/3 + 150);
             nodePanel.setBackground(new Color(0, 15, 30));
             nodePanel.setLayout(null);
             nodePanel.add(new NodeTitle("node" + i + ".6dist"));

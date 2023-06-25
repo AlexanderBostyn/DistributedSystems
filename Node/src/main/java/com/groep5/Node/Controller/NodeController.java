@@ -105,13 +105,15 @@ public class NodeController {
     }
 
     @GetMapping("/getGUIInfo")
-    public String getGUIInfo()//nodeName,nodeHash,nodeAddress,prevNode,nextNode
+    public String getGUIInfo()//nodeName,nodeHash,nodeAddress, prevNode,nextNode
     {
         logger.info("incoming GET /getGUIInfo");
         String info="";
         info+=nodePropreties.getNodeName()+";";
         info+= nodePropreties.getNodeHash()+";";
         info+= nodePropreties.getNodeAddress()+";";
+        info+= nodePropreties.getPreviousHash()+";";
+        info+= nodePropreties.getNextHash()+";";
         info+= "Online";
         return info;
     }
