@@ -111,11 +111,12 @@ public class UpdateNewNode {
                 newNextNodeHash += 32768;
                 logger.info("file: "+file.getName()+ " new next node at start of ring, add 32768: "+ newNextNodeHash);
 
-                // The file is also located at the beginning of the ring, adding 32768 will make the ring linear again.
-                if (fileHash < nodePropreties.nodeHash) {
-                    fileHash += 32768;
-                    logger.info("file id is at start of ring, add 32768: "+ fileHash);
-                }
+
+            }
+            // The file is also located at the beginning of the ring, adding 32768 will make the ring linear again.
+            if (fileHash < nodePropreties.nodeHash) {
+                fileHash += 32768;
+                logger.info("file id is at start of ring, add 32768: "+ fileHash);
             }
             if (fileHash > newNextNodeHash) {
                 logger.info("file (" + file.getName() + ") is sent to node with hash:" + receivedNodeHash + "/" + ip.getHostAddress());
