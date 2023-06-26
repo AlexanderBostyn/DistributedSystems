@@ -97,7 +97,9 @@ public class UpdateNewNode {
     }
 
     private void resendFiles() throws UnknownHostException {
-        logger.info("resendFiles");
+        logger.info("resendFiles:");
+        logger.info( "current log is: "+log);
+        logger.info("replicated files: "+replicatedFiles.toString());
         Log sentLog = new Log();
         Inet4Address ip = namingServerService.getIp(receivedNodeHash);
         for (File file : replicatedFiles) {
