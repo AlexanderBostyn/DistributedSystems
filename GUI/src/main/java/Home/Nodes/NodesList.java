@@ -17,7 +17,7 @@ public class NodesList extends JPanel {
         NodeCellFactory ncf = new NodeCellFactory();
         add(ncf.createFirstCell());
         DataContainer dataContainer = new DataContainer();
-        int socket = 8080;
+        int socket = 8081;
         for (int i = 0; i<4; i++) {
             String s = dataContainer.getNode(String.valueOf(socket));
             String[] strings = s.split(";");

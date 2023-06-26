@@ -18,10 +18,10 @@ public class DataContainer {
     public DataContainer() throws IOException {}
 
     public String getNode(String socket) throws IOException {
-        int i = Integer.parseInt(socket) - 8079;
+        int i = Integer.parseInt(socket) - 8080;
         String nodeInfo = "node" + i + ".6dist;/;/;/;/;Offline";
         try {
-            nodeInfo = WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + socket)
+            nodeInfo = WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + socket+1)
                     .get()
                     .uri("/getNodeInfo")
                     .retrieve()
@@ -34,8 +34,8 @@ public class DataContainer {
 
     public String getFiles() {
         String files = "";
-        int nodeSocket = 8080;
-        for (int i = 0;i<5;i++) {
+        int nodeSocket = 8081;
+        for (int i = 0;i<4;i++) {
             try {
                 files = WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + nodeSocket++)
                         .get()
@@ -64,7 +64,7 @@ public class DataContainer {
         catch (WebClientRequestException ignored) {
         }
         String nodeInfo = null;
-        int nodeSocket = 8080;
+        int nodeSocket = 8082;
 
 
         for (int i = 0;i<5;i++) {

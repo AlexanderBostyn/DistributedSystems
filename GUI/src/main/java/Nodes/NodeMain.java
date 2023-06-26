@@ -24,7 +24,7 @@ public class NodeMain extends JPanel{
             setLayout(null);
 
             DataContainer dataContainer = new DataContainer();
-            int socket = 8080;
+            int socket = 8081;
             for (int i = 1; i<5; i++) {
                 String s = dataContainer.getNode(String.valueOf(socket));
                 add(createNode(i, s, status));
