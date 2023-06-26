@@ -15,6 +15,7 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -78,7 +79,9 @@ public class UpdateNewNode {
             for (File localFile:localFiles) {
                 if (localFile.getName().equals(entry.getFileName())){
                     logger.info("log contains local file: "+entry.getFileName());
-                    for (Inet4Address address: entry.getAddresses()) {
+                    Set<Inet4Address> addresses = entry.getAddresses();
+                    List<Inet4Address> addressList = addresses.stream().toList();
+                     for (Inet4Address address: addressList) {
                         if (address!=nodePropreties.getNodeAddress() && address!=newIp)
                         {
                             logger.info("delete non local, non destination address: "+address);
