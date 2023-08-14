@@ -40,11 +40,15 @@ public class NodeButtons extends JPanel {
                 if(status.get(i-1)) {
                     JOptionPane.showMessageDialog(null,"Node shutdown","Node Shutdown",JOptionPane.INFORMATION_MESSAGE);
                     status.set(i-1,false);
-                    int socket = 8080 + i;
+                    int socket = 8081 + i;
+                    System.out.println( "socket: "+socket);
                     try {
                         WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + socket)
                                 .put()
-                                .uri("/shutdown");
+                                .uri("/shutdown")
+                        .retrieve()
+                                .bodyToMono(Void.class)
+                                .block();
                     } catch (UnknownHostException ex) {
                         throw new RuntimeException(ex);
                     } catch (WebClientResponseException ignore) {
@@ -53,11 +57,15 @@ public class NodeButtons extends JPanel {
                 } else {
                     JOptionPane.showMessageDialog(null,"Node Startup","Node Startup",JOptionPane.INFORMATION_MESSAGE);
                     status.set(i-1,true);
-                    int socket = 8080 + i;
+                    int socket = 8081 + i;
                     try {
                         WebClient.create("http://" + InetAddress.getByName("localhost").getHostAddress() + ":" + socket)
                                 .put()
-                                .uri("/activate");
+                                .uri("/activate")
+
+                                .retrieve()
+                                .bodyToMono(Void.class)
+                                .block();
                     } catch (UnknownHostException ex) {
                         throw new RuntimeException(ex);
                     } catch (WebClientResponseException ignore) {
